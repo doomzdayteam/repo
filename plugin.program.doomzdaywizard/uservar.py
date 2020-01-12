@@ -17,7 +17,7 @@ ADDONTITLE = base64.b64decode(b'W0JdW0NPTE9SIEdvbGRdRG9vbXpkYXlbL0NPTE9SXVsvQl0g
 BUILDERNAME = base64.b64decode(b'REQgVGVhbQ==')
 EXCLUDES = [ADDON_ID, 'repository.doomzday', 'plugin.program.doomzdaywizard']
 # Text File with build info in it.
-BUILDFILE = base64.b64decode(b'aHR0cHM6Ly9kb29temRheS54eXovRE9OVC1ET1dOTE9BRC90ZXh0JTIwZmlsZXMvYnVpbGRzLnR4dA==')
+BUILDFILE = base64.b64decode(b'aHR0cHM6Ly9naXRsYWIuY29tL2Rvb216ZGF5L3RleHQvcmF3L21hc3Rlci9idWlsZHMudHh0')
 # How often you would like it to check for build updates in days
 # 0 being every startup of kodi
 UPDATECHECK = 0
@@ -98,9 +98,9 @@ AUTOINSTALL = 'Yes'
 # Addon ID for the repository
 REPOID = base64.b64decode(b'cmVwb3NpdG9yeS5kb29temRheQ==')
 # Url to Addons.xml file in your repo folder(this is so we can get the latest version)
-REPOADDONXML = base64.b64decode(b'aHR0cHM6Ly9kb29temRheS54eXovX3JlcG8vYWRkb25zLnhtbA==')
+REPOADDONXML = base64.b64decode(b'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2Rvb216ZGF5dGVhbS9yZXBvL21hc3Rlci9femlwZmlsZXMvYWRkb25zLnhtbA==')
 # Url to folder zip is located in
-REPOZIPURL = base64.b64decode(b'aHR0cHM6Ly9kb29temRheS54eXovX3JlcG8vcmVwb3NpdG9yeS5kb29temRheS8=')
+REPOZIPURL = base64.b64decode(b'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2Rvb216ZGF5dGVhbS9yZXBvL21hc3Rlci9femlwZmlsZXMvcmVwb3NpdG9yeS5kb29temRheS8=')
 #########################################################
 
 #########################################################
@@ -109,7 +109,7 @@ REPOZIPURL = base64.b64decode(b'aHR0cHM6Ly9kb29temRheS54eXovX3JlcG8vcmVwb3NpdG9y
 # Enable Notification screen Yes or No
 ENABLE = 'Yes'
 # Url to notification file
-NOTIFICATION = base64.b64decode(b'aHR0cHM6Ly9kb29temRheS54eXovRE9OVC1ET1dOTE9BRC90ZXh0JTIwZmlsZXMvbm90aWZ5LnR4dA==')
+NOTIFICATION = base64.b64decode(b'aHR0cHM6Ly9naXRsYWIuY29tL2Rvb216ZGF5L3RleHQvcmF3L21hc3Rlci9ub3RpZnkudHh0')
 # Use either 'Text' or 'Image'
 HEADERTYPE = 'Text'
 # Font size of header

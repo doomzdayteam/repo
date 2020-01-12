@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="repository.doomzday" name="Doomzday Repo" version="1.0.3" provider-name="DD Team">
+<addon id="repository.doomzday" name="Doomzday Repo" version="1.0.4" provider-name="DD Team">
     <requires>
         <import addon="xbmc.addon" version="12.0.0"/>
     </requires>

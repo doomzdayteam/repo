@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.doomzdaywizard" name="[B][COLOR gold]Doomzday[/COLOR][/B] Wizard" version="1.2.8" provider-name="DD Team">
+<addon id="plugin.program.doomzdaywizard" name="[B][COLOR gold]Doomzday[/COLOR][/B] Wizard" version="1.2.9" provider-name="DD Team">
     <requires>
         <import addon="xbmc.python" version="2.1.0" />
         <import addon="script.module.requests" />
