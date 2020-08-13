@@ -105,26 +105,40 @@ class Config:
 
     def init_paths(self):
         # Static variables
-        self.CLEANFREQ = ['Every Startup', 'Every Day', 'Every Three Days', 'Weekly', 'Monthly']
-        self.LOGFILES = ['log', 'xbmc.old.log', 'kodi.log', 'kodi.old.log', 'spmc.log', 'spmc.old.log', 'tvmc.log',
-                         'tvmc.old.log', 'dmp']
-        self.DEFAULTPLUGINS = ['metadata.album.universal', 'metadata.artists.universal',
-                               'metadata.common.fanart.tv', 'metadata.common.imdb.com',
-                               'metadata.common.musicbrainz.org', 'metadata.themoviedb.org',
-                               'metadata.tvdb.com', 'service.xbmc.versioncheck']
-        self.USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko)' \
-                          'Chrome/35.0.1916.153 Safari/537.36 SE 2.X MetaSr 1.0'
-        self.DB_FILES = ['Addons', 'ADSP', 'Epg', 'MyMusic', 'MyVideos', 'Textures', 'TV', 'ViewModes']
-        self.EXCLUDE_FILES = ['onechannelcache.db', 'saltscache.db', 'saltscache.db-shm', 'saltscache.db-wal',
-                          'saltshd.lite.db', 'saltshd.lite.db-shm', 'saltshd.lite.db-wal', 'queue.db', 'commoncache.db',
-                          'access.log', 'trakt.db', 'video_cache.db', '.gitignore', '.DS_Store',
-                          'Textures13.db', 'Thumbs.db']
-        self.EXCLUDE_DIRS = [self.ADDON_ID, 'cache', 'system', 'packages', 'Thumbnails', 'peripheral_data', 'temp', 'My_Builds',
-                         'library', 'keymaps', 'cdm', 'archive_cache']
-        self.XMLS = ['advancedsettings.xml', 'sources.xml', 'favourites.xml', 'profiles.xml', 'playercorefactory.xml']
+        self.CLEANFREQ = ['Every Startup', 'Every Day', 'Every Three Days',
+                          'Weekly', 'Monthly']
+        self.LOGFILES = ['log', 'xbmc.old.log', 'kodi.log']
+        self.DEFAULTPLUGINS = ['metadata.album.universal',
+                               'metadata.artists.universal',
+                               'metadata.common.fanart.tv',
+                               'metadata.common.imdb.com',
+                               'metadata.common.musicbrainz.org',
+                               'metadata.themoviedb.org',
+                               'metadata.tvdb.com',
+                               'service.xbmc.versioncheck']
+        self.USER_AGENT = ('Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36'
+                           ' (KHTML, like Gecko) Chrome/35.0.1916.153 Safari'
+                           '/537.36 SE 2.X MetaSr 1.0')
+        self.DB_FILES = ['Addons', 'ADSP', 'Epg', 'MyMusic', 'MyVideos',
+                         'Textures', 'TV', 'ViewModes']
+        self.EXCLUDE_FILES = ['onechannelcache.db', 'saltscache.db',
+                              'saltscache.db-shm', 'saltscache.db-wal',
+                              'saltshd.lite.db', 'saltshd.lite.db-shm',
+                              'saltshd.lite.db-wal', 'queue.db',
+                              'commoncache.db', 'access.log', 'trakt.db',
+                              'video_cache.db', '.gitignore', '.DS_Store',
+                              'Textures13.db', 'Thumbs.db']
+        self.EXCLUDE_DIRS = [self.ADDON_ID, 'cache', 'system', 'packages',
+                             'Thumbnails', 'peripheral_data', 'temp',
+                             'My_Builds', 'library', 'cdm', 'archive_cache']
+        self.XMLS = ['advancedsettings.xml', 'sources.xml', 'favourites.xml',
+                     'profiles.xml', 'playercorefactory.xml', 'guisettings.xml']
         self.MODURL = 'http://tribeca.tvaddons.ag/tools/maintenance/modules/'
         self.MODURL2 = 'http://mirrors.kodi.tv/addons/jarvis/'
-        self.DEPENDENCIES = ['script.module.bottle', 'script.module.certifi', 'script.module.chardet', 'script.module.idna', 'script.module.requests', 'script.module.six', 'script.module.urllib3', 'script.module.web-pdb']
+        self.DEPENDENCIES = ['script.module.bottle', 'script.module.certifi',
+                             'script.module.chardet', 'script.module.idna',
+                             'script.module.requests', 'script.module.six',
+                             'script.module.urllib3', 'script.module.web-pdb']
 
         # Default special paths
         self.XBMC = xbmc.translatePath('special://xbmc/')
@@ -228,6 +242,7 @@ class Config:
         self.KEEPPROFILES = self.get_setting('keepprofiles')
         self.KEEPPLAYERCORE = self.get_setting('keepplayercore')
         self.KEEPADVANCED = self.get_setting('keepadvanced')
+        self.KEEPGUISETTINGS = self.get_setting('keepguisettings')
         self.KEEPREPOS = self.get_setting('keeprepos')
         self.KEEPSUPER = self.get_setting('keepsuper')
         self.KEEPWHITELIST = self.get_setting('keepwhitelist')
@@ -240,7 +255,6 @@ class Config:
         self.MYBUILDS = os.path.join(self.BACKUPLOCATION, 'My_Builds')
 
         # Logging variables
-        self.WIZDEBUGGING = self.get_setting('addon_debug')
         self.DEBUGLEVEL = self.get_setting('debuglevel')
         self.ENABLEWIZLOG = self.get_setting('wizardlog')
         self.CLEANWIZLOG = self.get_setting('autocleanwiz')
@@ -269,20 +283,43 @@ class Config:
         except:
             return False
 
-    def open_settings(self, id=xbmcaddon.Addon().getAddonInfo('id')):
+    def open_settings(self, id=None, cat=None, set=None, activate=False):
+        offset = [(100,  200), (-100, -80)]
+        if not id:
+            id = self.ADDON_ID
+
         try:
-            return xbmcaddon.Addon(id).openSettings()
+            xbmcaddon.Addon(id).openSettings()
         except:
-            return False
+            import logging
+            logging.log('Cannot open settings for {}'.format(id), level=xbmc.LOGERROR)
+        
+        if int(self.KODIV) < 18:
+            use = 0
+        else:
+            use = 1
+
+        if cat is not None:
+            category_id = cat + offset[use][0]
+            xbmc.executebuiltin('SetFocus({})'.format(category_id))
+            if set is not None:
+                setting_id = set + offset[use][1]
+                xbmc.executebuiltin('SetFocus({})'.format(setting_id))
+                
+                if activate:
+                    xbmc.executebuiltin('SendClick({})'.format(setting_id))
+            
 
     def clear_setting(self, type):
-        build = {'buildname': '', 'buildversion': '', 'buildtheme': '', 'latestversion': '',
-                 'nextbuildcheck': '2019-01-01 00:00:00'}
-        install = {'extract': '', 'errors': ''}
-        default = {'defaultskinignore': 'false', 'defaultskin': '', 'defaultskinname': ''}
-        lookfeel = ['default.enablerssfeeds', 'default.font', 'default.rssedit', 'default.skincolors',
-                    'default.skintheme',
-                    'default.skinzoom', 'default.soundskin', 'default.startupwindow', 'default.stereostrength']
+        build = {'buildname': '', 'buildversion': '', 'buildtheme': '',
+                 'latestversion': '', 'nextbuildcheck': '2019-01-01 00:00:00'}
+        install = {'extract': '', 'errors': '', 'installed': ''}
+        default = {'defaultskinignore': 'false', 'defaultskin': '',
+                   'defaultskinname': ''}
+        lookfeel = ['default.enablerssfeeds', 'default.font', 'default.rssedit',
+                    'default.skincolors', 'default.skintheme',
+                    'default.skinzoom', 'default.soundskin',
+                    'default.startupwindow', 'default.stereostrength']
         if type == 'build':
             for element in build:
                 self.set_setting(element, build[element])
@@ -303,6 +340,8 @@ class Config:
         elif type == 'lookfeel':
             for element in lookfeel:
                 self.set_setting(element, '')
+        else:
+            self.set_setting(type, '')
 
 
 CONFIG = Config()

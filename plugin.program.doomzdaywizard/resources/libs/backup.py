@@ -136,11 +136,11 @@ class Backup:
             tempzipname = ''
             zipname = os.path.join(CONFIG.MYBUILDS, name)
             try:
-                zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
+                zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w', allowZip64=True)
             except:
                 try:
                     tempzipname = os.path.join(CONFIG.PACKAGES, '{0}.zip'.format(name))
-                    zipf = zipfile.ZipFile(tempzipname, mode='w')
+                    zipf = zipfile.ZipFile(tempzipname, mode='w', allowZip64=True)
                 except:
                     logging.log("Unable to create {0}.zip".format(name), level=xbmc.LOGERROR)
                     if self.dialog.yesno(CONFIG.ADDONTITLE,
@@ -255,11 +255,11 @@ class Backup:
             tools.convert_special(CONFIG.HOME, True)
             extractsize = 0
             try:
-                zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
+                zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w', allowZip64=True)
             except:
                 try:
                     tempzipname = os.path.join(CONFIG.PACKAGES, '{0}.zip'.format(name))
-                    zipf = zipfile.ZipFile(tempzipname, mode='w')
+                    zipf = zipfile.ZipFile(tempzipname, mode='w', allowZip64=True)
                 except:
                     logging.log("Unable to create {0}.zip".format(name), level=xbmc.LOGERROR)
                     if self.dialog.yesno(CONFIG.ADDONTITLE,
@@ -461,12 +461,17 @@ class Backup:
         backup_zip = os.path.join(backup_path, zipname)
         temp_txt = os.path.join(CONFIG.PACKAGES, txtname)
         info_txt = os.path.join(backup_path, txtname)
+        
+        _skin_root = xbmc.translatePath('special://skin/')
+        _skin_id = os.path.basename(os.path.normpath(_skin_root))
+        _skin = xbmcaddon.Addon(_skin_id)
+        _skin_name = xbmc.translatePath(_skin.getAddonInfo('name'))
 
         with open(temp_txt, 'w') as f:
             f.write('name="{0}"\n'.format(name))
             f.write('extracted="{0}"\n'.format(extractsize))
             f.write('zipsize="{0}"\n'.format(os.path.getsize(backup_zip)))
-            f.write('skin="{0}"\n'.format(CONFIG.SKIN))
+            f.write('skin="{0}"\n'.format(_skin_name))
             f.write('created="{0}"\n'.format(tools.get_date(formatted=True)))
             f.write('programs="{0}"\n'.format(', '.join(programs)) if len(programs) > 0 else 'programs="none"\n')
             f.write('video="{0}"\n'.format(', '.join(video)) if len(video) > 0 else 'video="none"\n')
@@ -510,11 +515,11 @@ class Backup:
         guizipname = os.path.join(CONFIG.MYBUILDS, '{0}_guisettings.zip'.format(guiname))
         if os.path.exists(CONFIG.GUISETTINGS):
             try:
-                zipf = zipfile.ZipFile(guizipname, mode='w')
+                zipf = zipfile.ZipFile(guizipname, mode='w', allowZip64=True)
             except:
                 try:
                     tempguizipname = os.path.join(CONFIG.PACKAGES, '{0}_guisettings.zip'.format(guiname))
-                    zipf = zipfile.ZipFile(tempguizipname, mode='w')
+                    zipf = zipfile.ZipFile(tempguizipname, mode='w', allowZip64=True)
                 except:
                     logging.log("Unable to create {0}_guisettings.zip".format(guiname), level=xbmc.LOGERROR)
                     if self.dialog.yesno(CONFIG.ADDONTITLE,
@@ -588,11 +593,11 @@ class Backup:
         tempzipname = ''
         zipname = os.path.join(CONFIG.MYBUILDS, '{0}.zip'.format(themename))
         try:
-            zipf = zipfile.ZipFile(zipname, mode='w')
+            zipf = zipfile.ZipFile(zipname, mode='w', allowZip64=True)
         except:
             try:
                 tempzipname = os.path.join(CONFIG.PACKAGES, '{0}.zip'.format(themename))
-                zipf = zipfile.ZipFile(tempzipname, mode='w')
+                zipf = zipfile.ZipFile(tempzipname, mode='w', allowZip64=True)
             except:
                 logging.log("Unable to create {0}.zip".format(themename), level=xbmc.LOGERROR)
                 if self.dialog.yesno(CONFIG.ADDONTITLE,
@@ -796,11 +801,11 @@ class Backup:
             tempzipname = ''
             zipname = os.path.join(CONFIG.MYBUILDS, name)
             try:
-                zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
+                zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w', allowZip64=True)
             except:
                 try:
                     tempzipname = os.path.join(CONFIG.PACKAGES, '{0}.zip'.format(name))
-                    zipf = zipfile.ZipFile(tempzipname, mode='w')
+                    zipf = zipfile.ZipFile(tempzipname, mode='w', allowZip64=True)
                 except:
                     logging.log("Unable to create {0}_addondata.zip".format(name), level=xbmc.LOGERROR)
                     if self.dialog.yesno(CONFIG.ADDONTITLE,

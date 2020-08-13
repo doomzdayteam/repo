@@ -111,32 +111,24 @@ def auto_install_repo():
 
 
 def show_notification():
-    if not CONFIG.NOTIFY == 'true':
-        response = tools.open_url(CONFIG.NOTIFICATION)
-        if response:
-            note_id, msg = window.split_notify(CONFIG.NOTIFICATION)
-            if note_id:
-                try:
-                    note_id = int(note_id)
-                    if note_id == CONFIG.NOTEID:
-                        if CONFIG.NOTEDISMISS == 'false':
-                            window.show_notification(msg)
-                        else:
-                            logging.log("[Notifications] id[{0}] Dismissed".format(note_id), level=xbmc.LOGNOTICE)
-                    elif note_id > CONFIG.NOTEID:
-                        logging.log("[Notifications] id: {0}".format(note_id), level=xbmc.LOGNOTICE)
-                        CONFIG.set_setting('noteid', '{0}'.format(note_id))
-                        CONFIG.set_setting('notedismiss', 'false')
-                        window.show_notification(msg=msg)
-                        logging.log("[Notifications] Complete", level=xbmc.LOGNOTICE)
-                except Exception as e:
-                    logging.log("Error on Notifications Window: {0}".format(e), level=xbmc.LOGERROR)
+    note_id, msg = window.split_notify(CONFIG.NOTIFICATION)
+    
+    if note_id:
+        if note_id == CONFIG.NOTEID:
+            if CONFIG.NOTEDISMISS == 'false':
+                window.show_notification(msg)
             else:
-                logging.log("[Notifications] Text File not formatted Correctly")
-        else:
-            logging.log("[Notifications] URL({0}): {1}".format(CONFIG.NOTIFICATION, response), level=xbmc.LOGNOTICE)
+                logging.log('[Notifications] No new notifications.', level=xbmc.LOGNOTICE)
+        elif note_id > CONFIG.NOTEID:
+            logging.log('[Notifications] Showing notification {0}'
+                        .format(note_id))
+            CONFIG.set_setting('noteid', note_id)
+            CONFIG.set_setting('notedismiss', 'false')
+            window.show_notification(msg)
     else:
-        logging.log("[Notifications] Turned Off", level=xbmc.LOGNOTICE)
+        logging.log('[Notifications] Notifications file at {0} not formatted correctly.'
+                    .format(CONFIG.NOTIFICATION),
+                    level=xbmc.LOGNOTICE)
 
 
 def installed_build_check():
@@ -147,7 +139,7 @@ def installed_build_check():
                                                                                                     CONFIG.EXTERROR),
                     level=xbmc.LOGNOTICE)
         yes = dialog.yesno(CONFIG.ADDONTITLE,
-                           '[COLOR {0}]{1}[/COLOR] [COLOR {2}]was not installed correctly!'.format(CONFIG.COLOR1,
+                           '[COLOR {0}]{2}[/COLOR] [COLOR {1}]was not installed correctly![/COLOR]'.format(CONFIG.COLOR1,
                                                                                                    CONFIG.COLOR2,
                                                                                                    CONFIG.BUILDNAME),
                            ('Installed: [COLOR {0}]{1}[/COLOR] / '
@@ -209,7 +201,7 @@ def installed_build_check():
             logging.log('[Build Installed Check] Restoring Login Data', level=xbmc.LOGNOTICE)
             loginit.login_it('restore', 'all')
 
-        CONFIG.clear_setting('installed')
+        CONFIG.clear_setting('install')
 
 
 def build_update_check():
@@ -228,40 +220,46 @@ def build_update_check():
 
 
 def save_trakt():
-    if CONFIG.TRAKTSAVE <= time.mktime(time.strptime(tools.get_date(formatted=True), "%Y-%m-%d %H:%M:%S")):
+    current_time = time.mktime(time.strptime(tools.get_date(formatted=True), "%Y-%m-%d %H:%M:%S"))
+    next_save = time.mktime(time.strptime(CONFIG.get_setting('traktnextsave'), "%Y-%m-%d %H:%M:%S"))
+    
+    if next_save <= current_time:
         from resources.libs import traktit
         logging.log("[Trakt Data] Saving all Data", level=xbmc.LOGNOTICE)
         traktit.auto_update('all')
         CONFIG.set_setting('traktnextsave', tools.get_date(days=3, formatted=True))
     else:
-        local_time = time.localtime(time.mktime(time.strptime(CONFIG.get_setting('traktnextsave'), "%Y-%m-%d %H:%M:%S")))
-        logging.log("[Trakt Data] Next Auto Save isn't until: {0} / TODAY is: {1}".format(local_time,
+        logging.log("[Trakt Data] Next Auto Save isn't until: {0} / TODAY is: {1}".format(CONFIG.get_setting('traktnextsave'),
                                                                                           tools.get_date(formatted=True)),
                     level=xbmc.LOGNOTICE)
 
 
 def save_debrid():
-    if CONFIG.DEBRIDSAVE <= time.mktime(time.strptime(tools.get_date(formatted=True), "%Y-%m-%d %H:%M:%S")):
+    current_time = time.mktime(time.strptime(tools.get_date(formatted=True), "%Y-%m-%d %H:%M:%S"))
+    next_save = time.mktime(time.strptime(CONFIG.get_setting('debridnextsave'), "%Y-%m-%d %H:%M:%S"))
+    
+    if next_save <= current_time:
         from resources.libs import debridit
         logging.log("[Debrid Data] Saving all Data", level=xbmc.LOGNOTICE)
         debridit.auto_update('all')
         CONFIG.set_setting('debridnextsave', tools.get_date(days=3, formatted=True))
     else:
-        local_time = time.localtime(time.mktime(time.strptime(CONFIG.get_setting('debridnextsave'), "%Y-%m-%d %H:%M:%S")))
-        logging.log("[Debrid Data] Next Auto Save isn't until: {0} / TODAY is: {1}".format(local_time,
+        logging.log("[Debrid Data] Next Auto Save isn't until: {0} / TODAY is: {1}".format(CONFIG.get_setting('debridnextsave'),
                                                                                            tools.get_date(formatted=True)),
                     level=xbmc.LOGNOTICE)
 
 
 def save_login():
-    if CONFIG.LOGINSAVE <= time.mktime(time.strptime(tools.get_date(formatted=True), "%Y-%m-%d %H:%M:%S")):
+    current_time = time.mktime(time.strptime(tools.get_date(formatted=True), "%Y-%m-%d %H:%M:%S"))
+    next_save = time.mktime(time.strptime(CONFIG.get_setting('loginnextsave'), "%Y-%m-%d %H:%M:%S"))
+    
+    if next_save <= current_time:
         from resources.libs import loginit
         logging.log("[Login Info] Saving all Data", level=xbmc.LOGNOTICE)
         loginit.auto_update('all')
         CONFIG.set_setting('loginnextsave', tools.get_date(days=3, formatted=True))
     else:
-        local_time = time.localtime(time.mktime(time.strptime(CONFIG.get_setting('loginnextsave'), "%Y-%m-%d %H:%M:%S")))
-        logging.log("[Login Info] Next Auto Save isn't until: {0} / TODAY is: {1}".format(local_time,
+        logging.log("[Login Info] Next Auto Save isn't until: {0} / TODAY is: {1}".format(CONFIG.get_setting('loginnextsave'),
                                                                                           tools.get_date(formatted=True)),
                     level=xbmc.LOGNOTICE)
 
@@ -305,7 +303,7 @@ def stop_if_duplicate():
     
     if temp:
         if temp > NOW - (60 * 2):
-            logging.log("Killing Start Up Script", xbmc.LOGDEBUG)
+            logging.log('Killing Start Up Script')
             sys.exit()
             
     logging.log("{0}".format(NOW))
@@ -313,10 +311,10 @@ def stop_if_duplicate():
     xbmc.sleep(1000)
     
     if not CONFIG.get_setting('time_started') == NOW:
-        logging.log("Killing Start Up Script", xbmc.LOGDEBUG)
+        logging.log('Killing Start Up Script')
         sys.exit()
     else:
-        logging.log("Continuing Start Up Script", xbmc.LOGDEBUG)
+        logging.log('Continuing Start Up Script')
 
 
 def check_for_video():
@@ -326,13 +324,13 @@ def check_for_video():
 
 # Don't run the script while video is playing :)
 check_for_video()
-# Stop this script if it's been run more than once
-if CONFIG.KODIV < 18:
-    stop_if_duplicate()
-# Ensure that the wizard's name matches its folder
-check.check_paths()
 # Ensure that any needed folders are created
 tools.ensure_folders()
+# Stop this script if it's been run more than once
+# if CONFIG.KODIV < 18:
+    # stop_if_duplicate()
+# Ensure that the wizard's name matches its folder
+check.check_paths()
 
 
 # FIRST RUN SETTINGS
@@ -343,7 +341,7 @@ else:
     logging.log("[First Run] Skipping Save Data Settings", level=xbmc.LOGNOTICE)
 
 # BUILD INSTALL PROMPT
-if tools.open_url(CONFIG.BUILDFILE, check=True) and not CONFIG.get_setting('installed'):
+if tools.open_url(CONFIG.BUILDFILE, check=True) and CONFIG.get_setting('installed') == 'false':
     logging.log("[Current Build Check] Build Not Installed", level=xbmc.LOGNOTICE)
     window.show_build_prompt()
 else:
@@ -380,16 +378,15 @@ else:
 # AUTO UPDATE WIZARD
 if CONFIG.AUTOUPDATE == 'Yes':
     logging.log("[Auto Update Wizard] Started", level=xbmc.LOGNOTICE)
-    update.wizard_update('startup')
+    update.wizard_update()
 else:
     logging.log("[Auto Update Wizard] Not Enabled", level=xbmc.LOGNOTICE)
 
 # SHOW NOTIFICATIONS
 if CONFIG.ENABLE_NOTIFICATION == 'Yes':
-    logging.log("[Notifications] Started", level=xbmc.LOGNOTICE)
     show_notification()
 else:
-    logging.log("[Notifications] Not Enabled", level=xbmc.LOGNOTICE)
+    logging.log('[Notifications] Not Enabled', level=xbmc.LOGNOTICE)
 
 # INSTALLED BUILD CHECK
 if CONFIG.get_setting('installed') == 'true':

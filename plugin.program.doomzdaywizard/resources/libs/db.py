@@ -452,7 +452,7 @@ def fix_update():
 
 
 def grab_addons(path):
-    zfile = zipfile.ZipFile(path)
+    zfile = zipfile.ZipFile(path, allowZip64=True)
     addonlist = []
     for item in zfile.infolist():
         if str(item.filename).find('addon.xml') == -1:
@@ -467,6 +467,7 @@ def find_binary_addons(addon='all'):
     from xml.etree import ElementTree
     
     dialog = xbmcgui.Dialog()
+    logging.log('Checking {} for platform-dependence...'.format(addon), level=xbmc.LOGDEBUG)
     
     if addon == 'all':
         addonfolders = glob.iglob(os.path.join(CONFIG.ADDONS, '*/'))

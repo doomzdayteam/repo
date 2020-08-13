@@ -112,7 +112,7 @@ class Restore:
 
         if not self.external:
             try:
-                zipfile.ZipFile(file, 'r')
+                zipfile.ZipFile(file, 'r', allowZip64=True)
             except zipfile.BadZipFile as e:
                 from resources.libs.common import logging
                 logging.log(e, level=xbmc.LOGERROR)
@@ -121,7 +121,7 @@ class Restore:
                 xbmcvfs.copy(file, packages)
                 file = xbmc.translatePath(packages)
                 self.progress_dialog.update(0, '', 'Copying file to packages: Complete')
-                zipfile.ZipFile(file, 'r')
+                zipfile.ZipFile(file, 'r', allowZip64=True)
         else:
             from resources.libs.downloader import Downloader
             Downloader().download(file, packages)
@@ -136,7 +136,7 @@ class Restore:
         CONFIG.set_setting('extract', percent)
         CONFIG.set_setting('errors', errors)
 
-        if not self.external:
+        if self.external:
             try:
                 os.remove(file)
             except:
@@ -167,7 +167,7 @@ class Restore:
     def choose(self, location):
         from resources.libs import skin
 
-        skin.look_and_feel_data()
+        skin.look_and_feel_data('restore')
         external = 'External' if self.external else 'Local'
 
         file = self.dialog.browseSingle(1, '[COLOR {0}]Select the backup file you want to restore[/COLOR]'.format(

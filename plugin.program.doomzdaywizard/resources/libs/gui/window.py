@@ -28,6 +28,8 @@ try:  # Python 3
 except ImportError:  # Python 3
     from urllib import quote_plus
 
+from resources.libs.common import logging
+from resources.libs.common import tools
 from resources.libs.common.config import CONFIG
 
 
@@ -76,8 +78,6 @@ def get_artwork(file):
 
 
 def while_window(window, active=False, count=0, counter=15):
-    from resources.libs.common import logging
-
     windowopen = xbmc.getCondVisibility('Window.IsActive({0})'.format(window))
     logging.log("{0} is {1}".format(window, windowopen))
     while not windowopen and count < counter:
@@ -255,6 +255,7 @@ def show_save_data_settings():
             self.sources = 304
             self.profiles = 305
             self.playercore = 314
+            self.guisettings = 315
             self.advanced = 306
             self.favourites = 307
             self.superfav = 308
@@ -265,12 +266,12 @@ def show_save_data_settings():
             self.thumbs = 313
             self.show_dialog()
             self.controllist = [self.trakt, self.debrid, self.login,
-                                    self.sources, self.profiles, self.playercore, self.advanced,
+                                    self.sources, self.profiles, self.playercore, self.guisettings, self.advanced,
                                     self.favourites, self.superfav, self.repo,
                                     self.whitelist, self.cache, self.packages,
                                     self.thumbs]
             self.controlsettings = ['keeptrakt', 'keepdebrid', 'keeplogin',
-                                    'keepsources', 'keepprofiles', 'keepplayercore', 'keepadvanced',
+                                    'keepsources', 'keepprofiles', 'keepplayercore', 'keepguisettings', 'keepadvanced',
                                     'keepfavourites', 'keeprepos', 'keepsuper',
                                     'keepwhitelist', 'clearcache', 'clearpackages',
                                     'clearthumbs']
@@ -332,9 +333,6 @@ def show_build_prompt():
             self.setFocusId(self.buildmenu)
 
         def do_build_menu(self):
-            from resources.libs.common import logging
-            from resources.libs.common import tools
-
             logging.log("[Current Build Check] [User Selected: Open Build Menu] [Next Check: {0}]".format(CONFIG.BUILDCHECK),
                         level=xbmc.LOGNOTICE)
             CONFIG.set_setting('nextbuildcheck', tools.get_date(days=CONFIG.UPDATECHECK, formatted=True))
@@ -347,9 +345,6 @@ def show_build_prompt():
             xbmc.executebuiltin('ActivateWindow(Programs, {0}, return)'.format(url))
 
         def do_ignore(self):
-            from resources.libs.common import logging
-            from resources.libs.common import tools
-            
             logging.log("[Current Build Check] [User Selected: Ignore Build Menu] [Next Check: {0}]".format(CONFIG.BUILDCHECK),
                         level=xbmc.LOGNOTICE)
             CONFIG.set_setting('nextbuildcheck', tools.get_date(days=CONFIG.UPDATECHECK, formatted=True))
@@ -400,9 +395,6 @@ def show_update_window(name='Testing Window', current='1.0', new='1.1', icon=CON
             self.setProperty('dialog.imageicon', self.icon)
 
         def do_fresh_install(self):
-            from resources.libs.common import logging
-            from resources.libs.common import tools
-
             logging.log("[Check Updates] [Installed Version: {0}] [Current Version: {1}] [User Selected: Fresh Install build]".format(CONFIG.BUILDVERSION, CONFIG.BUILDLATEST))
             logging.log("[Check Updates] [Next Check: {0}]".format(tools.get_date(days=CONFIG.UPDATECHECK, formatted=True)))
             url = 'plugin://{0}/?mode=install&name={1}&action=fresh'.format(CONFIG.ADDON_ID, quote_plus(CONFIG.BUILDNAME))
@@ -410,9 +402,6 @@ def show_update_window(name='Testing Window', current='1.0', new='1.1', icon=CON
             self.close()
 
         def do_normal_install(self):
-            from resources.libs.common import logging
-            from resources.libs.common import tools
-
             logging.log("[Check Updates] [Installed Version: {0}] [Current Version: {1}] [User Selected: Normal Install build]".format(CONFIG.BUILDVERSION, CONFIG.BUILDLATEST))
             logging.log("[Check Updates] [Next Check: {0}]".format(tools.get_date(days=CONFIG.UPDATECHECK, formatted=True)))
             url = 'plugin://{0}/?mode=install&name={1}&action=normal'.format(CONFIG.ADDON_ID, quote_plus(CONFIG.BUILDNAME))
@@ -420,9 +409,6 @@ def show_update_window(name='Testing Window', current='1.0', new='1.1', icon=CON
             self.close()
 
         def do_ignore(self):
-            from resources.libs.common import logging
-            from resources.libs.common import tools
-
             logging.log("[Check Updates] [Installed Version: {0}] [Current Version: {1}] [User Selected: Ignore {2} Days]".format(CONFIG.BUILDVERSION, CONFIG.BUILDLATEST, CONFIG.UPDATECHECK))
             logging.log("[Check Updates] [Next Check: {0}]".format(tools.get_date(days=CONFIG.UPDATECHECK, formatted=True)))
             self.close()
@@ -440,34 +426,56 @@ def show_update_window(name='Testing Window', current='1.0', new='1.1', icon=CON
             elif controlid == self.ignore:
                 self.do_ignore()
 
-    update = UpdateWindow("build_update_prompt.xml", CONFIG.ADDON_PATH, 'Default', name=name, current=current, new=new, icon=icon, fanart=fanart)
-    update.doModal()
-    del update
+    # update = UpdateWindow("build_update_prompt.xml", CONFIG.ADDON_PATH, 'Default', name=name, current=current, new=new, icon=icon, fanart=fanart)
+    # update.doModal()
+    # del update
+    msgcurrent = 'Running latest version of installed build: '
+    msgupdate = 'Update available for installed build: '
+    build_name = '[COLOR {0}]{1}[/COLOR]'.format(CONFIG.COLOR1, name)
+    current_version = 'Current Version: v[COLOR {0}]{1}[/COLOR]'.format(CONFIG.COLOR1, current)
+    latest_version = 'Latest Version: v[COLOR {0}]{1}[/COLOR]'.format(CONFIG.COLOR1, new)
+    
+    final_msg = '{0}{1}\n{2}\n{3}\n'.format(msgcurrent if current >= new else msgupdate,
+                                        build_name, current_version, latest_version)
+    
+    install = xbmcgui.Dialog().yesno(CONFIG.ADDONTITLE, final_msg,
+                                     yeslabel='Install', nolabel='Ignore')
+    if install:
+        from resources.libs.wizard import Wizard
+        Wizard().build(CONFIG.BUILDNAME)    
 
 
 def split_notify(notify):
-    from resources.libs.common import tools
-
     response = tools.open_url(notify)
 
     if response:
-        link = response.text.replace('\r', '').replace('\t', '').replace('\n', '[CR]')
+        link = response.text
+        
+        try:
+            link = response.text.decode('utf-8')
+        except:
+            pass
+        
+        link = link.replace('\r', '').replace('\t', '    ').replace('\n', '[CR]')
         if link.find('|||') == -1:
             return False, False
-        id, msg = link.split('|||')
+
+        _id, msg = link.split('|||')
+        _id = _id.replace('[CR]', '')
         if msg.startswith('[CR]'):
             msg = msg[4:]
-        return id.replace('[CR]', ''), msg
+            
+        return _id, msg
     else:
         return False, False
 
 
-def show_notification(msg='', test=False):
+def show_notification(msg, test=False):
     class Notification(xbmcgui.WindowXMLDialog):
 
         def __init__(self, *args, **kwargs):
             self.test = kwargs['test']
-            self.message = CONFIG.THEME2.format(kwargs['msg'])
+            self.msg = kwargs['msg']
 
         def onInit(self):
             self.image = 101
@@ -483,7 +491,8 @@ def show_notification(msg='', test=False):
             self.testimage = os.path.join(CONFIG.ART, 'text.png')
             self.getControl(self.image).setImage(CONFIG.BACKGROUND)
             self.getControl(self.image).setColorDiffuse('9FFFFFFF')
-            self.getControl(self.textbox).setText(self.message)
+            msg_text = CONFIG.THEME2.format(self.msg)
+            self.getControl(self.textbox).setText(msg_text)
             self.setFocusId(self.remindme)
             if CONFIG.HEADERTYPE == 'Text':
                 self.getControl(self.titlebox).setLabel(CONFIG.THEME3.format(CONFIG.HEADERMESSAGE))
@@ -491,19 +500,15 @@ def show_notification(msg='', test=False):
                 self.getControl(self.titleimage).setImage(CONFIG.HEADERIMAGE)
 
         def do_remind(self):
-            from resources.libs.common import logging
             if not test:
-                CONFIG.set_setting("notedismiss", "false")
-            logging.log("[Notification] NotifyID {0} Remind Me Later".format(CONFIG.get_setting('noteid')),
-                        level=xbmc.LOGNOTICE)
+                CONFIG.set_setting('notedismiss', 'false')
+            logging.log('[Notifications] Notification {0} Remind Me Later'.format(CONFIG.get_setting('noteid')))
             self.close()
 
         def do_dismiss(self):
-            from resources.libs.common import logging
             if not test:
-                CONFIG.set_setting("notedismiss", "true")
-            logging.log("[Notification] NotifyID {0} Dismissed".format(CONFIG.get_setting('noteid')),
-                        level=xbmc.LOGNOTICE)
+                CONFIG.set_setting('notedismiss', 'true')
+            logging.log('[Notifications] Notification {0} Dismissed'.format(CONFIG.get_setting('noteid')))
             self.close()
 
         def onAction(self, action):
@@ -524,15 +529,11 @@ def show_notification(msg='', test=False):
 
 
 def show_log_viewer(window_title="Viewing Log File", window_msg=None, log_file=None, ext_buttons=False):
-    from resources.libs.common import logging
-
     class LogViewer(xbmcgui.WindowXMLDialog):
         def __init__(self, *args, **kwargs):
             self.log_file = kwargs['log_file']
 
         def onInit(self):
-            from resources.libs.common import tools
-
             self.title = 101
             self.msg = 102
             self.scrollbar = 103

@@ -38,7 +38,7 @@ def str_test(teststr):
 def test_theme(path):
     from resources.libs.common import logging
 
-    zfile = zipfile.ZipFile(path)
+    zfile = zipfile.ZipFile(path, allowZip64=True)
     for item in zfile.infolist():
         logging.log(str(item.filename))
         if '/settings.xml' in item.filename:
@@ -47,7 +47,7 @@ def test_theme(path):
 
 
 def test_gui(path):
-    zfile = zipfile.ZipFile(path)
+    zfile = zipfile.ZipFile(path, allowZip64=True)
     for item in zfile.infolist():
         if '/guisettings.xml' in item.filename:
             return True
@@ -68,7 +68,7 @@ def test_notify():
                 logging.log_notify(CONFIG.ADDONTITLE,
                                    "[COLOR {0}]Notification: Not Formatted Correctly[/COLOR]".format(CONFIG.COLOR2))
                 return
-            window.show_notification(msg, True)
+            window.show_notification(msg, test=True)
         except Exception as e:
             logging.log("Error on Notifications Window: {0}".format(str(e)), level=xbmc.LOGERROR)
     else:

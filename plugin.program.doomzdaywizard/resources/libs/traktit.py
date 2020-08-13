@@ -29,7 +29,8 @@ from resources.libs.common.config import CONFIG
 from resources.libs.common import logging
 from resources.libs.common import tools
 
-ORDER = ['exodusredux', 'gaia', 'numbers', 'openmeta', 'premiumizer', 'realizer', 'scrubs', 'seren', 'thecrew', 'trakt', 'venom']
+ORDER = ['exodusredux', 'fen', 'gaia', 'numbers', 'openmeta', 'premiumizer',
+         'realizer', 'scrubs', 'seren', 'shadow', 'thecrew', 'trakt', 'venom']
 
 TRAKTID = {
     'gaia': {
@@ -148,10 +149,22 @@ TRAKTID = {
         'icon'     : os.path.join(CONFIG.ADDONS, 'plugin.video.scrubsv2', 'icon.jpg'),
         'fanart'   : os.path.join(CONFIG.ADDONS, 'plugin.video.scrubsv2', 'fanart.png'),
         'file'     : os.path.join(CONFIG.TRAKTFOLD, 'scrubs_trakt'),
-        'settings' : os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubs', 'settings.xml'),
+        'settings' : os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'settings.xml'),
         'default'  : 'trakt.user',
         'data'     : ['trakt.user', 'trakt.user2', 'trakt.token', 'trakt.refresh', 'trakt.auth'],
         'activate' : 'RunPlugin(plugin://plugin.video.scrubsv2/?action=authTrakt)'},
+    'shadow': {
+        'name'     : 'Shadow',
+        'plugin'   : 'plugin.video.shadow',
+        'saved'    : 'shadow',
+        'path'     : os.path.join(CONFIG.ADDONS, 'plugin.video.shadow'),
+        'icon'     : os.path.join(CONFIG.ADDONS, 'plugin.video.shadow', 'icon.jpg'),
+        'fanart'   : os.path.join(CONFIG.ADDONS, 'plugin.video.shadow', 'fanart.png'),
+        'file'     : os.path.join(CONFIG.TRAKTFOLD, 'shadow_trakt'),
+        'settings' : os.path.join(CONFIG.ADDON_DATA, 'plugin.video.shadow', 'settings.xml'),
+        'default'  : 'trakt_access_token',
+        'data'     : ['trakt_access_token', 'trakt_refresh_token', 'trakt_expires_at'],
+        'activate' : ''},
     'premiumizer': {
         'name'     : 'Premiumizer',
         'plugin'   : 'plugin.video.premiumizer',
@@ -187,7 +200,19 @@ TRAKTID = {
         'settings' : os.path.join(CONFIG.ADDON_DATA, 'plugin.video.themoviedb.helper', 'settings.xml'),
         'default'  : 'trakt.management',
         'data'     : ['trakt.token', 'trakt.management'],
-        'activate' : 'RunScript(plugin.video.themoviedb.helper, authenticate_trakt)'}
+        'activate' : 'RunScript(plugin.video.themoviedb.helper, authenticate_trakt)'},
+    'fen': {
+        'name'     : 'Fen',
+        'plugin'   : 'plugin.video.fen',
+        'saved'    : 'fen',
+        'path'     : os.path.join(CONFIG.ADDONS, 'plugin.video.fen'),
+        'icon'     : os.path.join(CONFIG.ADDONS, 'plugin.video.fen', 'icon.png'),
+        'fanart'   : os.path.join(CONFIG.ADDONS, 'plugin.video.fen', 'fanart.png'),
+        'file'     : os.path.join(CONFIG.TRAKTFOLD, 'fen_trakt'),
+        'settings' : os.path.join(CONFIG.ADDON_DATA, 'plugin.video.fen', 'settings.xml'),
+        'default'  : 'trakt_user',
+        'data'     : ['trakt_user', 'trakt_access_token', 'trakt_refresh_token',  'trakt_expires_at'],
+        'activate' : 'RunPlugin(plugin://plugin.video.fen/?mode=trakt_authenticate)'}
 }
 
 
@@ -265,10 +290,10 @@ def update_trakt(do, who):
                 root = ElementTree.Element(saved)
                 
                 for setting in data:
-                    debrid = ElementTree.SubElement(root, 'debrid')
-                    id = ElementTree.SubElement(debrid, 'id')
+                    trakt = ElementTree.SubElement(root, 'trakt')
+                    id = ElementTree.SubElement(trakt, 'id')
                     id.text = setting
-                    value = ElementTree.SubElement(debrid, 'value')
+                    value = ElementTree.SubElement(trakt, 'value')
                     value.text = addonid.getSetting(setting)
                   
                 tree = ElementTree.ElementTree(root)
@@ -287,7 +312,7 @@ def update_trakt(do, who):
             root = tree.getroot()
             
             try:
-                for setting in root.iter('debrid'):
+                for setting in root.findall('trakt'):
                     id = setting.find('id').text
                     value = setting.find('value').text
                     addonid.setSetting(id, value)
@@ -306,7 +331,7 @@ def update_trakt(do, who):
                 tree = ElementTree.parse(settings)
                 root = tree.getroot()
                 
-                for setting in root.iter('setting'):
+                for setting in root.findall('setting'):
                     if setting.attrib['id'] in data:
                         logging.log('Removing Setting: {0}'.format(setting.attrib))
                         root.remove(setting)
@@ -340,7 +365,7 @@ def auto_update(who):
                 dialog = xbmcgui.Dialog()
 
                 if dialog.yesno(CONFIG.ADDONTITLE,
-                                    "[COLOR {0}]Would you like to save the [COLOR {1}]Trakt Data[/COLOR] for [COLOR {2}]{3}[/COLOR]?".format(CONFIG.COLOR2, CONFIG.COLOR1, CONFIG.COLOR1, n),
+                                    "Would you like to save the [COLOR {0}]Trakt Data[/COLOR] for [COLOR {1}]{2}[/COLOR]?".format(CONFIG.COLOR2, CONFIG.COLOR1, n),
                                     "Addon: [COLOR springgreen][B]{0}[/B][/COLOR]".format(u),
                                     "Saved:[/COLOR] [COLOR red][B]{0}[/B][/COLOR]".format(su) if not su == '' else 'Saved:[/COLOR] [COLOR red][B]None[/B][/COLOR]',
                                     yeslabel="[B][COLOR springgreen]Save Data[/COLOR][/B]",
@@ -367,7 +392,7 @@ def import_list(who):
             tree = ElementTree.parse(file)
             root = tree.getroot()
             
-            for setting in root.iter('trakt'):
+            for setting in root.findall('trakt'):
                 id = setting.find('id').text
                 value = setting.find('value').text
             

@@ -23,7 +23,11 @@ import xbmcvfs
 
 import os
 import re
+import time
 
+import _strptime
+
+from resources.libs.common import tools
 from resources.libs.common.config import CONFIG
 
 try:  # Python 3
@@ -40,32 +44,19 @@ REPLACES = (('//.+?:.+?@', '//USER:PASSWORD@'), ('<user>.+?</user>', '<user>USER
                                                                                             '<pass>PASSWORD</pass>'),)
 
 
-def log(msg, level=xbmc.LOGNOTICE):
-    from resources.libs.common import tools
-
-    if not os.path.exists(CONFIG.PLUGIN_DATA):
-        os.makedirs(CONFIG.PLUGIN_DATA)
-    if not os.path.exists(CONFIG.WIZLOG):
-        f = open(CONFIG.WIZLOG, 'w+')
-        f.close()
-    if CONFIG.WIZDEBUGGING == 'false':
-        return False
+def log(msg, level=xbmc.LOGDEBUG):
     if CONFIG.DEBUGLEVEL == '0':  # No Logging
         return False
     if CONFIG.DEBUGLEVEL == '1':  # Normal Logging
-        if level not in [xbmc.LOGNOTICE, xbmc.LOGERROR, xbmc.LOGSEVERE, xbmc.LOGFATAL]:
-            return False
+        pass
     if CONFIG.DEBUGLEVEL == '2':  # Full Logging
         level = xbmc.LOGNOTICE
-    try:
-        xbmc.log('{0}: {1}'.format(CONFIG.ADDONTITLE, msg), level)
-    except Exception as e:
-        try:
-            xbmc.log('Logging Failure: {0}'.format(e), level)
-        except:
-            pass
+    
+    xbmc.log('{0}: {1}'.format(CONFIG.ADDONTITLE, msg), level)
     if CONFIG.ENABLEWIZLOG == 'true':
-        import time
+        if not os.path.exists(CONFIG.WIZLOG):
+            with open(CONFIG.WIZLOG, 'w+') as f:
+                f.close()
 
         lastcheck = CONFIG.NEXTCLEANDATE if not CONFIG.NEXTCLEANDATE == 0 else tools.get_date()
         if CONFIG.CLEANWIZLOG == 'true' and time.mktime(time.strptime(lastcheck, "%Y-%m-%d %H:%M:%S")) <= tools.get_date():
@@ -77,8 +68,6 @@ def log(msg, level=xbmc.LOGNOTICE):
 
 
 def check_log():
-    from resources.libs.common import tools
-
     next = tools.get_date(days=1, formatted=True)
     lines = tools.read_from_file(CONFIG.WIZLOG).split('\n')
 
@@ -112,24 +101,18 @@ def log_notify(title, message, times=2000, icon=CONFIG.ADDON_ICON, sound=False):
 
 
 def grab_log(file=False, old=False, wizard=False):
-    from resources.libs.common import tools
     if wizard:
-        if not os.path.exists(CONFIG.WIZLOG):
-            return False
+        if os.path.exists(CONFIG.WIZLOG):
+            return CONFIG.WIZLOG if file else tools.read_from_file(CONFIG.WIZLOG)
         else:
-            if file:
-                return CONFIG.WIZLOG
-            else:
-                return tools.read_from_file(CONFIG.WIZLOG)
-    finalfile = 0
-    logfilepath = os.listdir(CONFIG.LOGPATH)
+            return False
+                
     logsfound = []
 
-    for item in logfilepath:
-        if old and item.endswith('.old.log'):
-            logsfound.append(os.path.join(CONFIG.LOGPATH, item))
-        elif not old and item.endswith('.log') and not item.endswith('.old.log'):
-            logsfound.append(os.path.join(CONFIG.LOGPATH, item))
+    for item in [file for file in os.listdir(CONFIG.LOGPATH) if os.path.basename(file).startswith('kodi')]:
+        if item.endswith('.log'):
+            if (old and 'old' in item) or (not old and 'old' not in item):
+                logsfound.append(os.path.join(CONFIG.LOGPATH, item))
 
     if len(logsfound) > 0:
         logsfound.sort(key=lambda f: os.path.getmtime(f))
@@ -184,12 +167,12 @@ def upload_log():
 
 def get_files():
     logfiles = []
-    log = grab_log(file=True)
+    kodilog = grab_log(file=True)
     old = grab_log(file=True, old=True)
     wizard = False if not os.path.exists(CONFIG.WIZLOG) else CONFIG.WIZLOG
-    if log:
-        if os.path.exists(log):
-            logfiles.append(['log', log])
+    if kodilog:
+        if os.path.exists(kodilog):
+            logfiles.append(['log', kodilog])
         else:
             show_result("No log file found")
     else:
@@ -208,7 +191,6 @@ def get_files():
         else:
             show_result("No wizard log file found")
     if CONFIG.KEEPCRASHLOG:
-        from resources.libs.common import tools
         crashlog_path = ''
         items = []
         if xbmc.getCondVisibility('system.platform.osx'):
@@ -282,7 +264,6 @@ def post_log(data, name):
 
 # CURRENTLY NOT IN USE
 def copy_to_clipboard(txt):
-    from resources.libs.common import tools
     import subprocess
 
     platform = tools.platform()
@@ -455,8 +436,6 @@ def _dialog_watch():
 
 
 def error_list(file):
-    from resources.libs.common import tools
-
     errors = []
     b = tools.read_from_file(file).replace('\n', '[CR]').replace('\r', '')
 
