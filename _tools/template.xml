@@ -23,6 +23,9 @@
         <summary>{summary}</summary>
         <description>{description}</description>
         <platform>all</platform>
-        <genre>movies,usa</genre>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
     </extension>
 </addon>

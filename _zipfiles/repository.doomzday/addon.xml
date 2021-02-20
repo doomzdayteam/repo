@@ -23,6 +23,9 @@
         <summary>Doomzday Repository</summary>
         <description>Repo from the Doomzday Team for you.</description>
         <platform>all</platform>
-        <genre>movies,usa</genre>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
     </extension>
 </addon>
