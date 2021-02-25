@@ -20,12 +20,11 @@
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary>{summary}</summary>
-        <description>{description}</description>
+        <summary lang="en_GB">{summary}</summary>
+        <description lang="en_GB">{description}</description>
         <platform>all</platform>
         <assets>
             <icon>icon.png</icon>
-            <fanart>fanart.jpg</fanart>
         </assets>
     </extension>
 </addon>

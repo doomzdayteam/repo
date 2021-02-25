@@ -1,34 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.program.doomzday19" name="Doomzday Wizard" version="1.0.6" provider-name="DDTeam">
-	<requires>
-		<import addon="xbmc.python" version="3.0.0"/>
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="addon.py">
-		<provides>executable</provides>
-	</extension>
-	<extension point="xbmc.service" library="service.py" />
-	<extension point="xbmc.addon.metadata">
-		<summary lang="en_GB">Doomzday Wizard for installing builds on 19 Matrix.</summary>
-		<description lang="en_GB">Doomzday 19 Wizard</description>
-		<disclaimer lang="en_GB">This Addon contains no content</disclaimer>
-		<language>en</language>
-		<platform>all</platform>
-		<license>GPL-2.0-or-later</license>
-		<forum></forum>
-		<website></website>
-		<email></email>
-		<source></source>
-		<assets>
-				<icon>resources/icon.png</icon>
-				<fanart>resources/fanart.jpg</fanart>
-				<banner></banner>
-				<clearlogo></clearlogo>
-				<screenshot></screenshot>
-		</assets>
-	</extension>
-</addon>
-
 <addon id="plugin.program.doomzdaywizard" name="[B][COLOR gold]Doomzday[/COLOR][/B] Wizard" version="1.4.3" provider-name="DD Team">
     <requires>
         <import addon="xbmc.python" version="2.1.0" />
@@ -76,12 +47,11 @@
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary>Doomzday Repository</summary>
-        <description>Repo from the Doomzday Team for you.</description>
+        <summary lang="en_GB">Doomzday Repository</summary>
+        <description lang="en_GB">Repo from the Doomzday Team for you.</description>
         <platform>all</platform>
         <assets>
             <icon>icon.png</icon>
-            <fanart>fanart.jpg</fanart>
         </assets>
     </extension>
 </addon>
