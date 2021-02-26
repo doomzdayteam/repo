@@ -17,7 +17,7 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc
+import xbmc, xbmcvfs
 import xbmcaddon
 
 import os
@@ -141,22 +141,22 @@ class Config:
                              'script.module.urllib3', 'script.module.web-pdb']
 
         # Default special paths
-        self.XBMC = xbmc.translatePath('special://xbmc/')
-        self.HOME = xbmc.translatePath('special://home/')
-        self.TEMP = xbmc.translatePath('special://temp/')
-        self.MASTERPROFILE = xbmc.translatePath('special://masterprofile/')
-        self.PROFILE = xbmc.translatePath('special://profile/')
-        self.SUBTITLES = xbmc.translatePath('special://subtitles/')
-        self.USERDATA = xbmc.translatePath('special://userdata/')
-        self.DATABASE = xbmc.translatePath('special://database/')
-        self.THUMBNAILS = xbmc.translatePath('special://thumbnails/')
-        self.RECORDINGS = xbmc.translatePath('special://recordings/')
-        self.SCREENSHOTS = xbmc.translatePath('special://screenshots/')
-        self.MUSICPLAYLISTS = xbmc.translatePath('special://musicplaylists/')
-        self.VIDEOPLAYLISTS = xbmc.translatePath('special://videoplaylists/')
-        self.CDRIPS = xbmc.translatePath('special://cdrips/')
-        self.SKIN = xbmc.translatePath('special://skin/')
-        self.LOGPATH = xbmc.translatePath('special://logpath/')
+        self.XBMC = xbmcvfs.translatePath('special://xbmc/')
+        self.HOME = xbmcvfs.translatePath('special://home/')
+        self.TEMP = xbmcvfs.translatePath('special://temp/')
+        self.MASTERPROFILE = xbmcvfs.translatePath('special://masterprofile/')
+        self.PROFILE = xbmcvfs.translatePath('special://profile/')
+        self.SUBTITLES = xbmcvfs.translatePath('special://subtitles/')
+        self.USERDATA = xbmcvfs.translatePath('special://userdata/')
+        self.DATABASE = xbmcvfs.translatePath('special://database/')
+        self.THUMBNAILS = xbmcvfs.translatePath('special://thumbnails/')
+        self.RECORDINGS = xbmcvfs.translatePath('special://recordings/')
+        self.SCREENSHOTS = xbmcvfs.translatePath('special://screenshots/')
+        self.MUSICPLAYLISTS = xbmcvfs.translatePath('special://musicplaylists/')
+        self.VIDEOPLAYLISTS = xbmcvfs.translatePath('special://videoplaylists/')
+        self.CDRIPS = xbmcvfs.translatePath('special://cdrips/')
+        self.SKIN = xbmcvfs.translatePath('special://skin/')
+        self.LOGPATH = xbmcvfs.translatePath('special://logpath/')
 
         # Constructed paths
         self.ADDONS = os.path.join(self.HOME, 'addons')
@@ -251,7 +251,7 @@ class Config:
         self.KEEPLOGIN = self.get_setting('keeplogin')
 
         # Backup variables
-        self.BACKUPLOCATION = xbmc.translatePath(self.get_setting('path') if not self.get_setting('path') == '' else self.HOME)
+        self.BACKUPLOCATION = xbmcvfs.translatePath(self.get_setting('path') if not self.get_setting('path') == '' else self.HOME)
         self.MYBUILDS = os.path.join(self.BACKUPLOCATION, 'My_Builds')
 
         # Logging variables

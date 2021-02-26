@@ -104,7 +104,12 @@ class Wizard:
                     
                 return
                 
-            install.wipe()
+            yes_fresh = self.dialog.yesno(CONFIG.ADDONTITLE,
+                                       '[COLOR {0}][COLOR {1}]Do you wish to erase all data before installing?[/COLOR]'.format(CONFIG.COLOR2, CONFIG.COLOR1),
+                                       nolabel='[B][COLOR red]No Thanks[/COLOR][/B]',
+                                       yeslabel='[B][COLOR springgreen]Fresh Install[/COLOR][/B]')
+            if yes_fresh:
+                install.wipe()
                 
             skin.look_and_feel_data('save')
             
@@ -142,10 +147,10 @@ class Wizard:
                 self.dialogProgress.close()
 
                 from resources.libs.gui.build_menu import BuildMenu
-                themecount = BuildMenu().theme_count(name)
+                #themecount = BuildMenu().theme_count(name)
 
-                if themecount > 0:
-                    self.theme(name, 'theme')
+                #if themecount > 0:
+                    #self.theme(name, 'theme')
 
                 db.addon_database(CONFIG.ADDON_ID, 1)
                 #db.force_check_updates(over=True)
