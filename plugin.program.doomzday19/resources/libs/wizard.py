@@ -104,7 +104,12 @@ class Wizard:
                     
                 return
                 
-            install.wipe()
+            yes_fresh = self.dialog.yesno(CONFIG.ADDONTITLE,
+                                       '[COLOR {0}][COLOR {1}]Do you wish to erase all data before installing?[/COLOR]'.format(CONFIG.COLOR2, CONFIG.COLOR1),
+                                       nolabel='[B][COLOR red]No Thanks[/COLOR][/B]',
+                                       yeslabel='[B][COLOR springgreen]Fresh Install[/COLOR][/B]')
+            if yes_fresh:
+                install.wipe()
                 
             skin.look_and_feel_data('save')
             
@@ -142,13 +147,13 @@ class Wizard:
                 self.dialogProgress.close()
 
                 from resources.libs.gui.build_menu import BuildMenu
-                themecount = BuildMenu().theme_count(name)
+                #themecount = BuildMenu().theme_count(name)
 
-                if themecount > 0:
-                    self.theme(name, 'theme')
+                #if themecount > 0:
+                    #self.theme(name, 'theme')
 
                 db.addon_database(CONFIG.ADDON_ID, 1)
-                db.force_check_updates(over=True)
+                #db.force_check_updates(over=True)
 
                 self.dialog.ok(CONFIG.ADDONTITLE, "[COLOR {0}]To save changes you now need to force close Kodi, Press OK to force close Kodi[/COLOR]".format(CONFIG.COLOR2))
                 tools.kill_kodi(over=True)
@@ -284,23 +289,6 @@ class Wizard:
             
             self.dialogProgress.update(0, '\n' + "Installing {0}".format(name))
 
-            test1 = False
-            test2 = False
-            
-            from resources.libs import skin
-            from resources.libs import test
-            test1 = test.test_theme(lib) if CONFIG.SKIN not in skin.DEFAULT_SKINS else False
-            test2 = test.test_gui(lib) if CONFIG.SKIN not in skin.DEFAULT_SKINS else False
-
-            if test1:
-                skin.look_and_feel_data('save')
-                swap = skin.skin_to_default('Theme Install')
-
-                if not swap:
-                    return False
-
-                xbmc.sleep(500)
-
             title = '[COLOR {0}][B]Installing Theme:[/B][/COLOR] [COLOR {1}]{2}[/COLOR]'.format(CONFIG.COLOR2, CONFIG.COLOR1, theme)
             self.dialogProgress.update(0, title + '\n' + 'Please Wait')
             percent, errors, error = extract.all(lib, CONFIG.HOME, title=title)
@@ -308,26 +296,12 @@ class Wizard:
             logging.log('INSTALLED {0}: [ERRORS:{1}]'.format(percent, errors))
             self.dialogProgress.close()
 
-            db.force_check_updates(over=True)
+            #db.force_check_updates(over=True)
             installed = db.grab_addons(lib)
             db.addon_database(installed, 1, True)
-
-            if test2:
-                skin.look_and_feel_data('save')
-                skin.skin_to_default("Theme Install")
-                gotoskin = CONFIG.get_setting('defaultskin')
-                skin.switch_to_skin(gotoskin, "Theme Installer")
-                skin.look_and_feel_data('restore')
-            elif test1:
-                skin.look_and_feel_data('save')
-                skin.skin_to_default("Theme Install")
-                gotoskin = CONFIG.get_setting('defaultskin')
-                skin.switch_to_skin(gotoskin, "Theme Installer")
-                skin.look_and_feel_data('restore')
-            else:
-                xbmc.executebuiltin("ReloadSkin()")
-                xbmc.sleep(1000)
-                xbmc.executebuiltin("Container.Refresh()")
+            xbmc.executebuiltin("ReloadSkin()")
+            xbmc.sleep(1000)
+            xbmc.executebuiltin("Container.Refresh()")
         else:
             logging.log_notify(CONFIG.ADDONTITLE,
                                '[COLOR {0}]Theme Install: Cancelled![/COLOR]'.format(CONFIG.COLOR2))

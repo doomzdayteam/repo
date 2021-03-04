@@ -1,6 +1,4 @@
-import xbmc
-import xbmcaddon
-import xbmcgui
+import xbmc, xbmcgui,xbmcaddon
 import xbmcplugin
 
 import sys
@@ -117,8 +115,13 @@ class Router:
             db.toggle_addon(name, url)
             xbmc.executebuiltin('Container.Refresh()')
         elif mode == 'forceupdate':
-            from resources.libs import db
-            db.force_check_updates(auto=action)
+            xbmc.executebuiltin('UpdateAddonRepos')
+            xbmc.sleep(1000)
+            xbmcgui.Dialog().ok(CONFIG.ADDONTITLE, "Repos Updated Successfully")
+        elif mode == 'forceupdateaddons':
+            xbmc.executebuiltin('UpdateLocalAddons')
+            xbmc.sleep(1000)
+            xbmcgui.Dialog().ok(CONFIG.ADDONTITLE, "Addons Updated Successfully")
         elif mode == 'togglecache':
             from resources.libs import clear
             clear.toggle_cache(name)
@@ -145,8 +148,12 @@ class Router:
             menu.view_ip()
             self._finish(handle)
         elif mode == 'speedtest': 
-            xbmc.executebuiltin('InstallAddon("script.speedtester")')
-            xbmc.executebuiltin('RunAddon("script.speedtester")')
+        	try:
+        		xbmcaddon.Addon(id = 'script.speedtester')
+        		xbmc.executebuiltin('RunAddon("script.speedtester")')
+        	except:
+        		xbmc.executebuiltin('InstallAddon("script.speedtester")')
+        		xbmc.executebuiltin('RunAddon("script.speedtester")')
         elif mode == 'apk':  # APK Installer
             menu.apk_menu(url)
             self._finish(handle)
