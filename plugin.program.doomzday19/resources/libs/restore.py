@@ -138,7 +138,7 @@ class Restore:
             except:
                 pass
 
-        #db.force_check_updates(over=True)
+        db.force_check_updates(over=True)
 
         tools.kill_kodi(
             msg='[COLOR {0}]To save changes, Kodi needs to be force closed. Would you like to continue?[/COLOR]'.format(

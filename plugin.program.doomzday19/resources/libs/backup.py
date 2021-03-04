@@ -268,7 +268,6 @@ class Backup:
 
             for folder in sorted(fold, key=lambda x: x):
                 foldername = os.path.split(folder[:-1])[1]
-                xbmc.log(msg='dude path = ' + foldername, level=xbmc.LOGINFO) 
                 if foldername == 'packages':
                     continue
 
@@ -316,7 +315,7 @@ class Backup:
             binarytxt = self._backup_binaries(binidlist)
 
             for base, dirs, files in os.walk(CONFIG.HOME):
-                dirs[:] = [d for d in dirs if d not in exclude_dirs]
+                dirs[:] = [d for d in dirs if os.path.join(base, d) not in exclude_dirs]
                 files[:] = [f for f in files if f not in CONFIG.EXCLUDE_FILES]
                 for file in files:
                     try:
@@ -617,7 +616,7 @@ class Backup:
                                         False)
                 if not fn == CONFIG.HOME:
                     for base, dirs, files in os.walk(fn):
-                        dirs[:] = [d for d in dirs if d not in CONFIG.EXCLUDE_DIRS]
+                        dirs[:] = [d for d in dirs if os.path.join(base, d) not in CONFIG.EXCLUDE_DIRS]
                         files[:] = [f for f in files if f not in CONFIG.EXCLUDE_FILES]
                         for file in files:
                             try:
@@ -756,7 +755,7 @@ class Backup:
             tools.ascii_check(CONFIG.ADDON_DATA, True)
             self.progress_dialog.create(CONFIG.ADDONTITLE + "[COLOR {0}]: Creating Zip[/COLOR]".format(CONFIG.COLOR2), "[COLOR {0}]Creating back up zip".format(CONFIG.COLOR2) + '\n' + "Please Wait...[/COLOR]")
             for base, dirs, files in os.walk(CONFIG.ADDON_DATA):
-                dirs[:] = [d for d in dirs if d not in CONFIG.EXCLUDE_DIRS]
+                dirs[:] = [d for d in dirs if os.path.join(base, d) not in CONFIG.EXCLUDE_DIRS]
                 files[:] = [f for f in files if f not in CONFIG.EXCLUDE_FILES]
                 for file in files:
                     ITEM.append(file)
@@ -785,7 +784,7 @@ class Backup:
                 (os.path.join(CONFIG.ADDON_DATA, 'script.module.simplecache', 'simplecache.db'))]
 
             for base, dirs, files in os.walk(CONFIG.ADDON_DATA):
-                dirs[:] = [d for d in dirs if d not in CONFIG.EXCLUDE_DIRS]
+                dirs[:] = [d for d in dirs if os.path.join(base, d) not in CONFIG.EXCLUDE_DIRS]
                 files[:] = [f for f in files if f not in CONFIG.EXCLUDE_FILES]
                 for file in files:
                     try:

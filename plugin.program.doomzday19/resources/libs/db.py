@@ -36,7 +36,6 @@ from datetime import datetime
 from resources.libs.common.config import CONFIG
 from resources.libs.common import logging
 from resources.libs.common import tools
-from xml.dom.minidom import parse
 
 
 def addon_database(addon=None, state=1, array=False):
@@ -118,7 +117,7 @@ def force_check_updates(auto=False, over=False):
         installed_repos = sqlexe.execute('SELECT addonID FROM repo')
 
         start_time = time.time()
-        checked_time = 0.1
+        checked_time = 0
         for repo in installed_repos.fetchall():
             repo = repo[0]
             logging.log('Force checking {0}...'.format(repo), level=xbmc.LOGDEBUG)
@@ -131,8 +130,7 @@ def force_check_updates(auto=False, over=False):
                 
                 if lastcheck:
                     checked_time = lastcheck.fetchone()[0]
-                    if checked_time:
-                        checked_time = time.mktime(time.strptime(checked_time, '%Y-%m-%d %H:%M:%S'))
+                    checked_time = time.mktime(time.strptime(checked_time, '%Y-%m-%d %H:%M:%S')) if checked_time else 0
                     
                 xbmc.sleep(1000)
             checked_time = 0
@@ -238,7 +236,7 @@ def kodi_17_fix():
         addon_database(disabledAddons, 1, True)
         logging.log_notify(CONFIG.ADDONTITLE,
                            "[COLOR {0}]Enabling Addons Complete![/COLOR]".format(CONFIG.COLOR2))
-    xbmc.executebuiltin("UpdateLocalAddons()")
+    update.force_update()
     xbmc.executebuiltin("ReloadSkin()")
 
 
@@ -518,12 +516,11 @@ def find_binary_addons(addon='all'):
         xml = os.path.join(CONFIG.ADDONS, addon, 'addon.xml')
         
         if os.path.exists(xml):
-            logging.log('Checking {0}'.format(xml), level=xbmc.LOGINFO)
-            root = parse(xml)
-            tag = root.documentElement
-            addonid = tag.getAttribute('id')
-            addonname = tag.getAttribute('name')
-            extension = tag.getAttribute('extension')
+            logging.log('Checking {0}'.format(xml), level=xbmc.LOGNOTICE)
+            root = ElementTree.parse(xml).getroot()
+            addonid = root.get('id')
+            addonname = root.get('name')
+            extension = root.find('extension')
             
             try:
                 ext_attrs = extension.keys()

@@ -9,7 +9,7 @@
         <setting id="nextbuildcheck" type="text" label="Next check for build update: " enable="false" default="2019-01-01 00:00:00" />
         <setting id="disableupdate" type="bool" label="Disable Update Notification" default="false"/>
         <setting type="lsep" label="Show Builds:"/>
-        <setting id="show17" type="bool" label="Show Krypton (v17.0) Builds" default="true"/>
+        <setting id="show17" type="bool" label="Show Krypton (v17.0) Builds" default="false"/>
         <setting id="show18" type="bool" label="Show Leia (v18.0) Builds" default="true"/>
         <setting id="show19" type="bool" label="Show Matrix (v19.0) Builds" default="true"/>
         <setting id="separate" type="bool" label="Do not separate based off version" default="false"/>
@@ -157,7 +157,7 @@
 
     <category label="Install Settings">
         <setting type="lsep" label="APKs" />
-        <setting type="action" label="Open Kodi Android Updater Settings" action="RunPlugin(plugin://plugin.program.openwizard/?mode=fmchoose)" option="close" />
+        <setting type="action" label="Open Kodi Android Updater Settings" action="RunPlugin(plugin://plugin.program.doomzday19/?mode=fmchoose)" option="close" />
         <setting id="apk_path" type="folder" label="Choose Download Location" default="/storage/emulated/0/Download/"/>
         <setting type="lsep" label="Save Data When Installing Build:"/>
         <setting id="keeptrakt" type="bool" label="Keep My Trakt Data" default="true"/>
