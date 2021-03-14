@@ -15,7 +15,7 @@
     
     <extension point="xbmc.addon.metadata">
         <summary lang="en">[COLOR orangered]Doomzday 19 [/COLOR]Wizard</summary>
-        <description lang="en">[COLOR orangered]Doomzday 19[/COLOR]Wizard</description>
+        <description lang="en">[COLOR orangered]Doomzday 19 [/COLOR]Wizard</description>
         <platform>all</platform>
         <reuselanguageinvoker>false</reuselanguageinvoker>
         <assets>
