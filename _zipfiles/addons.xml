@@ -52,6 +52,66 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.fetch" name="Fetch!" version="0.0.2" provider-name="DD Team">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0"/>
+		<import addon="script.module.requests"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="addon.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">Fetch TV</summary>
+		<description lang="en">Live TV channels with an adult section</description>
+		<platform>all</platform>
+		<language>en</language>
+		<license>GPL-2.0-or-later</license>
+		<forum></forum>
+		<website></website>
+		<email></email>
+		<source></source>
+		<news>v0.0.1 - Kodi 19</news>
+		<disclaimer lang="en">The author of this add-on does not host any of the content which is found and has no affiliation with any of the content providers. This add-on simply searches websites for content. Use at your own risk!</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+			<banner></banner>
+			<clearlogo></clearlogo>
+			<screenshot></screenshot>
+		</assets>
+	</extension>
+</addon>
+
+<addon id="plugin.video.fetchrg" name="Fetch! G" version="0.0.2g" provider-name="DD Team">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0"/>
+		<import addon="script.module.requests"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="addon.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">Fetch TV G</summary>
+		<description lang="en">Live TV channels. G rated content</description>
+		<platform>all</platform>
+		<language>en</language>
+		<license>GPL-2.0-or-later</license>
+		<forum></forum>
+		<website></website>
+		<email></email>
+		<source></source>
+		<news>v0.0.1 - Kodi 19</news>
+		<disclaimer lang="en">The author of this add-on does not host any of the content which is found and has no affiliation with any of the content providers. This add-on simply searches websites for content. Use at your own risk!</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+			<banner></banner>
+			<clearlogo></clearlogo>
+			<screenshot></screenshot>
+		</assets>
+	</extension>
+</addon>
+
 <addon id="repository.doomzday" name="Doomzday Repo" version="1.0.7" provider-name="DD Team">
     <requires>
         <import addon="xbmc.addon" version="12.0.0"/>
@@ -77,7 +137,8 @@
         <description lang="en_GB">Repo from the Doomzday Team for you.</description>
         <platform>all</platform>
         <assets>
-            <icon>icon.png</icon>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
         </assets>
     </extension>
 </addon>

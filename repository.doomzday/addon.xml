@@ -24,7 +24,8 @@
         <description lang="en_GB">Repo from the Doomzday Team for you.</description>
         <platform>all</platform>
         <assets>
-            <icon>icon.png</icon>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
         </assets>
     </extension>
 </addon>
