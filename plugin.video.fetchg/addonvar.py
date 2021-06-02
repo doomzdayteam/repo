@@ -26,3 +26,8 @@ resources = os.path.join(addon_path, 'resources/')
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 headers = {'User-Agent': user_agent}
 base_url = 'https://doomzdayteam.github.io/iptv/languages/eng.sfw.m3u'
+yt_xml = resources + 'main.xml'###Host and replace with url if you wish
+try:
+	api_key = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')###Try Youtube Addon for key
+except:
+	api_key = ''###Enter your api key in the quotes
