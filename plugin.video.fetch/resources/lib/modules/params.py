@@ -1,5 +1,7 @@
 import sys
 from urllib.parse import unquote_plus
+from .utils import Log
+
 
 class Params:
 	
@@ -73,4 +75,13 @@ class Params:
 		except:
 			pass
 		return description
+
+	def get_channeldata(self):
+		params=self.get_params()
+		channeldata=None
+		try:
+			channeldata=str(params["channeldata"])
+		except:
+			pass 
+		return channeldata
 p = Params()
