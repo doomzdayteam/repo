@@ -1,7 +1,7 @@
 #Credits to natko1412, mintsoft, yeahme49,anxdpanic and bromix for code from Youtube Channels and Youtube
 
 import xbmcplugin, xbmcgui, xbmcaddon
-import sys, requests, json
+import sys, requests, re, json
 from urllib.parse import quote_plus
 
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
@@ -24,23 +24,24 @@ def get_playlist(pl_id, page_token=None):
 	page = json.loads(get_page(pl_api))
 	items = page['items']
 	item_list = []
+	video_ids = []
 	for item in items:
-		title = item['snippet']['title']
 		video_id = item['snippet']['resourceId']['videoId']
-		icon = get_thumbnail('high',item['snippet']['thumbnails'])
-		fanart = icon
-		description = item['snippet']['description']
-		item_list.append({'title': title, 'url': 'plugin://plugin.video.youtube/play/?video_id=%s'%video_id, 'icon': icon, 'fanart': fanart, 'description': description})
+		video_ids.append(video_id)
+	video_list = get_videos(video_ids)
+	for title, video_id, icon, description, duration, date in video_list:
+		item_list.append({'title': title, 'url': 'plugin://plugin.video.youtube/play/?video_id=%s'%video_id, 'icon': icon, 'fanart': icon, 'description': description, 'duration': duration, 'date': date})
 	page_token = page.get('nextPageToken')
-	item_list.append(page_token)
+	if page_token:
+		item_list.append(page_token)
 	return item_list
 
 def get_playlist_items(pl_id):
 	if '|||' in pl_id:
-		pageToken = pl_id.split('|||')[1]
+		page_token = pl_id.split('|||')[1]
 		pl_id = pl_id.split('|||')[0]
-		items = get_playlist(pl_id,page_token=pageToken)
 	else:
+		page_token = None
 		if pl_id.startswith('UU'):
 			addDir('Playlists', get_channel_id(pl_id),2, addon_icon, addon_fanart, 'Playlists from this Channel')#mode integer should be one that calls ch_playlists function
 		elif pl_id.startswith('UC'):
@@ -50,15 +51,18 @@ def get_playlist_items(pl_id):
 			pl_id = pl_id
 		else:
 			pl_id = get_ch_id(pl_id)
-			if pl_id:
-				addDir('Playlists', get_channel_id(pl_id),2, addon_icon, addon_fanart, 'Playlists from this Channel')#mode integer should be one that calls ch_playlists function
-		items = get_playlist(pl_id)
-	for item in items[:-1]:
-		if item.get('title')=='Deleted video':
-			continue
-		addDir(item.get('title'), item.get('url'),3,item.get('icon', addon_icon), item.get('fanart', addon_fanart),item.get('description'), isFolder=False)#mode integer should be one that calls the player
-	page_token = items[-1]
-	if page_token:
+	items = get_playlist(pl_id, page_token=page_token)
+	if type(items[-1]) is dict:
+		for item in items:
+			if item.get('title')=='Deleted video':
+				continue
+			addDir(item.get('title'), item.get('url'),3,item.get('icon', addon_icon), item.get('fanart', addon_fanart),item.get('description'), duration=item.get('duration', ''), date='Date Published: '+str(item.get('date','')+'\n'), isFolder=False)#mode integer should be one that calls the player
+	else:
+		for item in items[:-1]:
+			if item.get('title')=='Deleted video':
+				continue
+			addDir(item.get('title'), item.get('url'),3,item.get('icon', addon_icon), item.get('fanart', addon_fanart),item.get('description'), duration=item.get('duration', ''), date='Date Published: '+str(item.get('date','')+'\n'), isFolder=False)#mode integer should be one that calls the player
+		page_token = items[-1]
 		addDir('Next Page', pl_id + '|||' + page_token, 1, addon_icon, addon_fanart,'Load the next page.')#mode integer should be one that calls get_playlist_items function
 
 def get_thumbnail(thumb_size, thumbnails):
@@ -76,10 +80,13 @@ def get_thumbnail(thumb_size, thumbnails):
             break
     return image
 
-def get_channel_playlists(ch_id):
+def get_channel_playlists(ch_id, page_token=None):
 	if ch_id.startswith('UU'):
 		ch_id = get_channel_id(ch_id)
-	ch_api ='https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=%s&maxResults=500&key=%s'%(ch_id, api_key)
+	if page_token:
+		ch_api ='https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=%s&nextPageToken&pageToken=%s&maxResults=%s&key=%s'%(ch_id, page_token, str(50), api_key)
+	else:
+		ch_api ='https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=%s&nextPageToken&maxResults=%s&key=%s'%(ch_id, str(50), api_key)
 	page = json.loads(get_page(ch_api))
 	playlists=[]
 	for item in page['items']:
@@ -88,11 +95,26 @@ def get_channel_playlists(ch_id):
 			playlist_name = item['snippet']['title']
 			thumbnail = item['snippet']['thumbnails']['high']['url']
 			playlists.append([playlist_id,playlist_name,thumbnail])
+	page_token = page.get('nextPageToken')
+	if page_token:
+		playlists.append(page_token)
 	return playlists
 
 def ch_playlists(ch_id):
-	for _id, name, thumb in get_channel_playlists(ch_id):
-		addDir(name, _id, 1, thumb, thumb,name)#mode integer should be one that calls the get_playlist_items function
+	if '|||' in ch_id:
+		pageToken = ch_id.split('|||')[1]
+		ch_id = ch_id.split('|||')[0]
+		items = get_channel_playlists(ch_id,page_token=pageToken)
+	else:
+		items = get_channel_playlists(ch_id)
+	if isList(items[-1]):
+		for _id, name, thumb in items:
+			addDir(name, _id, 1, thumb, thumb,name)#mode integer should be one that calls the get_playlist_items function
+	else:
+		for _id, name, thumb in items[:-1]:
+			addDir(name, _id, 1, thumb, thumb,name)#mode integer should be one that calls the get_playlist_items function
+		page_token = items[-1]
+		addDir('Next Page', ch_id + '|||' + page_token, 2, addon_icon, addon_fanart,'Load the next page.')#mode integer should be one that calls get_ch_playlists function
 
 def get_uploads_id(ch_id):
 	return json.loads(get_page('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=%s&key=%s'%(ch_id, api_key)))['items'][0]['contentDetails']['relatedPlaylists']['uploads']
@@ -108,12 +130,59 @@ def get_ch_id(username):
 	else:
 		return False
 
-def addDir(name,url,mode,icon,fanart,description,addcontext=False,isFolder=True):
+def get_videos(_ids, item_list = None):
+	if item_list==None:
+		item_list = []
+	video_url = 'https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=%s&key=%s' % (','.join(_ids), api_key)
+	items = json.loads(get_page(video_url))['items']
+	for item in items:
+		title = item['snippet']['title']
+		video_id = item['id']
+		thumb = item['snippet']['thumbnails']['high']['url']
+		description =item['snippet']['description']
+		duration = yt_time(item['contentDetails']['duration'])
+		date = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", item['snippet']['publishedAt'])
+		item_list.append([title, video_id, thumb, description, duration, date.group()])
+	return item_list
+
+# https://stackoverflow.com/a/49976787
+def yt_time(duration="P1W2DT6H21M32S"):
+	"""
+	Converts YouTube duration (ISO 8061)
+	into Seconds
+
+	see http://en.wikipedia.org/wiki/ISO_8601#Durations
+	"""
+	ISO_8601 = re.compile(
+		'P'   # designates a period
+		'(?:(?P<years>\d+)Y)?'   # years
+		'(?:(?P<months>\d+)M)?'  # months
+		'(?:(?P<weeks>\d+)W)?'   # weeks
+		'(?:(?P<days>\d+)D)?'    # days
+		'(?:T' # time part must begin with a T
+		'(?:(?P<hours>\d+)H)?'   # hours
+		'(?:(?P<minutes>\d+)M)?' # minutes
+		'(?:(?P<seconds>\d+)S)?' # seconds
+		')?')   # end of time part
+	# Convert regex matches into a short list of time units
+	units = list(ISO_8601.match(duration).groups()[-3:])
+	# Put list in ascending order & remove 'None' types
+	units = list(reversed([int(x) if x != None else 0 for x in units]))
+	# Do the maths
+	return sum([x*60**units.index(x) for x in units])
+
+def addDir(name,url,mode,icon,fanart,description,duration='',date='',addcontext=False,isFolder=True):
 	u=sys.argv[0]+"?name="+quote_plus(name)+"&url="+quote_plus(url)+"&mode="+str(mode)+"&icon="+quote_plus(icon) +"&fanart="+quote_plus(fanart)+"&description="+quote_plus(description)
 	liz=xbmcgui.ListItem(name)
 	liz.setArt({'fanart':fanart,'icon':'DefaultFolder.png','thumb':icon})
-	liz.setInfo(type="Video", infoLabels={ "Title": name, "plot": description})
+	liz.setInfo(type="Video", infoLabels={ "Title": name, "plot": str(date)+description, 'duration': duration})
 	if addcontext:
 		contextMenu = []
 		liz.addContextMenuItems(contextMenu)
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
+
+def isList(item):
+	if isinstance(item,list):
+		return True
+	else:
+		return False

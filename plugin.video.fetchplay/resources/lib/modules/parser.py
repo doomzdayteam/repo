@@ -8,9 +8,9 @@ class Parser:
 	def get_list(self):
 		if self.url.endswith('.xml'):
 			try:
-				xml = ET.fromstring(self.get_page())
+				xml = ET.fromstring(self.get_page().replace('&', '&amp;').replace("'", "&apos;").replace('"', '&quot;'))
 			except ET.ParseError:
-				xml = ET.fromstringlist(["<root>", self.get_page(), "</root>"])
+				xml = ET.fromstringlist(["<root>", self.get_page().replace('&', '&amp;').replace("'", "&apos;").replace('"', '&quot;'), "</root>"])
 			item_list = []
 			for item in xml:
 				item_list.append({child.tag: child.text for child in item})

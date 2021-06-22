@@ -23,9 +23,10 @@ user_path = os.path.join(home, 'userdata/')
 data_path = os.path.join(user_path, 'addon_data/')
 packages = os.path.join(addons_path, 'packages/')
 resources = os.path.join(addon_path, 'resources/')
+xml_folder = os.path.join(resources, 'xml/')
+yt_xml = xml_folder + 'main.xml'###Host and replace with url if you wish
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 headers = {'User-Agent': user_agent}
-yt_xml = resources + 'main.xml'###Host and replace with url if you wish
 try:
 	api_key = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')###Try Youtube Addon for key
 except:
