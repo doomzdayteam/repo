@@ -93,7 +93,7 @@ def get_channel_playlists(ch_id, page_token=None):
 		if item['kind']=='youtube#playlist':
 			playlist_id = item['id']
 			playlist_name = item['snippet']['title']
-			thumbnail = item['snippet']['thumbnails']['high']['url']
+			thumbnail = get_thumbnail('high',item['snippet']['thumbnails'])
 			playlists.append([playlist_id,playlist_name,thumbnail])
 	page_token = page.get('nextPageToken')
 	if page_token:

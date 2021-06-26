@@ -23,4 +23,10 @@
         <icon>https://i.imgur.com/tL7yZEd.png</icon>
         <fanart>https://i.imgur.com/tL7yZEd.png</fanart>
     </playlist>
+	<playlist>
+        <title>Slams Playlists</title>
+        <link>slam_list.xml</link>
+        <icon>https://i.imgur.com/JwFWNXK.jpg</icon>
+        <fanart>https://i.imgur.com/JwFWNXK.jpg</fanart>
+    </playlist>
 </xml>
