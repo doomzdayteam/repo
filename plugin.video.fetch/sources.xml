@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sources>
 	<source>
-		<url>https://bitbucket.org/!api/2.0/snippets/fluxustv/expnoX/5e2627cda2a19eea8adf521c70a9e678a85e6955/files/IPTV_032321</url>
-		<name>Source 1</name>
+		<url>https://doomzdayteam.github.io/iptv/index.m3u</url>
+		<name>International Channels</name>
 		<icon></icon>
 	</source>
 	<source>
 		<url>https://doomzdayteam.github.io/iptv/languages/eng.m3u</url>
-		<name>Source 2</name>
+		<name>English Channels</name>
 		<icon></icon>
 	</source>
 </sources>

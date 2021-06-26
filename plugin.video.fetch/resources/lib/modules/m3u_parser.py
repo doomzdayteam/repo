@@ -22,7 +22,7 @@ class m3uRegex(object):
         match = ''
         m = re.search(re_patten, data)
         if m != None:
-            match = m.group(1)
+            match = m.group(1).decode('utf-8')
         else:
             match = ''
         return match
@@ -37,17 +37,17 @@ class m3uRegex(object):
             stream_url = stream_url.decode('utf-8')
             tvg_id='';tvg_name='';tvg_country='';tvg_language='';tvg_logo='';group_title=''
             if b'tvg-id' in other:
-                tvg_id = self.re_me(other,b'tvg-id=[\'"](.*?)[\'"]').decode('utf-8')
+                tvg_id = self.re_me(other,b'tvg-id=[\'"](.*?)[\'"]')
             if b'tvg-name' in other:
-                tvg_name = self.re_me(other,b'tvg-name=[\'"](.*?)[\'"]').decode('utf-8')
+                tvg_name = self.re_me(other,b'tvg-name=[\'"](.*?)[\'"]')
             if b'tvg-country' in other:
-                tvg_country = self.re_me(other,b'tvg-country=[\'"](.*?)[\'"]').decode('utf-8')
+                tvg_country = self.re_me(other,b'tvg-country=[\'"](.*?)[\'"]')
             if b'tvg-language' in other:
-                tvg_language = self.re_me(other,b'tvg-language=[\'"](.*?)[\'"]').decode('utf-8')
+                tvg_language = self.re_me(other,b'tvg-language=[\'"](.*?)[\'"]')
             if b'tvg-logo' in other:
-                tvg_logo = self.re_me(other,b'tvg-logo=[\'"](.*?)[\'"]').decode('utf-8')
+                tvg_logo = self.re_me(other,b'tvg-logo=[\'"](.*?)[\'"]')
             if b'group-title' in other:
-                group_title = self.re_me(other,b'group-title=[\'"](.*?)[\'"]').decode('utf-8')
+                group_title = self.re_me(other,b'group-title=[\'"](.*?)[\'"]')
             if group_title == '':
                 if tvg_country != '':
                     group_title = tvg_country
