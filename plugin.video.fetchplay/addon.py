@@ -33,8 +33,11 @@ def MainMenu(_xml):
 		else:
 			addDir(item.get('title','Unknown'),item.get('link',''), 1, item.get('icon', addon_icon), item.get('fanart', addon_fanart), 'Playlists from Youtube')
 	video_list = yt_playlists.get_videos(video_ids)
-	for title, video_id, icon, description, duration, date in video_list:
-		yt_playlists.addDir(title, 'plugin://plugin.video.youtube/play/?video_id=%s'%video_id,3,icon, icon, description, duration=duration, date='Date Published: '+str(date)+'\n', isFolder=False)
+	try:
+		for title, video_id, icon, description, duration, date in video_list:
+			yt_playlists.addDir(title, 'plugin://plugin.video.youtube/play/?video_id=%s'%video_id,3,icon, icon, description, duration=duration, date='Date Published: '+str(date)+'\n', isFolder=False)
+	except:
+		pass
 
 def yt_playlist(link):
 	if link.startswith('http'):

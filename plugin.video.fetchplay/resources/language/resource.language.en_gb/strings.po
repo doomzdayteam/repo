@@ -1,7 +1,7 @@
 # XBMC Media Center language file
-# Addon Name: M3U Template
-# Addon id: plugin.video.m3utemplate
-# Addon Provider: X
+# Addon Name: Fetch Playlists
+# Addon id: plugin.video.fetchplay
+# Addon Provider: DD Team
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Addons\n"

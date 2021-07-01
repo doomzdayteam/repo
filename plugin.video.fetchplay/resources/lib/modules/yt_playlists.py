@@ -1,16 +1,97 @@
 #Credits to natko1412, mintsoft, yeahme49,anxdpanic and bromix for code from Youtube Channels and Youtube
 
-import xbmcplugin, xbmcgui, xbmcaddon
+import xbmc, xbmcplugin, xbmcgui, xbmcaddon
 import sys, requests, re, json
 from urllib.parse import quote_plus
 
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon = xbmcaddon.Addon(addon_id)
+addon_name = addon.getAddonInfo('name')
 addon_icon = addon.getAddonInfo("icon")
 addon_fanart = addon.getAddonInfo("fanart")
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 headers = {'User-Agent': user_agent}
-api_key = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')#Requires api key added to Youtube addon. Can be changed to suit your needs.
+dialog = xbmcgui.Dialog()
+setting = addon.getSetting
+setting_set = addon.setSetting
+
+def test_api_key(apiKey):
+	response = requests.get('https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=7lCDEYXw3mM&key=%s' %apiKey, headers=headers)
+	try:
+		response.raise_for_status()
+		setting_set('api.verify', 'true')
+		return True
+	except:
+		setting_set('api.verify', 'false')
+		return False
+
+def prompt_api():
+	if dialog.yesno(addon_name, 'No Youtube api key found.\nWould you like to enter one now?', nolabel='No', yeslabel='Yes'):
+		kb = xbmc.Keyboard(setting('youtube.api.key'), 'heading', False)
+		kb.setHeading('Enter Api Key') 
+		kb.doModal()
+		if (kb.isConfirmed()):
+			text = kb.getText()
+			setting_set('youtube.api.key', text)
+			if test_api_key(text):
+				xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', text)
+				return text	
+			else:
+				if dialog.yesno(addon_name, 'Api key not found.\nWould you like to try again?', nolabel='No', yeslabel='Yes'):
+					kb = xbmc.Keyboard(setting('youtube.api.key'), 'heading', False)
+					kb.setHeading('Enter Api Key') 
+					kb.doModal()
+					if (kb.isConfirmed()):
+						text = kb.getText()
+						setting_set('youtube.api.key', text)
+						if test_api_key(text):
+							xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', text)
+							return text
+						else:
+							dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
+							sys.exit()
+					else:
+						dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
+						sys.exit()
+				else:
+					dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
+					sys.exit()
+		else:
+			dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
+			sys.exit()
+	else:
+		dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
+		sys.exit()
+
+def get_key():
+	if setting('youtube.api.key'):
+		if setting('api.verify') == 'true':
+			xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', setting('youtube.api.key'))
+			return setting('youtube.api.key')
+		elif test_api_key(setting('youtube.api.key')):
+			xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', setting('youtube.api.key'))
+			return setting('youtube.api.key')
+		elif xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key'):
+			apiKey = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')
+			if test_api_key(apiKey):
+				setting_set('youtube.api.key', apiKey)
+				return apiKey
+			else:
+				return prompt_api()
+		else:
+			return prompt_api()
+							
+	elif xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key'):
+		apiKey = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')
+		if test_api_key(apiKey):
+			setting_set('youtube.api.key', apiKey)
+			return apiKey
+		else:
+			return prompt_api()
+	else:
+		return prompt_api()
+		
+api_key = get_key()
 
 def get_page(url):
 	session = requests.Session()
@@ -93,7 +174,7 @@ def get_channel_playlists(ch_id, page_token=None):
 		if item['kind']=='youtube#playlist':
 			playlist_id = item['id']
 			playlist_name = item['snippet']['title']
-			thumbnail = get_thumbnail('high',item['snippet']['thumbnails'])
+			thumbnail = item['snippet']['thumbnails']['high']['url']
 			playlists.append([playlist_id,playlist_name,thumbnail])
 	page_token = page.get('nextPageToken')
 	if page_token:
@@ -117,7 +198,11 @@ def ch_playlists(ch_id):
 		addDir('Next Page', ch_id + '|||' + page_token, 2, addon_icon, addon_fanart,'Load the next page.')#mode integer should be one that calls get_ch_playlists function
 
 def get_uploads_id(ch_id):
-	return json.loads(get_page('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=%s&key=%s'%(ch_id, api_key)))['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+	try:
+		return json.loads(get_page('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=%s&key=%s'%(ch_id, api_key)))['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+	except:
+		dialog.ok(addon_name, 'There was a problem loading the list.\nPlease ensure you are connected to the internet\nand you have a valid api key.\nIf the problem persists, contact\nthe addon administrator.')
+		sys.exit()
 
 def get_channel_id(uploads_id):
 	return json.loads(get_page('https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s'%(uploads_id, api_key)))['items'][0]['snippet']['channelId']
@@ -136,14 +221,18 @@ def get_videos(_ids, item_list = None):
 	video_url = 'https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=%s&key=%s' % (','.join(_ids), api_key)
 	items = json.loads(get_page(video_url))['items']
 	for item in items:
-		title = item['snippet']['title']
-		video_id = item['id']
-		thumb = item['snippet']['thumbnails']['high']['url']
-		description =item['snippet']['description']
-		duration = yt_time(item['contentDetails']['duration'])
-		date = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", item['snippet']['publishedAt'])
-		item_list.append([title, video_id, thumb, description, duration, date.group()])
-	return item_list
+		try:
+			title = item['snippet']['title']
+			video_id = item['id']
+			thumb = item['snippet']['thumbnails']['high']['url']
+			description =item['snippet']['description']
+			duration = yt_time(item['contentDetails']['duration'])
+			date = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", item['snippet']['publishedAt'])
+			item_list.append([title, video_id, thumb, description, duration, date.group()])
+		except:
+			pass
+	if len(item_list) > 0:
+		return item_list
 
 # https://stackoverflow.com/a/49976787
 def yt_time(duration="P1W2DT6H21M32S"):
