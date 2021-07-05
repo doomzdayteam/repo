@@ -1,4 +1,4 @@
-import xbmc, xbmcvfs, xbmcaddon, xbmcgui
+import xbmcvfs, xbmcaddon, xbmcgui
 import os
 
 addon_id = xbmcaddon.Addon().getAddonInfo('id')

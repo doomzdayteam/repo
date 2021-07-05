@@ -1,13 +1,6 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<settings version="1">
-	<section id="settings" label="" help="">
-		<category id="general.settings" label="30000" help="">
-			<group id="1" label="14260">
-				<setting id="debug" label="30001" type="boolean" help="">
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-			</group>
-		</category>
-	</section>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="Addon Settings">
+		<setting label="Youtube API Key" type="text" id="apikey" default="changeme" visible="true" />
+     </category>	  
 </settings>

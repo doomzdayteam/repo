@@ -6,12 +6,14 @@ from urllib.parse import quote_plus
 
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon = xbmcaddon.Addon(addon_id)
+yt_addon = xbmcaddon.Addon('plugin.video.youtube')
 addon_name = addon.getAddonInfo('name')
 addon_icon = addon.getAddonInfo("icon")
 addon_fanart = addon.getAddonInfo("fanart")
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 headers = {'User-Agent': user_agent}
 dialog = xbmcgui.Dialog()
+yt_setting = yt_addon.getSetting
 setting = addon.getSetting
 setting_set = addon.setSetting
 
@@ -20,43 +22,41 @@ def test_api_key(apiKey):
 	try:
 		response.raise_for_status()
 		setting_set('api.verify', 'true')
+		setting_set('apikey', apiKey)
 		return True
 	except:
 		setting_set('api.verify', 'false')
 		return False
 
+def from_keyboard():
+	kb = xbmc.Keyboard(setting('apikey'), 'Enter Api Key', False)
+	kb.doModal()
+	if (kb.isConfirmed()):
+		setting_set('apikey', kb.getText())
+		return kb.getText()
+	else:
+		dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
+		sys.exit()
+
+def verify_keyboard():
+	text = from_keyboard()
+	if test_api_key(text):
+		return text
+	else:
+		return False	
+
 def prompt_api():
+	counter = 0
 	if dialog.yesno(addon_name, 'No Youtube api key found.\nWould you like to enter one now?', nolabel='No', yeslabel='Yes'):
-		kb = xbmc.Keyboard(setting('youtube.api.key'), 'heading', False)
-		kb.setHeading('Enter Api Key') 
-		kb.doModal()
-		if (kb.isConfirmed()):
-			text = kb.getText()
-			setting_set('youtube.api.key', text)
-			if test_api_key(text):
-				xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', text)
-				return text	
-			else:
-				if dialog.yesno(addon_name, 'Api key not found.\nWould you like to try again?', nolabel='No', yeslabel='Yes'):
-					kb = xbmc.Keyboard(setting('youtube.api.key'), 'heading', False)
-					kb.setHeading('Enter Api Key') 
-					kb.doModal()
-					if (kb.isConfirmed()):
-						text = kb.getText()
-						setting_set('youtube.api.key', text)
-						if test_api_key(text):
-							xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', text)
-							return text
-						else:
-							dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
-							sys.exit()
-					else:
-						dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
-						sys.exit()
-				else:
-					dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
-					sys.exit()
+		userKey = verify_keyboard()
+		if userKey:
+			return userKey
 		else:
+			while dialog.yesno(addon_name, 'Api key not found.\nWould you like to try again?', nolabel='No', yeslabel='Yes')==True and counter<3:
+				userKey = verify_keyboard()
+				if userKey:
+					return userKey
+				counter+=1
 			dialog.ok(addon_name, 'Unable to verify api key.\nPlease make sure the key is valid and\nthat you are connected to the internet.')
 			sys.exit()
 	else:
@@ -64,34 +64,21 @@ def prompt_api():
 		sys.exit()
 
 def get_key():
-	if setting('youtube.api.key'):
-		if setting('api.verify') == 'true':
-			xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', setting('youtube.api.key'))
-			return setting('youtube.api.key')
-		elif test_api_key(setting('youtube.api.key')):
-			xbmcaddon.Addon('plugin.video.youtube').setSetting('youtube.api.key', setting('youtube.api.key'))
-			return setting('youtube.api.key')
-		elif xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key'):
-			apiKey = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')
-			if test_api_key(apiKey):
-				setting_set('youtube.api.key', apiKey)
-				return apiKey
-			else:
-				return prompt_api()
-		else:
-			return prompt_api()
-							
-	elif xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key'):
-		apiKey = xbmcaddon.Addon('plugin.video.youtube').getSetting('youtube.api.key')
-		if test_api_key(apiKey):
-			setting_set('youtube.api.key', apiKey)
-			return apiKey
+	setting_set('begin', 'true')
+	if setting('api.verify')=='true':
+		return setting('apikey')
+	elif test_api_key(yt_setting('youtube.api.key')):
+		return yt_setting('youtube.api.key')
+	elif setting('apikey')!='changeme':
+		if test_api_key(setting('apikey')):
+			return setting('apikey')
 		else:
 			return prompt_api()
 	else:
 		return prompt_api()
 		
 api_key = get_key()
+###
 
 def get_page(url):
 	session = requests.Session()
