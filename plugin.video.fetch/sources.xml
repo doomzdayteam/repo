@@ -10,4 +10,14 @@
 		<name>English Channels</name>
 		<icon></icon>
 	</source>
+	<source>
+		<url>https://raw.githubusercontent.com/doomzdayteam/info/master/Tools/pluto.m3u</url>
+		<name>Pluto Channels</name>
+		<icon>https://i.imgur.com/1KqGLEH.jpg</icon>
+	</source>
+	<source>
+		<url>https://raw.githubusercontent.com/doomzdayteam/info/master/Tools/stirr.m3u</url>
+		<name>Stirr Channels</name>
+		<icon>https://i.imgur.com/2b8Ayju.png</icon>
+	</source>
 </sources>
