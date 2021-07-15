@@ -1,12 +1,6 @@
-import json
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import xbmcvfs
-from urllib.parse import unquote_plus
-from addonvar import addon_icon,addon_fanart,addon_name,data,addon_profile,resources,icon_search,icon_fav,icon_recent,icon_settings,search_json,local_string,dialog,fav_json,addon,recentplayed_json
+import json, os, sys
+import xbmc, xbmcgui, xbmcplugin, xbmcvfs
+from resources.lib.modules.addonvar import addon_icon,addon_fanart,addon_name,data,addon_profile,resources,icon_search,icon_fav,icon_recent,icon_settings,search_json,local_string,dialog,fav_json,addon,recentplayed_json, customiser_json, m3udata_json
 from resources.lib.modules.utils import addDir,Log,NewJsonFile,ParamsDict,Timestamp_Region_dt
 from resources.lib.modules.params import p
 from resources.lib.modules.m3u_parser import m3u,m3uRegex
@@ -14,16 +8,12 @@ from resources.lib.modules.http import UrlValidator
 from resources.lib.modules.xml_parser import xmlRegex
 from resources.lib.modules.search import SearchSelected,NewSearchQuery,SelSources
 from uservar import host
-from urllib import parse
 
 Log(str(sys.argv))
 
 xmlread         = xmlRegex(host)
 m3usources      = xmlread.xmlSourcesRead()
 iso_info        = json.load(open(os.path.join(data,'iso_3166-2.json')))
-customiser_json = os.path.join(addon_profile,'customiser.json')
-m3udata_json    = os.path.join(addon_profile,'m3udata.json')
-cache_json      = os.path.join(addon_profile,'cache.json')
 
 def MainMenu():
     for s in m3usources:
@@ -175,7 +165,7 @@ def myFavMenu(name):
                             refresh = True
                         else:
                             pass
-            addDir(stream_name,stream_url,3,v.get('tvg_logo',addon_icon),addon_fanart,v.get('group_title'),isFolder=False,addcontext=['re_fav_chan'],channeldata=v)
+                addDir(stream_name,stream_url,3,v.get('tvg_logo',addon_icon),addon_fanart,v.get('group_title'),isFolder=False,addcontext=['re_fav_chan'],channeldata=v)
             if refresh:
                 xbmc.executebuiltin("Container.Refresh")
         else:
@@ -199,12 +189,8 @@ def RecentPlayedMenu(name):
             dialog.notification(addon_name,local_string(32024).format(menu=name))
             xbmc.executebuiltin('Action(Back)') 
 
-
-
-
-
 def play_video(title, link, iconimage,channeldata):
-
+    
     def __play__():
         from resources.lib.modules.xbmc_player import xbmcPlayer
         p = xbmcPlayer(channeldata)

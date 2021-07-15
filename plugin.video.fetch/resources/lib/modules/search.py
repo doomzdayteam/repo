@@ -3,7 +3,7 @@ import json
 import xbmcgui
 from .m3u_parser import m3uRegex
 from .xml_parser import xmlRegex
-from addonvar import dialog,addon,search_json
+from resources.lib.modules.addonvar import dialog,addon,search_json
 from uservar import host
 from .utils import Log
 
@@ -45,7 +45,7 @@ def SearchSelected(query,sources):
 					v.update({'weight':ratio})
 					matches.append(v) 
 			if addon.getSettingBool('general.search.instring'):
-				if query in tvg_name and stream_url not in matches:
+				if query.lower() in tvg_name.lower() and stream_url not in matches:
 					ratio = 1/len(tvg_name)*len(query)
 					v.update({'weight':ratio})
 					matches.append(v)

@@ -1,7 +1,7 @@
 import os
 import xml.etree.ElementTree as ET
 from requests import Session
-from addonvar import addon_path,addon_profile
+from resources.lib.modules.addonvar import addon_path,addon_profile
 
 
 class xmlRegex(object):

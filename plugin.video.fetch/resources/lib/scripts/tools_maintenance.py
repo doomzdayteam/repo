@@ -1,6 +1,7 @@
 
 import json
 import os
+import pathlib
 import sys
 import xbmc
 import xbmcaddon
@@ -22,7 +23,6 @@ class main():
 		self.__addonVerison__ = self.__addon__.getAddonInfo('version')
 		self.customiser_json  = os.path.join(self.__addonProfile__,'customiser.json')
 		self.tempm3u_json     = os.path.join(self.__addonProfile__,'m3udata.json')
-		self.cache_json       = os.path.join(self.__addonProfile__,'cache.json')
 		self.files_json_path  = os.path.join(self.__addonPath__,'resources','data','files.json')
 		self.files_json_data  = json.loads(self.OpenFileRead(self.files_json_path))
 		self.func             = sys.argv[2]
@@ -57,8 +57,11 @@ class main():
 			self.dialog.notification(self.__addonName__, 'All temporary files cleared successfully',self.__addon__.getAddonInfo('icon'))
 
 	
-	def NewJsonFile(self,path,headers):
-		with open(path,'w') as f:
+	def NewJsonFile(self,filepath,headers):
+		dirpath = pathlib.Path(filepath).resolve().parent
+		if not dirpath.exists():
+			dirpath.mkdir(parents=True, exist_ok=True)
+		with open(filepath,'w') as f:
 			json.dump(headers,f,indent=4)
 
 

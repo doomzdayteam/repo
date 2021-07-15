@@ -1,11 +1,12 @@
 from datetime import datetime
 import json
+import pathlib
 import xbmc
 import xbmcgui
 import xbmcplugin
-import sys, os
+import sys
 from urllib.parse import quote_plus,urlencode,parse_qs,unquote_plus
-from addonvar import setting,addon_name,addon_version,local_string,addon_profile
+from resources.lib.modules.addonvar import addon_name,addon_version,local_string,addon
 
 
 def addDir(name,url,mode,icon,fanart,description,addcontext=False,isFolder=True,m3udata=None,label2=None,channeldata=None):
@@ -30,22 +31,26 @@ def addDir(name,url,mode,icon,fanart,description,addcontext=False,isFolder=True,
 				contextMenu.append((local_string(32016), f"RunPlugin({sys.argv[0]}?mode=102&channeldata={DictParams(channeldata)})"))
 			if context == 're_fav_chan':
 				contextMenu.append((local_string(32017),f'Runplugin({sys.argv[0]}?mode=103&channeldata={DictParams(channeldata)})'))
+			# if context == 'userguide':
+			# 	mdpath = 'special://home/addons'
+			# 	contextMenu.append(('userInfo',f'RunScript(script.context.userguide,{mdpath})'))
 		liz.addContextMenuItems(contextMenu)
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
 
 
 def Log(msg):
-	if setting('general.debug'):
+	if addon.getSettingBool('general.debug'):
 		from inspect import getframeinfo, stack
 		fileinfo = getframeinfo(stack()[1][0])
 		xbmc.log('*__{}__{}*{} Python file name = {} Line Number = {}'.format(addon_name,addon_version,msg,fileinfo.filename,fileinfo.lineno), level=xbmc.LOGINFO)
 
 
 		
-def NewJsonFile(path,headers):
-	if not os.path.exists(addon_profile):
-		os.mkdir(addon_profile)
-	with open(path,'w') as f:
+def NewJsonFile(filepath,headers):
+	dirpath = pathlib.Path(filepath).resolve().parent
+	if not dirpath.exists():
+		dirpath.mkdir(parents=True, exist_ok=True)
+	with open(filepath,'w') as f:
 		json.dump(headers,f,indent=4)
 
 

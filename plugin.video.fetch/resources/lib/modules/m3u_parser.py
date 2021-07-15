@@ -1,7 +1,6 @@
 #Based on Playlist Loader by Avigdor
 import requests, re
-import addonvar
-from .http import http
+from . import addonvar
 import json
 from requests import Session
 
@@ -70,7 +69,7 @@ class m3u(object):
         self.content = content
 
     def get_categories(self):
-         return sorted(list(set(v.get('group_title') for k,v in json.loads(self.content).items())))
+        return sorted(list(set(v.get('group_title') for k,v in json.loads(self.content).items())))
 
     
     def get_catlist(self, category):

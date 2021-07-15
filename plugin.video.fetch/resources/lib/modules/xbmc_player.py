@@ -1,4 +1,4 @@
-from addonvar import recentplayed_json
+from resources.lib.modules.addonvar import recentplayed_json
 from datetime import datetime
 import json
 import xbmc

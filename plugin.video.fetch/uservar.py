@@ -1,3 +1,10 @@
+'''
+----------Edit required---------
+Set pluginid to same name as addon id in addon.xml
+'''
+pluginid = 'plugin.video.m3utemplate'
+
+
 ''' 
 ----------Edit required---------
 For online xml for sources, edit the host to the url of the file host='http://something.com/sources.xml'
@@ -6,5 +13,4 @@ please see sample.xml for layout
 on line source can be either https or http
 '''
 
-# host=''
 host='local'

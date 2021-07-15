@@ -2,7 +2,7 @@ import json
 import sys
 import xbmc
 import xbmcgui
-from addonvar import addon_profile,customiser_json,fav_json
+from resources.lib.modules.addonvar import addon_profile,customiser_json,fav_json
 from .utils import Log
 
 
