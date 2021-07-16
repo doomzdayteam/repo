@@ -2,7 +2,7 @@
 ----------Edit required---------
 Set pluginid to same name as addon id in addon.xml
 '''
-pluginid = 'plugin.video.m3utemplate'
+pluginid = 'plugin.video.fetch'
 
 
 ''' 
