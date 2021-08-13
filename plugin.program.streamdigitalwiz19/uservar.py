@@ -17,7 +17,7 @@ ADDONTITLE = '[COLOR dodgerblue][B]SD[/B][/COLOR] [COLOR ghostwhite][B]Wizard[/B
 BUILDERNAME = 'Mason Sparkx'
 EXCLUDES = [ADDON_ID, 'repository.openwizard']
 # Text File with build info in it.
-BUILDFILE = 'http://sdwteam.com/mb/matrix/txtx/autobuilds.txt'
+BUILDFILE = 'http://sdwteam.com/mb/xtxt/autobuilds.txt'
 # How often you would like it to check for build updates in days
 # 0 being every startup of kodi
 UPDATECHECK = 0
