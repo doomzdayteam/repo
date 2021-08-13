@@ -52,7 +52,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.program.sdwiz19" name="[B][COLOR dodgerblue]S[COLOR ghostwhite]tream [COLOR dodgerblue]D[COLOR ghostwhite]igital[/COLOR][/B]" version="75" provider-name="Team SD">
+<addon id="plugin.program..streamdigitalwiz19" name="[B][COLOR dodgerblue]S[COLOR ghostwhite]tream [COLOR dodgerblue]D[COLOR ghostwhite]igital[/COLOR][/B]" version="75" provider-name="Team SD">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
         <import addon="script.module.requests" />
