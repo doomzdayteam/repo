@@ -52,6 +52,33 @@
     </extension>
 </addon>
 
+<addon id="plugin.program.sdwiz19" name="[B][COLOR dodgerblue]S[COLOR ghostwhite]tream [COLOR dodgerblue]D[COLOR ghostwhite]igital[/COLOR][/B]" version="1.4.9" provider-name="Team SD">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0" />
+        <import addon="script.module.requests" />
+        <import addon="script.module.six" />
+        <import addon="script.kodi.android.update" optional="true" version="1.1.7" />
+        <import addon="script.speedtester" optional="true" version="1.1.2" />
+    </requires>
+
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>executable</provides>
+    </extension>
+
+    <extension point="xbmc.service" library="startup.py" start="startup" />
+
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en">[COLOR dodgerblue]SD [COLOR ghostwhite]Wizard[/COLOR]</summary>
+        <description lang="en">[COLOR dodgerblue]SD [COLOR ghostwhite]Wizard[/COLOR]</description>
+        <platform>all</platform>
+        <reuselanguageinvoker>false</reuselanguageinvoker>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.png</fanart>
+        </assets>
+    </extension>
+</addon>
+
 <addon id="plugin.video.fetch" name="Fetch!" version="0.1.4.1" provider-name="DD Team">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
@@ -123,6 +150,12 @@
            <info compressed="false">https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml</info>
 			<checksum>https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml.md5</checksum>
 			<datadir zip="true">https://raw.githubusercontent.com/Gujal00/smrzips/master/zips/</datadir>
+        </dir>
+		<dir>
+            <info compressed="false">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/</datadir>
+            <hashes>false</hashes>
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
