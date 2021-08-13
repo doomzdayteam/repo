@@ -15,9 +15,9 @@ ART = os.path.join(PATH, 'resources', 'media')
 #########################################################
 ADDONTITLE = '[COLOR dodgerblue][B]SD[/B][/COLOR] [COLOR ghostwhite][B]Wizard[/B][/COLOR]'
 BUILDERNAME = 'Mason Sparkx'
-EXCLUDES = [ADDON_ID, 'repository.streamdigital']
-# Text File with build info in it. Please read https://github.com/a4k-openproject/plugin.program.openwizard/wiki/Installing-Builds
-BUILDFILE = 'https://gitlab.com/doomzday/text/raw/master/builds.txt'
+EXCLUDES = [ADDON_ID, 'repository.openwizard']
+# Text File with build info in it.
+BUILDFILE = 'http://sdwteam.com/mb/matrix/txtx/autobuilds.txt'
 # How often you would like it to check for build updates in days
 # 0 being every startup of kodi
 UPDATECHECK = 0
@@ -63,7 +63,7 @@ SPACER = '='
 COLOR1 = 'dodgerblue'
 COLOR2 = 'ghostwhite'
 # Primary menu items   / {0} is the menu item and is required
-THEME1 = u'[COLOR {color1}][I]([COLOR {color1}][B]Open[/B][/COLOR][COLOR {color2}]Wizard[COLOR {color1}])[/I][/COLOR] [COLOR {color2}]{{}}[/COLOR]'.format(color1=COLOR1, color2=COLOR2)
+THEME1 = u'[COLOR {color1}][I]([COLOR {color1}][B]SD[/B][/COLOR][COLOR {color2}]Wizard[COLOR {color1}])[/I][/COLOR] [COLOR {color2}]{{}}[/COLOR]'.format(color1=COLOR1, color2=COLOR2)
 # Build Names          / {0} is the menu item and is required
 THEME2 = u'[COLOR {color1}]{{}}[/COLOR]'.format(color1=COLOR1)
 # Alternate items      / {0} is the menu item and is required
@@ -77,7 +77,7 @@ THEME5 = u'[COLOR {color1}]Current Theme:[/COLOR] [COLOR {color2}]{{}}[/COLOR]'.
 # Enable 'Contact' menu item 'Yes' hide or 'No' dont hide
 HIDECONTACT = 'Yes'
 # You can add \n to do line breaks
-CONTACT = 'Thank you for using SD Wizard'
+CONTACT = 'http://'
 # Images used for the contact window.  http:// for default icon and fanart
 CONTACTICON = os.path.join(ART, 'qricon.png')
 CONTACTFANART = 'http://'
@@ -96,7 +96,7 @@ AUTOUPDATE = 'No'
 # Enable Auto Install 'Yes' or 'No'
 AUTOINSTALL = 'No'
 # Addon ID for the repository
-REPOID = 'repository.streamdigital'
+REPOID = 'repository.doomzday'
 # Url to Addons.xml file in your repo folder(this is so we can get the latest version)
 REPOADDONXML = 'https://'
 # Url to folder zip is located in

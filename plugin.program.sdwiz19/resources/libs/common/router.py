@@ -1,4 +1,6 @@
 import xbmc
+import xbmcaddon
+import xbmcgui
 import xbmcplugin
 
 import sys
@@ -142,8 +144,8 @@ class Router:
         elif mode == 'viewIP':  # Maintenance -> Misc Maintenance -> Network Tools -> View IP Address & MAC Address
             menu.view_ip()
             self._finish(handle)
-        elif mode == 'speedtest':  # Maintenance -> Misc Maintenance -> Network Tools -> Speed Test
-            xbmc.executebuiltin('InstallAddon("script.speedtester")') 
+        elif mode == 'speedtest': 
+            xbmc.executebuiltin('InstallAddon("script.speedtester")')
             xbmc.executebuiltin('RunAddon("script.speedtester")')
         elif mode == 'apk':  # APK Installer
             menu.apk_menu(url)
