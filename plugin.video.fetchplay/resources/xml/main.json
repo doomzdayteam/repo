@@ -1,0 +1,44 @@
+{
+    "items": [
+        {
+            "title": "Music - Smokin Old School",
+            "link": "PLZPXCCyZsRZH2R7QEQ_WVXu_bq2k_cYCR",
+            "icon": "https://i.imgur.com/BAjXQ6Y.jpg",
+            "fanart": "https://i.imgur.com/BAjXQ6Y.jpg", 
+            "description": "Smokin Old School",
+            "type": "playlist"
+        },
+        {
+            "title": "Music - By Big Kev",
+            "link": "PLIhM97erOwwNrksoDBN1iRIAFMsvn4cTq",
+            "icon": "https://i.imgur.com/x0m6jIZ.png",
+            "fanart": "https://i.imgur.com/x0m6jIZ.png",
+            "description": "Music - By Big Kev",
+            "type": "playlist"
+        },
+        {
+            "title": "Music - By Big Kev",
+            "link": "PLIhM97erOwwPJCnRA22pz0wrg2LTtgUAu",
+            "icon": "https://i.imgur.com/x0m6jIZ.png",
+            "fanart": "https://i.imgur.com/x0m6jIZ.png",
+            "description": "Music - By Big Kev",
+            "type": "playlist"
+        },
+        {
+            "title": "Music - By Nature Man",
+            "link": "PLNbAVJARvL9fu7AVnlj8c7TI5lCVEvFmP",
+            "icon": "https://i.imgur.com/tL7yZEd.png",
+            "fanart": "https://i.imgur.com/tL7yZEd.png",
+            "description": "Music - By Nature Man",
+            "type": "playlist"
+        },
+        {
+            "title": "Slams Playlists",
+            "link": "http://slamiousbuilds.com/blds2/slam_list.json",
+            "icon": "https://i.imgur.com/QakdaUb.jpg",
+            "fanart": "https://i.imgur.com/QakdaUb.jpg", 
+            "description": "Playlists by Slamious",
+            "type": "dir"
+        }
+    ]
+}

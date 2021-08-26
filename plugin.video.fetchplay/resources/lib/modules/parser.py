@@ -16,7 +16,7 @@ class Parser:
 				item_list.append({child.tag: child.text for child in item})
 			return json.dumps({'items': item_list})	
 		elif self.url.endswith('.json'):
-			return json.dumps(self.get_page())
+			return self.get_page()
 
 	def get_page(self):
 		if self.url.startswith('http'):

@@ -1,4 +1,6 @@
 import xbmc
+import xbmcaddon
+import xbmcgui
 import xbmcplugin
 
 import sys
@@ -52,7 +54,7 @@ class Router:
 
         # SETTINGS
         elif mode == 'settings':  # OpenWizard settings
-            CONFIG.open_settings(name)
+            CONFIG.open_settings(cat = name)
             xbmc.executebuiltin('Container.Refresh()')
         elif mode == 'opensettings':  # Open other addons' settings
             settings_id = eval(url.upper() + 'ID')[name]['plugin']
@@ -110,6 +112,8 @@ class Router:
         elif mode == 'enableaddons':  # Maintenance - > Addon Tools -> Enable/Disable Addons
             menu.enable_addons()
             self._finish(handle)
+        elif mode == 'enableall':
+            menu.enable_addons(all=True)
         elif mode == 'toggleaddon':
             from resources.libs import db
             db.toggle_addon(name, url)
@@ -142,9 +146,9 @@ class Router:
         elif mode == 'viewIP':  # Maintenance -> Misc Maintenance -> Network Tools -> View IP Address & MAC Address
             menu.view_ip()
             self._finish(handle)
-        elif mode == 'speedtest':  # Maintenance -> Misc Maintenance -> Network Tools -> Speed Test
-            menu.speed_test()
-            self._finish(handle)
+        elif mode == 'speedtest': 
+            xbmc.executebuiltin('InstallAddon("script.speedtester")')
+            xbmc.executebuiltin('RunAddon("script.speedtester")')
         elif mode == 'apk':  # APK Installer
             menu.apk_menu(url)
             self._finish(handle)

@@ -25,7 +25,7 @@ def MainMenu(_xml):
 		link = item.get('link')
 		if 'video/' in link or 'youtu.be/' in link:
 			video_ids.append(link.split('/')[-1])
-		elif link.endswith('.xml'):
+		elif link.endswith('.json'):
 			if link.startswith('http'):
 				addDir(item.get('title','Unknown'), item.get('link',''), 4, item.get('icon', addon_icon), item.get('fanart', addon_fanart), 'Playlists from Youtube')
 			else:
