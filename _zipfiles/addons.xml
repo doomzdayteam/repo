@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.program.doomzday19" name="[COLOR orangered]Doomzday 19 [/COLOR]Wizard" version="2.0.0" provider-name="DD Team">
+<addon id="plugin.program.doomzday19" name="[COLOR orangered]Doomzday 19  [/COLOR]Wizard" version="2.0.1" provider-name="DD Team">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
         <import addon="script.module.requests" />
@@ -15,8 +15,8 @@
     <extension point="xbmc.service" library="startup.py" start="startup" />
 
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">[COLOR orangered]Doomzday 19 [/COLOR]Wizard</summary>
-        <description lang="en">[COLOR orangered]Doomzday 19 [/COLOR]Wizard</description>
+        <summary lang="en">[COLOR orangered]Doomzday 19  [/COLOR]Wizard</summary>
+        <description lang="en">[COLOR orangered]Doomzday 19  [/COLOR]Wizard</description>
         <platform>all</platform>
         <reuselanguageinvoker>false</reuselanguageinvoker>
         <assets>

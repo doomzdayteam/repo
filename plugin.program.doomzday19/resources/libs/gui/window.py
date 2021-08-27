@@ -314,7 +314,7 @@ def show_build_prompt():
 
         def __init__(self, *args, **kwargs):
             self.title = CONFIG.THEME3.format(CONFIG.ADDONTITLE)
-            self.msg = "Currently no build installed from {0}.\n\nSelect 'Build Menu' to install a Community Build from us or 'Ignore' to never see this message again.\n\nThank you for choosing {1}.".format(CONFIG.ADDONTITLE, CONFIG.ADDONTITLE)
+            self.msg = "Currently no build installed Select 'Build Menu' to install a Community Build or 'Close'.\n\nThank you for choosing {1}.".format(CONFIG.ADDONTITLE, CONFIG.ADDONTITLE)
             self.msg = CONFIG.THEME2.format(self.msg)
 
         def onInit(self):
@@ -326,7 +326,7 @@ def show_build_prompt():
             self.show_dialog()
 
         def show_dialog(self):
-            self.getControl(self.image).setImage(CONFIG.ADDON_FANART)
+            self.getControl(self.image).setImage(CONFIG.ADDON_ICON)
             self.getControl(self.image).setColorDiffuse('9FFFFFFF')
             self.getControl(self.textbox).setText(self.msg)
             self.getControl(self.titlebox).setLabel(self.title)
