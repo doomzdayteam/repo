@@ -10,19 +10,4 @@
 		<name>English Channels</name>
 		<icon></icon>
 	</source>
-	<source>
-		<url>https://doomzdayteam.github.io/collections/list/pluto/pluto.m3u</url>
-		<name>Pluto Channels</name>
-		<icon>https://i.imgur.com/1KqGLEH.jpg</icon>
-	</source>
-	<source>
-		<url>https://doomzdayteam.github.io/collections/list/stirr/stirr.m3u</url>
-		<name>Stirr Channels</name>
-		<icon>https://i.imgur.com/2b8Ayju.png</icon>
-	</source>
-	<source>
-		<url>https://doomzdayteam.github.io/collections/list/plex/plex.m3u</url>
-		<name>Plex Channels</name>
-		<icon>https://i.imgur.com/OkjAAjN.png</icon>
-	</source>
 </sources>
