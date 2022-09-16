@@ -79,6 +79,32 @@
 	</extension>
 </addon>
 
+<addon id="plugin.video.thearchives" name="The Archives" version="1.0.0" provider-name="The Archivist's">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0" />
+    <import addon="script.module.requests" />
+    <import addon="script.module.routing"/>
+    <import addon="script.module.unidecode" />
+    <import addon="script.module.inputstreamhelper" />
+    <import addon="script.module.resolveurl"/>
+    <import addon="script.module.microjenscrapers" />
+    <!--<import addon="name" />-->
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Collections</summary>
+    <platform>all</platform>
+    <language>en</language>
+    <license>GPL-2.0-or-later</license>
+	<assets>
+		<icon>icon.png</icon>
+		<fanart>fanart.jpg</fanart>
+  </assets>
+  </extension>
+</addon>
+
 <addon id="repository.doomzday" name="Doomzday Repo" version="1.0.8" provider-name="DD Team">
     <requires>
         <import addon="xbmc.addon" version="12.0.0"/>
