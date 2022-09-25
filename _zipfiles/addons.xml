@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.program.doomzday19" name="[COLOR orangered]Doomzday 19  [/COLOR]Wizard" version="2.0.1" provider-name="DD Team">
+<addon id="plugin.program.doomzday19" name="[B][COLOR=gold]Doomzday 19 Wizard[/COLOR][/B]" version="2.0.1" provider-name="DD Team">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
         <import addon="script.module.requests" />
@@ -15,8 +15,8 @@
     <extension point="xbmc.service" library="startup.py" start="startup" />
 
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">[COLOR orangered]Doomzday 19  [/COLOR]Wizard</summary>
-        <description lang="en">[COLOR orangered]Doomzday 19  [/COLOR]Wizard</description>
+        <summary lang="en">[B][COLOR=gold]Doomzday 19 Wizard[/COLOR][/B]</summary>
+        <description lang="en">[B][COLOR=gold]Doomzday 19 Wizard[/COLOR][/B]</description>
         <platform>all</platform>
         <reuselanguageinvoker>false</reuselanguageinvoker>
         <assets>
@@ -105,15 +105,18 @@
   </extension>
 </addon>
 
-<addon id="repository.doomzday" name="Doomzday Repo" version="1.0.8" provider-name="DD Team">
-    <requires>
-        <import addon="xbmc.addon" version="12.0.0"/>
-    </requires>
-    <extension point="xbmc.addon.repository" name="Doomzday Repo">
-        <info compressed="false">https://raw.githubusercontent.com/doomzdayteam/repo/master/_zipfiles/addons.xml</info>
-        <checksum>https://raw.githubusercontent.com/doomzdayteam/repo/master/_zipfiles/addons.xml.md5</checksum>
-        <datadir zip="true">https://raw.githubusercontent.com/doomzdayteam/repo/master/_zipfiles/</datadir>
-        <hashes>false</hashes>
+<addon id="repository.doomzday" name="[B][COLOR=gold]Doomzday Repo[/COLOR][/B]" version="1.0.9" provider-name="DD Team">
+    <extension point="xbmc.addon.repository" name="[B][COLOR=gold]Doomzday Repo[/COLOR][/B]">
+		<dir>
+			<info compressed="false">https://raw.githubusercontent.com/doomzdayteam/repo/master/_zipfiles/addons.xml</info>
+			<checksum>https://raw.githubusercontent.com/doomzdayteam/repo/master/_zipfiles/addons.xml.md5</checksum>
+			<datadir zip="true">https://raw.githubusercontent.com/doomzdayteam/repo/master/_zipfiles/</datadir>
+		</dir>
+		<dir>
+			<info compressed="false">http://the-hermit.com/hermit/repo/addons.xml</info>
+			<checksum>http://the-hermit.com/hermit/repo/addonsmd5.txt</checksum>
+			<datadir zip="true">http://the-hermit.com/hermit/repo/</datadir>
+		</dir>
 		<dir>
             <info compressed="false">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml.md5</checksum>
@@ -121,22 +124,16 @@
         </dir>
         <dir>
            <info compressed="false">https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/Gujal00/smrzips/master/zips/</datadir>
-        </dir>
-		<dir>
-            <info compressed="false">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml</info>
-            <checksum>https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/</datadir>
-            <hashes>false</hashes>
+           <checksum>https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml.md5</checksum>
+           <datadir zip="true">https://raw.githubusercontent.com/Gujal00/smrzips/master/zips/</datadir>
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en_GB">Doomzday Repository</summary>
-        <description lang="en_GB">Repo from the Doomzday Team for you.</description>
+        <description lang="en_GB">Repo from the Doomzday Team</description>
         <platform>all</platform>
         <assets>
-			<icon>icon.png</icon>
+            <icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
         </assets>
     </extension>
