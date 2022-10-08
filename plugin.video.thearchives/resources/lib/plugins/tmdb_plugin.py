@@ -10,6 +10,9 @@ except ImportError:
     from .resources.lib.util.common import *
 
 
+ITEMS_PER_PAGE = [20, 40, 60, 80, 100]
+PAGES = int(ITEMS_PER_PAGE[int(ownAddon.getSetting("items_per_page"))]/20)
+
 class objectview(object):
     def __init__(self, d):
         self.__dict__ = d
@@ -29,7 +32,7 @@ class TMDB_API:
     access_token = ownAddon.getSetting("tmdb.access_token") or ""
     session = DI.session
 
-    def get(self, path: str, paginated: bool = True, full_meta: bool = False):
+    def get(self, path: str, paginated: bool = True, full_meta: bool = False, page_count: int = 1):
         page = 1
         if paginated:
             splitted = path.split("/")
@@ -48,15 +51,12 @@ class TMDB_API:
                     _id = splitted[3]
                     if kind == "genre":
                         path = f"discover/{media_type}?with_genres={_id}"
-                    if kind == "company":
-                        path = f"discover/{media_type}?with_companies={_id}"
-                    if kind == "network":
+                    elif kind == "network":
                         path = f"discover/{media_type}?with_networks={_id}"
-                    if kind == "year":
-                        if media_type == 'show' or media_type == 'tv':
-                            path = f"discover/{media_type}?first_air_date_year={_id}"
-                        else:
-                            path = f"discover/{media_type}?primary_release_year={_id}"
+                    elif kind == "company":
+                        path = f"discover/{media_type}?with_companies={_id}"
+                    elif kind == "year":
+                        path = f"discover/{media_type}?year={_id}"
                            
             elif path.startswith("search") and len(splitted) == 4:
                 page = int(pagenum)
@@ -85,11 +85,17 @@ class TMDB_API:
                 results.extend(response.get("crew", []))
         else:
             results = response.get("results", response.get("parts", response))
-        if response.get("total_pages", 1) > page:
-            results.append({"type": "dir", "title": "Next Page", "link": f"tmdb/{path.replace('?with_genres=', '/genre/').replace('?with_networks=', '/network/').replace('?with_companies=', '/company/').replace('?year=', '/year/').replace('?first_air_date_year=', '/year/').replace('?primary_release_year=', '/year/').replace('?query=', '/')}/{page + 1}"})
+        
+        total_pages = response.get("total_pages", 1)
+        if total_pages > page:
+            if page_count < PAGES:
+                results.extend(self.get(f"{path.replace('?with_genres=', '/genre/').replace('?with_networks=', '/network/').replace('?with_companies=', '/company/').replace('?year=', '/year/').replace('?query=', '/')}/{page + 1}", paginated=paginated, full_meta=full_meta,page_count=page_count +1))
+            elif page_count == PAGES:
+                results.append({"type": "dir", "title": "Next Page", "link": f"tmdb/{path.replace('?with_genres=', '/genre/').replace('?with_networks=', '/network/').replace('?with_companies=', '/company/').replace('?year=', '/year/').replace('?query=', '/')}/{page + 1}"})
+            
         return results
 
-    def handle_items(self, items, show_id=None):
+    def handle_items(self, items,show_id=None):
         if type(items) == list:
             return {"items": [self.handle_items(item) for item in items]}
         if items.get("link", "").startswith("tmdb/"):
@@ -391,21 +397,21 @@ class TMDB(Plugin):
                         api_url = f"discover/tv?with_genres={list_id}"
                     else:
                         api_url = f"discover/movie?with_genres={list_id}"
-                elif kind == "company":
-                    if "show" in splitted[2] or "tv" in splitted[2]:
-                        api_url = f"discover/tv?with_companies={list_id}"
-                    else:
-                        api_url = f"discover/movie?with_companies={list_id}"
                 elif kind == "network":
                     if "show" in splitted[2] or "tv" in splitted[2]:
                         api_url = f"discover/tv?with_networks={list_id}"
                     else:
                         api_url = f"discover/movie?with_networks={list_id}"
+                elif kind == "company":
+                    if "show" in splitted[2] or "tv" in splitted[2]:
+                        api_url = f"discover/tv?with_companies={list_id}"
+                    else:
+                        api_url = f"discover/movie?with_companies={list_id}"
                 elif kind == "year":
                     if "show" in splitted[2] or "tv" in splitted[2]:
-                        api_url = f"discover/tv?first_air_date_year={list_id}"
+                        api_url = f"discover/tv?year={list_id}"
                     else:
-                        api_url = f"discover/movie?primary_release_year={list_id}"
+                        api_url = f"discover/movie?year={list_id}"
                 
                 else:
                     api_url = url.replace("tmdb/", "")
@@ -421,24 +427,6 @@ class TMDB(Plugin):
                         import sys
                         sys.exit()
                     api_url = f"{url.replace('tmdb/', '')}?query={query}"
-            elif kind == "allyears":
-                import datetime
-                typ = splitted[2]
-                if typ == "tv" or typ == "show":
-                    t = "TV Shows"
-                else:
-                    t = "Movies"
-                now = datetime.datetime.now()
-                item_list = []
-                for year in range(now.year,1900,-1):
-                    item_list.append(
-                        {
-                            "type": "dir",
-                            "title": f"{year} {t}",
-                            "link": f"tmdb/year/{typ}/{year}"
-                        }
-                    )
-                return json.dumps({"items": item_list})
             else:
                 api_url = url.replace("tmdb/", "")
         elif "tmdb_tv_show" in url:
