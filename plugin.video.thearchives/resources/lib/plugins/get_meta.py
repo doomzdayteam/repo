@@ -16,6 +16,18 @@ class Meta(Plugin):
         liz = item.get("list_item")
         if liz is None:
             liz = xbmcgui.ListItem(item.get("title", "Unknown Title"))
+        menu = []
+        if "contextmenu" in item:
+            contextmenu = item.get("contextmenu")
+            for c in contextmenu:
+                action = c.get("action")
+                menu.append((c.get("label"), action))
+            item["list_item"].addContextMenuItems(menu)
+        if "summary" in item:
+            summary = item["summary"]
+            item["list_item"].setInfo(
+                "video", {"plot": summary, "plotoutline": summary}
+            )
         if xbmcaddon.Addon().getSettingBool("full_meta"):
             if "infolabels" in item:
                 liz.setInfo("video", infoLabels=item["infolabels"])
@@ -39,13 +51,16 @@ class Meta(Plugin):
             _id = tmdb_api.tmdb_from_imdb(item["imdb_id"])
             if _id is None:
                 return item
-                
+
         try:
             from_cache = False
             new_item = None
             tmdb = TMDB()
             url = f"tmdb/{content}/{_id}"
-            if xbmcaddon.Addon().getSettingBool("use_cache") and not "tmdb/search" in url:
+            if (
+                xbmcaddon.Addon().getSettingBool("use_cache")
+                and not "tmdb/search" in url
+            ):
                 new_item = DI.db.get(url)
                 if new_item:
                     new_item = json.loads(new_item[0])
@@ -58,22 +73,33 @@ class Meta(Plugin):
             if link and from_cache is False:
                 link = self.process_links(link.replace("play_video/", ""))
             thumbnail = new_item.get("thumbnail")
-            liz.setArt({"icon": thumbnail, "thumb": thumbnail, "poster": thumbnail, "fanart": new_item.get("fanart")})
+            liz.setArt(
+                {
+                    "icon": thumbnail,
+                    "thumb": thumbnail,
+                    "poster": thumbnail,
+                    "fanart": new_item.get("fanart"),
+                }
+            )
             liz.setInfo("video", infoLabels=new_item["infolabels"])
             liz.setCast(new_item.get("cast", ""))
             new_item["link"] = f"play_video/{link}"
             new_item["is_dir"] = item["is_dir"]
-            if xbmcaddon.Addon().getSettingBool("use_cache") and not "tmdb/search" in url:
+            if (
+                xbmcaddon.Addon().getSettingBool("use_cache")
+                and not "tmdb/search" in url
+            ):
                 DI.db.set(url, json.dumps(new_item))
             new_item["list_item"] = liz
             return new_item
-            
+
         except Exception as e:
             xbmc.log(f"Error Processing Meta: {e}", xbmc.LOGINFO)
             return item
-    
+
     def process_links(self, link):
         import base64
+
         link_decoded = json.loads(base64.urlsafe_b64decode(link))
         item_link = link_decoded.get("link")
         if type(item_link) == list:
@@ -84,5 +110,6 @@ class Meta(Plugin):
         elif item_link is None:
             item_link = "search"
         link_decoded["link"] = item_link
-        return base64.urlsafe_b64encode(bytes(json.dumps(link_decoded), "utf-8")).decode("utf-8")
-        
+        return base64.urlsafe_b64encode(
+            bytes(json.dumps(link_decoded), "utf-8")
+        ).decode("utf-8")

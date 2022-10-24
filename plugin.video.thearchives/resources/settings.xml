@@ -8,51 +8,35 @@
 
         <setting id="use_cache" type="bool" label="Use Cache" visible="true" default="true" />
 
-        <setting id="time_cache" type="number" label="[COLOR gold]    Cache Update Interval [I][COLOR white](minutes)[/I][/COLOR]" subsetting="true" visible="eq(-1,true)" option="int" default=60 />
+        <setting id="time_cache" type="number" label="[COLOR khaki]    Cache Update Interval [I][COLOR white](minutes)[/I][/COLOR]" subsetting="true" visible="eq(-1,true)" option="int" default=60 />
 
-        <setting id="clear_cache" type="action" label="[COLOR gold]    Clear Cache [/COLOR]" subsetting="true" visible="eq(-2,true)" option="close" action="PlayMedia(plugin://$ID/clear_cache)"/>
-
-        <setting id="full_meta" type="bool" label="Enable Full Meta For TMDB Lists" visible="true" default="false" />
-
-        <setting id="item_meta" type="bool" label="[COLOR gold]    Fetch Metadata For Manually Made Lists [I][COLOR white](Slow Loading)[/I][/COLOR]" subsetting="true" visible="eq(-1,true)" default="false" />
+        <setting id="clear_cache" type="action" label="[COLOR khaki]    Clear Cache [/COLOR]" subsetting="true" visible="eq(-2,true)" option="close" action="PlayMedia(plugin://$ID/clear_cache)"/>
 
         <setting id="open.Osettings" subsetting="false" type="action" label="[COLOR deepskyblue]Open MicroJen Scrapers Settings[/COLOR]" option="close" action="RunPlugin(plugin://script.module.microjenscrapers/?mode=microjenscrapersettings)" />
 
         <!-- <setting id="debrid.only" type="bool" label="Debrid Sources Only" default="true" /> -->
 
     </category>
-
-    
-
-    <!-- TMDB api key and access token included for test purposes only -->    
-
-    <!-- Developers and Playlisters need to either include their own -->    
-
-    <!-- or leave blank for users to use theirs -->    
-
-    <!-- This key and token will be deactivated in near future -->  
-
-    <!-- which will stop this function from working -->      
-
+   
     <category label="TMDB">
     
-        <setting id="items_per_page" label="Items Per Page For TMDB Lists" type="enum" values="20|40|60|80|100" default="40"/>
+        <setting id="items_per_page" label="Items Per Page For TMDB Lists" type="enum" values="20|40|60|80|100" default="60" />
         
-        <setting id="full_meta" type="bool" label="Enable Full Meta For TMDB Lists" visible="true" default="false" />
+        <setting id="full_meta" type="bool" label="Enable Full Meta For TMDB Lists" visible="true" default="true" />
 
-        <setting id="item_meta" type="bool" label="[COLOR gold]    Fetch Metadata For Manually Made Lists [I][COLOR white](Slow Loading)[/I][/COLOR]" subsetting="true" visible="eq(-1,true)" default="false" />
+        <setting id="item_meta" type="bool" label="[COLOR khaki]    Fetch Metadata For Manually Made Lists [I][COLOR white](Slow Loading)[/I][/COLOR]" visible="true" default="true" />
 
-        <setting id="tmdb.api_key" type="text" label="API Key" option="hidden" visible="true" default="e7d229e4725ffe65f9458953c3287235"/>
+        <setting id="tmdb.api_key" type="text" label="API Key" option="hidden" visible="false" default="e7d229e4725ffe65f9458953c3287235"/>
 
-        <setting id="tmdb.access_token" type="text" label="Access Token" option="hidden" visible="true" default="eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlN2QyMjllNDcyNWZmZTY1Zjk0NTg5NTNjMzI4NzIzNSIsInN1YiI6IjU2NzcyMzQxOTI1MTQxNzlkYjAwNmEzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.n58LKh-GwsBdr0AW5-_yk4oXfiLt9jEWV1vTRAEo0qY" />
+        <setting id="tmdb.access_token" type="text" label="Access Token" option="hidden" visible="false" default="eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlN2QyMjllNDcyNWZmZTY1Zjk0NTg5NTNjMzI4NzIzNSIsInN1YiI6IjU2NzcyMzQxOTI1MTQxNzlkYjAwNmEzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.n58LKh-GwsBdr0AW5-_yk4oXfiLt9jEWV1vTRAEo0qY" />
 
     </category>
 
     <category label="Trakt">
 
-        <setting id="trakt.client_id" type="text" label="Client ID" option="hidden" visible="true" default="2dc6f1180d00b3ae9ed3d853b41af40ab3c26af23f730f50e0a262f277c2780c"/>
+        <setting id="trakt.client_id" type="text" label="Client ID" option="hidden" visible="false" default="2dc6f1180d00b3ae9ed3d853b41af40ab3c26af23f730f50e0a262f277c2780c"/>
 
-        <setting id="trakt.client_secret" type="text" label="Client Secret" option="hidden" visible="true" default="dca4571439aef5da45b7b03db43b792464069694cf0a35b19bde453de70981be"/>
+        <setting id="trakt.client_secret" type="text" label="Client Secret" option="hidden" visible="false" default="dca4571439aef5da45b7b03db43b792464069694cf0a35b19bde453de70981be"/>
 
         <setting id="trakt.access_token" type="text" label="Access Token" visible="false" default=""/>
 
@@ -72,9 +56,9 @@
 
     <category label="Home Page">
 
-        <setting id="root_xml" type="text" label="Root XML Location" default="file://main.xml" visible="false"/>
+        <setting id="root_xml" type="text" label="Root XML Location" default="file://main.xml" visible="true"/>
 
-        <setting id="message_xml_url" type="text" label="News File Location" default="file://news.xml" visible="false"/>
+        <setting id="message_xml_url" type="text" label="News File Location" default="file://news.xml" visible="true"/>
 
     </category>
 

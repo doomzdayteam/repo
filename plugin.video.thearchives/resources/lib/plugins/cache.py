@@ -12,17 +12,17 @@ class cached_list(Plugin):
     def get_list(self, url):
         if not xbmcaddon.Addon().getSettingBool("use_cache"):
             return
-        cache_timer =  xbmcaddon.Addon().getSetting("time_cache") or 0
-        cache_timer =  float(cache_timer*60)
+        cache_timer =  float(xbmcaddon.Addon().getSetting("time_cache") or 0)
         cached = DI.db.get(url)
         if not cached:
             return
         response, created = cached
+        
         try:
-            if float(created + json.loads(response).get("cache_time", cache_timer)) < time.time():
+            if (created + json.loads(response).get("cache_time", cache_timer)*60) < time.time():
                 return
         except json.decoder.JSONDecodeError as e:
             xbmc.log(f'Json Error: {e}', xbmc.LOGINFO)
-            if created + cache_timer < time.time():
+            if (created + cache_timer*60) < time.time():
                 return 
         return response

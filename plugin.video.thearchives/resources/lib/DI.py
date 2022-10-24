@@ -5,6 +5,7 @@ import requests
 import routing
 import xbmc
 import xbmcaddon
+import json
 
 
 class _DB:
@@ -12,6 +13,7 @@ class _DB:
         if not xbmcaddon.Addon().getSettingBool("use_cache"):
             return
         self.db = xbmcaddon.Addon().getAddonInfo("path") + "/cache.db"
+        self.cache_timer =  float(xbmcaddon.Addon().getSetting("time_cache") or 0)
         try:
             self.con = sqlite3.connect(self.db)
             self.cursor = self.con.cursor()
@@ -28,13 +30,25 @@ class _DB:
     def set(self, url: str, response: str) -> None:
         if url.startswith("m3u"):
             url = url.split("|")[1]
+        created = time.time()
+        cached = self.get(url)
+        if cached:
+            c_resp, c_created = cached
+            try:
+                if (c_created + json.loads(c_resp).get("cache_time", self.cache_timer)*60) > created:
+                    created = c_created
+            except json.decoder.JSONDecodeError as e:
+                xbmc.log(f'Json Error: {e}', xbmc.LOGINFO)
+                if (c_created + self.cache_timer*60) > created:
+                    created = c_created
+
         try:
             self.con = sqlite3.connect(self.db)
             self.cursor = self.con.cursor()
             self.cursor.execute(
                 """INSERT OR REPLACE INTO cache(url, response, created) VALUES(?, ?, ?);
 """,
-                (url, response, time.time()),
+                (url, response, created),
             )
             self.con.commit()
         except sqlite3.Error as e:
