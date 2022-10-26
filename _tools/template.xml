@@ -8,11 +8,6 @@
 			<hashes>false</hashes>
 		</dir>
 		<dir>
-			<info compressed="false">http://the-hermit.com/hermit/repo/addons.xml</info>
-			<checksum>http://the-hermit.com/hermit/repo/addonsmd5.txt</checksum>
-			<datadir zip="true">http://the-hermit.com/hermit/repo/</datadir>
-		</dir>
-		<dir>
             <info compressed="false">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/</datadir>
