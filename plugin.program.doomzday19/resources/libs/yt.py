@@ -47,10 +47,10 @@ import xbmc
 import xbmcgui
 
 import re
-import urllib2
+import urllib.request as urllib2
 import urllib
 import cgi
-import HTMLParser
+import html.parser
 
 try:
     import simplejson as json
@@ -281,7 +281,7 @@ def replaceHTMLCodes(txt):
     # Fix missing ; in &#<number>;
     txt = re.sub("(&#[0-9]+)([^;^0-9]+)", "\\1;\\2", txt)
 
-    txt = HTMLParser.HTMLParser().unescape(txt)
+    txt = html.parser.html.parser().unescape(txt)
     txt = txt.replace("&amp;", "&")
     return txt
 
