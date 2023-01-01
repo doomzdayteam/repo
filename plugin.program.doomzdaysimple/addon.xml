@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.doomzdaysimple" name="[B][COLOR=gold]Doomzday Simple  Wizard[/COLOR][/B]" version="2.1.8" provider-name="DD Team">
+<addon id="plugin.program.doomzdaysimple" name="[B][COLOR=red]Doomzday Simple  Wizard[/COLOR][/B]" version="2.1.8" provider-name="DD Team">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests" optional="true" />
@@ -10,7 +10,7 @@
 	<extension point="xbmc.service" library="service.py" />
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en_GB">Doomzday Simple Wizard</summary>
-		<description lang="en_GB">[COLOR=gold]Doomzday Community Builds[/COLOR]</description>
+		<description lang="en_GB">[COLOR=red]Doomzday Community Builds[/COLOR]</description>
 		<disclaimer lang="en_GB">This Addon contains no content</disclaimer>
 		<language>en</language>
 		<platform>all</platform>

@@ -343,7 +343,7 @@ def buildMenu():
 			if count18 > 0:
 				state = '+' if SHOW18 == 'false' else '-'
 				addFile('[B]%s Leia Builds(%s)[/B]' % (state, count18), 'togglesetting',  'show18', themeit=THEME3)
-				if SHOW17 == 'true':
+				if SHOW18 == 'true':
 					for name, version, url, url2, url3, gui, kodi, theme, icon, fanart, adult, description, preview in match:
 						if not SHOWADULT == 'true' and adult.lower() == 'yes': continue
 						if not DEVELOPER == 'true' and wiz.strTest(name): continue
@@ -4534,6 +4534,8 @@ elif mode == 'totalclean':
 elif mode == 'forceclose':
 	os._exit(1)
 
+elif mode == 'install':
+    buildWizard(name, url)
 
 '''
 elif mode=='wizardupdate'   : wiz.wizardUpdate()
@@ -4541,7 +4543,6 @@ elif mode=='builds'         : buildMenu()
 elif mode=='viewbuild'      : viewBuild(name)
 elif mode=='buildinfo'      : buildInfo(name)
 elif mode=='buildpreview'   : buildVideo(name)
-elif mode=='install'        : buildWizard(name, url)
 elif mode=='theme'          : buildWizard(name, mode, url)
 elif mode=='viewthirdparty' : viewThirdList(name)
 elif mode=='installthird'   : thirdPartyInstall(name, url)

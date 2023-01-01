@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.doomzdayguiwiz" name="[B][COLOR=gold]Doomzday Gui Wizard[/COLOR][/B]" version="2.0.5" provider-name="DD Team">
+<addon id="plugin.program.doomzdayguiwiz" name="[B][COLOR=white]Doomzday Gui Wizard[/COLOR][/B]" version="2.0.5" provider-name="DD Team">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
     <import addon="script.module.six" />
@@ -11,7 +11,7 @@
   <extension point="xbmc.service" library="startup.py" start="startup" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Doomzday GUI Wizard</summary>
-    <description lang="en">[COLOR=gold]Doomzday Community Builds[/COLOR]</description>
+    <description lang="en">[COLOR=white]Doomzday Community Builds[/COLOR]</description>
     <platform>all</platform>
     <assets>
 				<icon>icon.png</icon>
