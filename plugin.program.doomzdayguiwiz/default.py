@@ -2956,8 +2956,8 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 		except:pass
 		#try: PreviewButton.setVisible(False)
 		#except:pass
-		try: ThemeButton.setVisible(False)
-		except:pass
+		#try: ThemeButton.setVisible(False)
+		#except:pass
 		try: self.buildinfobg.setVisible(False)
 		except:pass
 		try: self.buildbg.setVisible(False)
@@ -3316,7 +3316,7 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 		global lastupdatchk
 		#global Bname
 		global PreviewButton
-		global ThemeButton
+		#global ThemeButton
 		
 		self.HIDEALL()
 		if not BUILDFILE == 'http://' and not BUILDFILE == '':
