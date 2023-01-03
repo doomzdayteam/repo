@@ -3441,11 +3441,11 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 			InstallButton.controlUp(self.BuildsButton)  # PreviewButton when fixed
 			InstallButton.controlLeft(buildlistmenu)
 		
-			FreshStartButton.controlDown(ThemeButton)
+			#FreshStartButton.controlDown(ThemeButton)
 			FreshStartButton.controlUp(InstallButton)
 			FreshStartButton.controlLeft(buildlistmenu)
-			ThemeButton.controlUp(FreshStartButton)
-			ThemeButton.controlLeft(buildlistmenu)
+			#ThemeButton.controlUp(FreshStartButton)
+			#ThemeButton.controlLeft(buildlistmenu)
 	
 		else:
 			self.no_txt.setVisible(True)
