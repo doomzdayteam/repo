@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.fetch" name="Fetch!" version="0.1.4.1" provider-name="DD Team">
+<addon id="plugin.video.fetch" name="Fetch!" version="0.1.4.2" provider-name="DD Team">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -17,7 +17,7 @@
 		<website></website> 
 		<email></email>
 		<source></source>
-		<news>v0.1.4.0 - Fixed myFavs, v0.0.2 - Bug Fixes- Kodi 19, v0.0.1 - Kodi 19 - Big Thanks to Slam and X</news>
+		<news>v0.1.4.2 - Channels added, v0.1.4.0 - Fixed myFavs, v0.0.2 - Bug Fixes- Kodi 19, v0.0.1 - Kodi 19 - Big Thanks to Slam and X</news>
 		<disclaimer lang="en">The author of this add-on does not host any of the content which is found and has no affiliation with any of the content providers. This add-on simply searches websites for content. Use at your own risk!</disclaimer>
 		<assets>
 			<icon>icon.png</icon>
