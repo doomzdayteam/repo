@@ -1,19 +1,13 @@
 import os
-import re
 import sys
 import math
-import signal
 import socket
 import timeit
 import platform
 import threading
 import uservar
-import xbmc
-import xbmcaddon
 import xbmcgui
-import xbmcplugin
-import os
-import sys
+
 
 ADDONTITLE = uservar.ADDONTITLE
 COLOR1 = uservar.COLOR1
@@ -228,7 +222,7 @@ def downloadSpeed(files, quiet=False):
     def consumer(q, total_files):
         while len(finished) < total_files:
             thread = q.get(True)
-            while thread.isAlive():
+            while thread.is_alive():
                 thread.join(timeout=0.1)
             finished.append(sum(thread.result))
             del thread
@@ -240,9 +234,9 @@ def downloadSpeed(files, quiet=False):
     start = timeit.default_timer()
     prod_thread.start()
     cons_thread.start()
-    while prod_thread.isAlive():
+    while prod_thread.is_alive():
         prod_thread.join(timeout=0.1)
-    while cons_thread.isAlive():
+    while cons_thread.is_alive():
         cons_thread.join(timeout=0.1)
     return sum(finished) / (timeit.default_timer() - start)
 class FilePutter(threading.Thread):
@@ -292,7 +286,7 @@ def uploadSpeed(url, sizes, quiet=False):
     def consumer(q, total_sizes):
         while len(finished) < total_sizes:
             thread = q.get(True)
-            while thread.isAlive():
+            while thread.is_alive():
                 thread.join(timeout=0.1)
             finished.append(thread.result)
             del thread
@@ -304,9 +298,9 @@ def uploadSpeed(url, sizes, quiet=False):
     start = timeit.default_timer()
     prod_thread.start()
     cons_thread.start()
-    while prod_thread.isAlive():
+    while prod_thread.is_alive():
         prod_thread.join(timeout=0.1)
-    while cons_thread.isAlive():
+    while cons_thread.is_alive():
         cons_thread.join(timeout=0.1)
     return sum(finished) / (timeit.default_timer() - start)
 def getAttributesByTagName(dom, tagName):
@@ -363,7 +357,7 @@ def closestServers(client, all=False):
             request = build_request(url)
             uh = catch_request(request)
             if uh is False:
-                errors.append('%s' % e)
+                errors.append('uh is False')
                 raise SpeedtestCliServerListError
             serversxml = []
             while 1:
@@ -377,7 +371,7 @@ def closestServers(client, all=False):
             try:
                 try:
                     root = ET.fromstring(''.encode().join(serversxml))
-                    elements = root.getiterator('server')
+                    elements = root.iter('server')
                 except Exception:
 
                                    # Python3 branch
@@ -609,7 +603,7 @@ def speedtest(
                                 headers=headers)
         f = catch_request(request)
         if f is False:
-            print_('Could not submit results to speedtest.net: %s' % e)
+            print_('Could not submit results to speedtest.net')
             sys.exit(1)
         response = f.read()
         code = f.code
@@ -628,7 +622,7 @@ def speedtest(
         print_('Share results: %s://www.speedtest.net/result/%s.png'
                % (scheme, resultid[0]))
 
-        dp.close
+        dp.close()
 
         curserver = ('%(name)s [%(d)0.2f km]: %(latency)s ms'
                      % best).encode('utf-8', 'ignore')
@@ -648,7 +642,6 @@ def main():
         speedtest()
     except KeyboardInterrupt:
         print_('\nCancelling...')
-        dp.close()
         sys.exit()
 if __name__ == '__main__':
     main()
