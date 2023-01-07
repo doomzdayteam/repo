@@ -3,9 +3,17 @@
         {
             "title": "Music - Smokin Old School",
             "link": "PLZPXCCyZsRZH2R7QEQ_WVXu_bq2k_cYCR",
-            "icon": "https://i.imgur.com/BAjXQ6Y.jpg",
-            "fanart": "https://i.imgur.com/BAjXQ6Y.jpg", 
+            "icon": "https://i.imgur.com/xQO8VE3.jpg",
+            "fanart": "https://i.imgur.com/xQO8VE3.jpg", 
             "description": "Smokin Old School",
+            "type": "playlist"
+        },
+		{
+            "title": "Random 4k - Big Kev",
+            "link": "PLIhM97erOwwM2YfgDpV0oA0rJqnhXQXmC",
+            "icon": "https://i.imgur.com/x0m6jIZ.png",
+            "fanart": "https://i.imgur.com/x0m6jIZ.png",
+            "description": "4K Videos",
             "type": "playlist"
         },
         {
@@ -30,6 +38,30 @@
             "icon": "https://i.imgur.com/tL7yZEd.png",
             "fanart": "https://i.imgur.com/tL7yZEd.png",
             "description": "Music - By Nature Man",
+            "type": "playlist"
+        },
+		{
+            "title": "Island Breeze Movies - Nature Man",
+            "link": "PLNbAVJARvL9eJa5YXAwR8IrBYTzFM7csS",
+            "icon": "https://i.imgur.com/tL7yZEd.png",
+            "fanart": "https://i.imgur.com/tL7yZEd.png",
+            "description": "Custom Movies",
+            "type": "playlist"
+        },
+		{
+            "title": "Music - The Hermits Rock",
+            "link": "PLmOhnL3l1ByiAl-Mc6kg_LE4CVSn5-pXE",
+            "icon": "https://i.imgur.com/6fVcUXj.jpg",
+            "fanart": "https://i.imgur.com/6fVcUXj.jpg",
+            "description": "Custom Music Playlist",
+            "type": "playlist"
+        },
+		{
+            "title": "Music - The Hermit",
+            "link": "PLmOhnL3l1ByhbkLxnW_s8MpeywztJ4qTN",
+            "icon": "https://i.imgur.com/6fVcUXj.jpg",
+            "fanart": "https://i.imgur.com/6fVcUXj.jpg",
+            "description": "Custom Music Playlist",
             "type": "playlist"
         },
         {
