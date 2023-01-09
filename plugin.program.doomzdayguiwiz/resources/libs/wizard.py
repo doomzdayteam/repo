@@ -3345,6 +3345,7 @@ def killxbmc(over=None):
 	else: choice = DIALOG.yesno('Force Close Kodi', '[COLOR %s]You are about to close Kodi' % COLOR2 + '\nWould you like to continue?[/COLOR]', nolabel='[B][COLOR red] No Cancel[/COLOR][/B]',yeslabel='[B][COLOR green]Force Close Kodi[/COLOR][/B]')
 	if choice == 1:
 		log("Force Closing Kodi: Platform[%s]" % str(platform()), xbmc.LOGINFO)
+		DIALOG.ok('Force Close Kodi', 'Kodi Will Now Close to Complete the Changes.')
 		os._exit(1)
 
 def redoThumbs():

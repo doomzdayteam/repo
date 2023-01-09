@@ -1593,7 +1593,7 @@ def removeAddonDataMenu():
 			addFile(' %s' % folderdisplay, 'removedata', foldername, icon=icon, fanart=fanart, themeit=THEME2)
 	else:
 		addFile('No Addon data folder found.', '', themeit=THEME3)
-	setView('files', 'viewType')
+	#setView('files', 'viewType')
 def enableAddons():
 	addFile("[I][B][COLOR red]!!Notice: Disabling Some Addons Can Cause Issues!![/COLOR][/B][/I]", '', icon=ICONMAINT)
 	fold = glob.glob(os.path.join(ADDONS, '*/'))
@@ -4207,7 +4207,7 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 	
 		removeaddons_button = pyxbmct.Button('[COLOR %s]Delete Selected Addons[/COLOR]' % OTHER_BUTTONS_TEXT,focusTexture=FBUTTON,noFocusTexture=BUTTON)
 		self.placeControl(removeaddons_button, 82, 26, 9, 9)
-		self.connect(removeaddons_button,lambda: removeAddonMenu)
+		self.connect(removeaddons_button,lambda: removeAddonMenu())
 	
 		removeaddondata_all_button = pyxbmct.Button('[COLOR %s]All Addon Data[/COLOR]' % OTHER_BUTTONS_TEXT,focusTexture=FBUTTON,noFocusTexture=BUTTON)
 		self.placeControl(removeaddondata_all_button, 92, 26, 9, 9)
