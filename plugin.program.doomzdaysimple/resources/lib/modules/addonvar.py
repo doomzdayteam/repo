@@ -5,7 +5,8 @@ import xbmcgui
 import os
 import base64
 from datetime import datetime
-from uservar import excludes
+from .colors import colors
+
 
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon           = xbmcaddon.Addon(addon_id)
@@ -46,7 +47,8 @@ notify_file = os.path.join(addon_profile,'notify.txt')
 texts_path = os.path.join(resources, 'texts/')
 authorize = texts_path + 'authorize.json'
 installed_date = str(datetime.now())[:-7]
-whitelist_path = addon_profile + 'whitelist.json'
+color1 = colors.color_text1
+color2 = colors.color_text2
 
 def isBase64(s):
     try:
@@ -66,16 +68,3 @@ def currSkin():
     return xbmc.getSkinDir()
 def percentage(part, whole):
     return 100 * float(part)/float(whole)
-
-def add_whitelist(_excludes):
-    import json
-    if xbmcvfs.exists(whitelist_path):
-        with open(whitelist_path, 'r') as wl:
-            whitelist  = json.loads(wl.read())['whitelist']
-        for x in whitelist:
-            if not x in _excludes:
-                _excludes.append(x)
-        return _excludes
-    else:
-        return _excludes
-EXCLUDES = add_whitelist(excludes)

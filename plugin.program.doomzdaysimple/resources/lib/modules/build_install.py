@@ -4,11 +4,13 @@ import xbmcvfs
 import xbmcaddon
 from .downloader import Downloader
 import json
+from datetime import datetime
 import time
+import sqlite3
 from zipfile import ZipFile
-from .save_data import save_backup,save_restore
-from .maintenance import fresh_start
-from .addonvar import dp, dialog, zippath, addon_name, home, setting_set, local_string
+from .save_data import save_backup_restore
+from .maintenance import fresh_start, clean_backups, truncate_tables
+from .addonvar import dp, dialog, zippath, addon_name, addon_id, home, setting_set, local_string, addons_db
 from xml.etree import ElementTree as ET
 from pathlib import Path
 import shutil
@@ -20,10 +22,8 @@ binaries_path = Path(xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo('profi
 def main(name, name2, version, url):
     yesInstall = dialog.yesno(name, local_string(30028), nolabel=local_string(30029), yeslabel=local_string(30030))  # Ready to install, Cancel, Continue
     if yesInstall:
-        save_backup()
-        yesFresh = dialog.yesno(local_string(30012), local_string(30031), nolabel=local_string(30032), yeslabel=local_string(30012))  # Fresh Start?
-        if yesFresh:
-            fresh_start()
+        save_backup_restore('backup')
+        fresh_start()
         build_install(name, name2, version, url)
     else:
         return
@@ -58,37 +58,19 @@ def build_install(name, name2, version, url):
         xbmc.sleep(500)
         dp.close()
         os.unlink(zippath)
-        save_restore()
+        save_backup_restore('restore')
+        clean_backups()
         setting_set('buildname', name2)
         setting_set('buildversion', version)
         setting_set('update_passed', 'false')
         setting_set('firstrun', 'true')
         check_binary()
-        repo_rollback()
+        enable_wizard()
+        truncate_tables()
         dialog.ok(addon_name, local_string(30036))  # Install Complete
         os._exit(1)
     else:
         return
-
-def repo_rollback():
-        import sqlite3
-
-        db = xbmcvfs.translatePath('special://database/') + 'Addons33.db'
-        try:
-                con = sqlite3.connect(db)
-                cursor = con.cursor()
-                cursor.execute(
-        """UPDATE repo SET version = 0 WHERE addonID = "repository.xbmc.org";
-""",
-        )
-                con.commit()
-        except sqlite3.Error as e:
-                xbmc.log(f"Failed to write data to the sqlite table: {e}", xbmc.LOGINFO)
-        finally:
-            if con:
-                xbmc.sleep(1000)
-                xbmc.executebuiltin('UpdateAddonRepos')
-                xbmc.sleep(5000)
 
 def check_binary():
     binary_list = []
@@ -104,7 +86,10 @@ def check_binary():
                       binary_list.append(root.attrib['id'])
                   except:
                       binary_list.append(folder.name)
-                  shutil.rmtree(folder)
+                  try:
+                      shutil.rmtree(folder)
+                  except PermissionError as e:
+                      xbmc.log(f'Unable to delete binary {folder} - {e}')
     if len(binary_list) > 0:
         with open(binaries_path, 'w', encoding='utf-8') as f:
             json.dump({'items': binary_list}, f, indent = 4)
@@ -138,5 +123,25 @@ def install_addon(plugin_id):
             xbmc.executebuiltin('SendClick(yesnodialog, 11)')
             clicked = True
     return True
-
 # Binaries inspired Dr. Infernoo
+
+def enable_wizard():
+    try:
+        timestamp = str(datetime.now())[:-7]
+
+        con = sqlite3.connect(addons_db)
+        cursor = con.cursor()
+        cursor.execute('INSERT or IGNORE into installed (addonID , enabled, installDate) VALUES (?,?,?)', (addon_id, 1, timestamp,))
+
+        cursor.execute('UPDATE installed SET enabled = ? WHERE addonID = ? ', (1, addon_id,))
+        con.commit()
+    except sqlite3.Error as e:
+        xbmc.log('There was an error writing to the database - %s' %e, xbmc.LOGINFO)
+        return
+    finally:
+        try:
+            if con:
+                con.close()
+        except UnboundLocalError as e:
+            xbmc.log('%s: There was an error connecting to the database - %s' % (xbmcaddon.Addon().getAddonInfo('name'), e), xbmc.LOGINFO)
+    

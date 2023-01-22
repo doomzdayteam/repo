@@ -1,7 +1,7 @@
 # Kodi Media Center language file
-# Addon Name: Simple 19 Wizard
+# Addon Name: Simple Wizard
 # Addon id: plugin.program.simple19wizard
-# Addon Provider: Slam, BYB
+# Addon Provider: Slam, Sarge, BYB
 msgid ""
 msgstr ""
 "Project-Id-Version: Kodi Addons\n"
@@ -124,7 +124,7 @@ msgid "Advanced Settings"
 msgstr ""
 
 msgctxt "#30026"
-msgid "Authorize Debrid Services"
+msgid "Authorize Debrid and Trakt"
 msgstr ""
 
 msgctxt "#30027"

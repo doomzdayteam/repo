@@ -67,56 +67,52 @@ class Startup:
         
     def save_menu(self):
         save_items = []
-        choices = ["Favourites", "Sources", "Debrid - Resolve URL", "Advanced Settings"]
+        choices = ["Trakt & Debrid Data", "YouTube API Keys", "Favourites", "Advanced Settings", "Sources"]
         save_select = dialog.multiselect(addon_name + ' - ' + local_string(30052),choices, preselect=[])  # Select Save Items
         if save_select == None:
             return
         else:
             for index in save_select:
                 save_items.append(choices[index])
+                
+        if 'Trakt & Debrid Data' in save_items:
+            setting_set('savedata','true')
+        else:
+            setting_set('savedata','false')
+            
+        if 'YouTube API Keys' in save_items:
+            setting_set('saveyoutube','true')
+        else:
+            setting_set('saveyoutube','false')
+            
         if 'Favourites' in save_items:
             setting_set('savefavs','true')
         else:
             setting_set('savefavs','false')
-        if 'Sources' in save_items:
-            setting_set('savesources', 'true')
-        else:
-            setting_set('savesources', 'false')
-        if 'Debrid - Resolve URL' in save_items:
-            setting_set('savedebrid','true')
-        else:
-            setting_set('savedebrid','false')
+            
         if 'Advanced Settings' in save_items:
             setting_set('saveadvanced','true')
         else:
             setting_set('saveadvanced','false')
-    
+        
+        if 'Sources' in save_items:
+            setting_set('savesources', 'true')
+        else:
+            setting_set('savesources', 'false')
+  
         setting_set('firstrunSave', 'true')
 
     def notify_check(self):
-        notify_version = self.get_notifyversion()    
-        if not setting('firstrunNotify')=='true' or notify_version > int(setting('notifyversion')):
-            self.notification()
-            
-    def notification(self):
-        from resources.lib.GUIcontrol import notify
-        d=notify.notify('notify.xml', xbmcaddon.Addon().getAddonInfo('path'), 'Default', '720p')
-        d.doModal()
-        del d
-        setting_set('firstrunNotify', 'true')
-        setting_set('notifyversion', str(self.get_notifyversion()))
+        from ..GUIcontrol import notify
+        info = notify.get_notify()
+        current_notify = int(setting('notifyversion'))
+        notify_version = info[0]
+        message = info[1]
+        if not setting('firstrunNotify')=='true' or notify_version > current_notify:
+            notify.notification(message)
+            setting_set('firstrunNotify', 'true')
+            setting_set('notifyversion', str(notify_version))  
     
-    def get_notifyversion(self):
-        try:
-            response = self.get_page(notify_url).decode('utf-8')
-        except:
-            return
-        try:
-            split_response = response.split('|||')
-            return int(split_response[0])    
-        except:
-            return False    
-
     def run_startup(self):
         if binaries_path.exists():
             restore_binary()
@@ -132,6 +128,8 @@ class Startup:
         self.check_updates()
         
         if setting('firstrun') == 'true':
-            from resources.lib.modules import addons_enable
-            addons_enable.enable_addons()
+            from resources.lib.modules.addons_enable import enable_addons
+            from .save_data import backup_gui_skin
+            enable_addons()
+            backup_gui_skin()
         setting_set('firstrun', 'false')
