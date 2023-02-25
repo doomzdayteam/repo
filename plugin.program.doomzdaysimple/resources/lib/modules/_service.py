@@ -114,22 +114,21 @@ class Startup:
             setting_set('notifyversion', str(notify_version))  
     
     def run_startup(self):
-        if binaries_path.exists():
-            restore_binary()
-        if setting('autoclearpackages')=='true':
-            xbmc.sleep(2000)
-            clear_packages()
-        
         if not setting('firstrunSave')=='true':
-            xbmc.sleep(2000)
             self.save_menu()
-        
-        self.notify_check()
-        self.check_updates()
-        
+            xbmc.sleep(2000)
         if setting('firstrun') == 'true':
             from resources.lib.modules.addons_enable import enable_addons
             from .save_data import backup_gui_skin
             enable_addons()
             backup_gui_skin()
-        setting_set('firstrun', 'false')
+            setting_set('firstrun', 'false')
+        else:
+            if setting('autoclearpackages')=='true':
+                clear_packages()
+            xbmc.sleep(1000)
+            self.notify_check()
+            xbmc.sleep(3000)      #Delay Build Update Notification
+            self.check_updates()
+        if binaries_path.exists():
+            restore_binary()

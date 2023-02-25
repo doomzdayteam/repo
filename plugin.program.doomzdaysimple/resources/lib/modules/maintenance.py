@@ -5,10 +5,8 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 from .skinSwitch import swapSkins
-from .save_data import save_backup_restore
-from .utils import log
 from .addonvar import currSkin, user_path, db_path, addon_name, textures_db, advancedsettings_folder, advancedsettings_xml, dialog, dp, xbmcPath, packages, setting_set, addon_icon, local_string, addons_db
-from .whitelist import EXCLUDES, EXCLUDES_DEPEND
+from .whitelist import EXCLUDES_INSTALL, EXCLUDES_FRESH
 
 def purge_db(db):
     if os.path.exists(db):
@@ -102,9 +100,9 @@ def fresh_start(standalone=False):
     xbmc.sleep(100)
     if standalone:
         for root, dirs, files in os.walk(xbmcPath, topdown=True):
-            dirs[:] = [d for d in dirs if d not in EXCLUDES_DEPEND]
+            dirs[:] = [d for d in dirs if d not in EXCLUDES_FRESH]
             for name in files:
-                if name not in EXCLUDES_DEPEND:
+                if name not in EXCLUDES_FRESH:
                     try:
                         os.remove(os.path.join(root, name))
                     except:
@@ -112,7 +110,7 @@ def fresh_start(standalone=False):
         dp.update(60, local_string(30043))
         xbmc.sleep(100)    
         for root, dirs, files in os.walk(xbmcPath,topdown=True):
-            dirs[:] = [d for d in dirs if d not in EXCLUDES_DEPEND]
+            dirs[:] = [d for d in dirs if d not in EXCLUDES_FRESH]
             for name in dirs:
                 if name not in ['addons', 'userdata', 'Database', 'addon_data', 'backups', 'temp']:
                     try:
@@ -122,9 +120,9 @@ def fresh_start(standalone=False):
 
     if not standalone:                
         for root, dirs, files in os.walk(xbmcPath, topdown=True):
-            dirs[:] = [d for d in dirs if d not in EXCLUDES]
+            dirs[:] = [d for d in dirs if d not in EXCLUDES_INSTALL]
             for name in files:
-                if name not in EXCLUDES:
+                if name not in EXCLUDES_INSTALL:
                     try:
                         os.remove(os.path.join(root, name))
                     except:
@@ -132,7 +130,7 @@ def fresh_start(standalone=False):
         dp.update(60, local_string(30043))
         xbmc.sleep(100)    
         for root, dirs, files in os.walk(xbmcPath,topdown=True):
-            dirs[:] = [d for d in dirs if d not in EXCLUDES]
+            dirs[:] = [d for d in dirs if d not in EXCLUDES_INSTALL]
             for name in dirs:
                 if name not in ['addons', 'userdata', 'Database', 'addon_data', 'backups', 'temp']:
                     try:

@@ -1,11 +1,12 @@
 import xbmc
+import xbmcgui
 import xbmcvfs	
 import xbmcaddon
 import os
 import shutil
 import json
 import xml.etree.ElementTree as ET 
-from .addonvar import user_path, data_path, setting, packages, addon_name, dialog
+from .addonvar import user_path, data_path, setting, addon_id, packages, addon_name, dialog
 
 user_path = xbmcvfs.translatePath('special://userdata/')	
 data_path = os.path.join(user_path, 'addon_data/')
@@ -35,7 +36,7 @@ def backup_gui_skin():
         try:
             xbmcvfs.copy(os.path.join(user_path, gui_file), os.path.join(gui_save, gui_file))   #Backup gui settings
         except Exception as e:
-            xbmc.log('Failed to backup %s. Reason: %s' % (os.path.join(gui_save, gui_file), e), xbmc.LOGINFO)    
+            xbmc.log('Failed to backup %s. Reason: %s' % (os.path.join(gui_save, gui_file), e), xbmc.LOGINFO)     
     if os.path.exists(os.path.join(data_path, skin_id)) and os.path.exists(os.path.join(gui_save)):
         try:
             shutil.copytree(os.path.join(data_path, skin_id), os.path.join(gui_save, skin_id), dirs_exist_ok=True)   #Backup skin settings
@@ -50,10 +51,11 @@ def backup_gui_skin():
 def restore(path, file):
     if os.path.exists(os.path.join(packages, file)):
         try:
-            if os.path.isfile(os.path.join(path, file)):
-                os.unlink(os.path.join(path, file))   #Remove Kodi specifics (advancedsettings, favs etc...) included with new install
+            if os.path.isfile(os.path.join(packages, file)):
+                if os.path.exists(os.path.join(user_path, file)):
+                    os.unlink(os.path.join(path, file))   #Remove Kodi specifics (advancedsettings, favs etc...) included with new install
                 shutil.move(os.path.join(packages, file), os.path.join(path, file))   #Restore your backed up Kodi specifics (advancedsettings, favs etc...)
-            elif os.path.isdir(os.path.join(path, file)):
+            elif os.path.isdir(os.path.join(packages, file)):
                 shutil.copytree(os.path.join(packages, file), os.path.join(path, file), dirs_exist_ok=True)   #Restore your backed up Trakt & Debrid data
         except Exception as e:
             xbmc.log('Failed to restore %s. Reason: %s' % (os.path.join(path, file), e), xbmc.LOGINFO)
@@ -80,7 +82,7 @@ def restore_skin():
             xbmc.log('Failed to restore %s. Reason: %s' % (os.path.join(data_path, skinsc), e), xbmc.LOGINFO)
     dialog.ok(addon_name, 'To save changes you now need to force close Kodi, Press OK to force close Kodi')
     os._exit(1)
-    
+
 def save_backup_restore(_type: str) -> None:
     with open(os.path.join(text_path, 'backup_restore.json'), 'r', encoding='utf-8', errors='ignore') as f:
         item_list = json.loads(f.read())

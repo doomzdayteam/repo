@@ -14,32 +14,51 @@ from .addonvar import dp, dialog, zippath, addon_name, addon_id, home, setting_s
 from xml.etree import ElementTree as ET
 from pathlib import Path
 import shutil
+from .colors import colors
 
 addons_path = Path(xbmcvfs.translatePath('special://home/addons'))
 user_data = Path(xbmcvfs.translatePath('special://userdata'))
 binaries_path = Path(xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo('profile'))) / 'binaries.json'
-
-def main(name, name2, version, url):
-    yesInstall = dialog.yesno(name, local_string(30028), nolabel=local_string(30029), yeslabel=local_string(30030))  # Ready to install, Cancel, Continue
-    if yesInstall:
-        save_backup_restore('backup')
-        fresh_start()
-        build_install(name, name2, version, url)
-    else:
-        return
+color1 = colors.color_text1
+color2 = colors.color_text2
+    
 
 def build_install(name, name2, version, url):
+    # Ready to install, Cancel, Continue
+    if not dialog.yesno(color2(name), color2(local_string(30028)), nolabel=local_string(30029), yeslabel=local_string(30030)):
+        return
+    
+    download_build(name, url)
+    save_backup_restore('backup')
+    fresh_start()
+    extract_build()
+    save_backup_restore('restore')
+    clean_backups()
+    setting_set('buildname', name2)
+    setting_set('buildversion', version)
+    setting_set('update_passed', 'false')
+    setting_set('firstrun', 'true')
+    check_binary()
+    enable_wizard()
+    truncate_tables()
+    
+    dialog.ok(addon_name, local_string(30036))  # Install Complete
+    os._exit(1)
+
+def download_build(name, url):
     if os.path.exists(zippath):
         os.unlink(zippath)
     d = Downloader(url)
     if 'dropbox' in url:
         if not xbmc.getCondVisibility('System.HasAddon(script.module.requests)'):
             xbmc.executebuiltin('InstallAddon(script.module.requests)')
-            dialog.ok(name, local_string(30033))  # Installing Requests
+            dialog.ok(color2(name), color2(local_string(30033)))  # Installing Requests
             return
         d.download_build(name, zippath, meth='requests')
     else:
         d.download_build(name, zippath, meth='urllib')
+
+def extract_build():
     if os.path.exists(zippath):
         dp.create(addon_name, local_string(30034))  # Extracting files
         counter = 1
@@ -47,9 +66,11 @@ def build_install(name, name2, version, url):
             files = z.infolist()
             for file in files:
                 filename = file.filename
+                filename_path = os.path.join(home, filename)
                 progress_percentage = int(counter/len(files)*100)
                 try:
-                    z.extract(file, home)
+                    if not os.path.exists(filename_path) or 'Addons33.db' in filename:
+                        z.extract(file, home)
                 except Exception as e:
                     xbmc.log(f'Error extracting {filename} - {e}', xbmc.LOGINFO)
                 dp.update(progress_percentage, f'{local_string(30034)}...\n{progress_percentage}%\n{filename}')
@@ -58,19 +79,6 @@ def build_install(name, name2, version, url):
         xbmc.sleep(500)
         dp.close()
         os.unlink(zippath)
-        save_backup_restore('restore')
-        clean_backups()
-        setting_set('buildname', name2)
-        setting_set('buildversion', version)
-        setting_set('update_passed', 'false')
-        setting_set('firstrun', 'true')
-        check_binary()
-        enable_wizard()
-        truncate_tables()
-        dialog.ok(addon_name, local_string(30036))  # Install Complete
-        os._exit(1)
-    else:
-        return
 
 def check_binary():
     binary_list = []
@@ -144,4 +152,3 @@ def enable_wizard():
                 con.close()
         except UnboundLocalError as e:
             xbmc.log('%s: There was an error connecting to the database - %s' % (xbmcaddon.Addon().getAddonInfo('name'), e), xbmc.LOGINFO)
-    

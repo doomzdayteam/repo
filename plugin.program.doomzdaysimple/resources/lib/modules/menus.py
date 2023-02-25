@@ -57,7 +57,7 @@ def build_menu():
         
         if url.endswith('.xml') or url.endswith('.json'):
             add_dir(COLOR2(name),url,1,icon,fanart,COLOR2(description),name2=name,version=version,isFolder=True)
-        add_dir(COLOR2(f'{name} {local_string(30020)} {version}'), url, 3, icon, fanart, description, name2=COLOR2(name), version=version, isFolder=False)  # Version
+        add_dir(COLOR2(f'{name} {local_string(30020)} {version}'), url, 3, icon, fanart, description, name2=name, version=version, isFolder=False)  # Version
         if preview is not None:
             add_dir(COLOR1(local_string(30021) + ' ' + name + ' ' + local_string(30020) + ' ' + version), preview, 2, icon, fanart, COLOR2(description), name2=name, version=version, isFolder=False)  # Video Preview
 
@@ -72,6 +72,7 @@ def submenu_maintenance():
     add_dir(COLOR2('Backup/Restore Build'),'',12,addon_icon,addon_fanart, COLOR2('Backup and Restore Build'))  # Backup Build
     add_dir(COLOR2('Restore GUI/Skin Settings'),'',19,addon_icon,addon_fanart,COLOR2('Restore GUI and Skin Settings'))
     add_dir(COLOR2('Force Close'),'', 18, addon_icon,addon_fanart,COLOR2('Force Close Kodi'))
+    add_dir(COLOR2('Speedtest'),'',27,addon_icon,addon_fanart,COLOR2('Speedtest'), isFolder=False)
     add_dir(COLOR2('View Log'),'', 25, addon_icon,addon_fanart,COLOR2('View Log'), isFolder=False)
 
 def backup_restore():

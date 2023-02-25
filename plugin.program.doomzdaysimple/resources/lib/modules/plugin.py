@@ -6,7 +6,7 @@ from .params import Params
 from .utils import play_video
 from .menus import main_menu, build_menu, submenu_maintenance, backup_restore, restore_gui_skin
 from .authorize import authorize_menu, authorize_submenu
-from .build_install import main
+from .build_install import build_install
 from .maintenance import fresh_start, clear_packages, clear_thumbnails, advanced_settings
 from .whitelist import get_whitelist
 from .addonvar import addon
@@ -40,7 +40,7 @@ def router(paramstring):
         play_video(name, url, icon, description)
     
     elif mode == 3:
-        main(name, name2, version, url)
+        build_install(name, name2, version, url)
     
     elif mode == 4:
         fresh_start(standalone=True)
@@ -105,6 +105,10 @@ def router(paramstring):
     
     elif mode == 26:
         authorize_submenu(name2, icon)
+    
+    elif mode == 27:
+        from .speedtester.addon import run
+        run()
     
     elif mode == 100:
         from resources.lib.GUIcontrol import notify

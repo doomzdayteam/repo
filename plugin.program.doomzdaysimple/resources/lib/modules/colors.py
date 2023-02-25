@@ -18,9 +18,15 @@ class Colors:
         return COLORS[color_index]
     
     def color_text1(self, string: str) -> str:
-        return f'[COLOR {self.color1}]{string}[/COLOR]'
+        if '[B]' in string or '[/B]' in string:
+            return f'[COLOR {self.color1}]{string}[/COLOR]'
+        else:
+            return f'[B][COLOR {self.color1}]{string}[/COLOR][/B]'
     
     def color_text2(self, string: str) -> str:
-        return f'[COLOR {self.color2}]{string}[/COLOR]'
+        if '[B]' in string or '[/B]' in string:
+            return f'[COLOR {self.color2}]{string}[/COLOR]'
+        else:
+            return f'[B][COLOR {self.color2}]{string}[/COLOR][/B]'
         
 colors = Colors()
