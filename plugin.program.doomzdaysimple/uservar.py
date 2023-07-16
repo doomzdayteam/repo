@@ -1,6 +1,9 @@
+# This part of code generates a Windows Defender warning Trojan:Python/MCCrash.B!MTB for uservar.py in BOTH branches doomzdayguiwiz and doomzdaysimple.
+# There should be at least an explanation why this file is obfuscated, maybe in the nearly empty README.md - also what the difference is between guiwiz and daysimple.
+# Few lines will do it! TBH, currently I would not trust the code below at all.
+
 # Python code obfuscated by www.development-tools.net 
  
-
 import base64, codecs
 magic = 'aW1wb3J0IHhibWNhZGRvbgoKYWRkb25faWQgPSB4Ym1jYWRkb24uQWRkb24oKS5nZXRBZGRvbkluZm8oJ2lkJykKCicnJyMjIyMjLS0tLS1CdWlsZCBGaWxlLS0tLS0jIyMjIycnJwpidWlsZGZpbGUgPSAnaHR0cHM6Ly9naXRsYWIuY29tL2lmaXRzbm90eW91cnNkb2'
 love = '50qKAynKDinJMcqUAho3E5o3Ilp2EioaE1p2IcqP9lLKpioJScov9vqJyfMUZhnaAiovpXPvpaWlZwVlZwYF0gYF1Bo3EcMzywLKEco25mVRMcoTHgYF0gYFZwVlZwWlpaPz5iqTyzrI91pzjtVQ0tW2u0qUOmBv8iM2y0oTSvYzAioF9cMzy0p25iqUyiqKWmMT9hqUIm'
