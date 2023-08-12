@@ -17,34 +17,26 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import os, uservar,re
-import six
-from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
-
-try:
-    import wizard as wiz
-    import thread as _thread
-except ImportError:
-    from resources.libs import wizard as wiz
-    import _thread
-try:
-    import json as simplejson
-except:
-    import simplejson
+import os
+import _thread
+import json
+import uservar
+import xbmc
+import xbmcaddon
+import xbmcvfs
+from . import wizard as wiz
 
 KODIV  = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
 COLOR1 = uservar.COLOR1
 COLOR2 = uservar.COLOR2
-transPath  = xbmc.translatePath if KODIV < 19 else xbmcvfs.translatePath
-
-
+transPath  = xbmcvfs.translatePath
 
 def getOld(old):
     try:
         old = '"%s"' % old 
         query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":%s}, "id":1}' % (old)
         response = xbmc.executeJSONRPC(query)
-        response = simplejson.loads(response)
+        response = json.loads(response)
         if 'result' in response:
             if 'value' in response['result']:
                 return response ['result']['value'] 
@@ -57,7 +49,7 @@ def setNew(new, value):
         new = '"%s"' % new
         value = '"%s"' % value
         query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":%s,"value":%s}, "id":1}' % (new, value)
-        response = xbmc.executeJSONRPC(query)
+        xbmc.executeJSONRPC(query)
     except:
         pass
     return None
@@ -92,7 +84,7 @@ def swapUS():
         xbmc.sleep(200)
         query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":%s,"value":%s}, "id":1}' % (new, value)
         response = xbmc.executeJSONRPC(query)
-        wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Unknown Sources:[/COLOR] [COLOR %s]Enabled[/COLOR]' % (COLOR1, COLOR2))
+        wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, uservar.ADDONTITLE), '[COLOR %s]Unknown Sources:[/COLOR] [COLOR %s]Enabled[/COLOR]' % (COLOR1, COLOR2))
         wiz.log("Unknown Sources Set Settings: %s" % str(response), xbmc.LOGDEBUG)
         
 def dialogWatch():

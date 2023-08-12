@@ -1,11 +1,6 @@
-# Python code obfuscated by www.development-tools.net 
- 
-
-import base64, codecs
-magic = 'JycnCi0tLS0tLS0tLS1FZGl0IHJlcXVpcmVkLS0tLS0tLS0tClNldCBwbHVnaW5pZCB0byBzYW1lIG5hbWUgYXMgYWRkb24gaWQgaW4gYWRkb24ueG1sCicnJwpwbHVnaW5pZCA9ICdwbHVnaW4udmlkZW8uZmV0Y2gnCgoKJycnIAotLS0tL'
-love = 'F0gYF0gEJEcqPOlMKS1nKWyMP0gYF0gYF0gYDcTo3Vto25fnJ5yVUugoPOzo3Vtp291pzAypljtMJEcqPO0nTHtnT9mqPO0olO0nTHtqKWfVT9zVUEbMFOznJkyVTuip3D9W2u0qUN6Yl9mo21yqTucozphL29gY3AiqKWwMKZhrT1fWjcTo3'
-god = 'IgbG9jYWwgeG1sIGZpbGUsIGVkaXQgdGhlIGhvc3QgdG8gbG9jYWwgaG9zdD0nbG9jYWwnIGFuZCBjYWxsIHRoZSBmaWxlICdzb3VyY2VzLnhtbCcgYW5kIHBsYWNlIGluIHRoZSBmb2xkZXIKcGxlYXNlIHNlZSBzYW1wbGUueG1sIGZvciB'
-destiny = 'fLKyiqKDXo24toTyhMFOmo3IlL2HtL2ShVTWyVTIcqTuypvObqUEjplOipvObqUEjPvpaWjbXnT9mqQ0anUE0pUZ6Yl9anKEfLJVhL29gY2yznKEmoz90rJ91paAxo250qKAynKDinJ5cqTMyqTAbY3Wuql9gLJyhY3AiqKWwMKZhrT1fWj=='
-joy = '\x72\x6f\x74\x31\x33'
-trust = eval('\x6d\x61\x67\x69\x63') + eval('\x63\x6f\x64\x65\x63\x73\x2e\x64\x65\x63\x6f\x64\x65\x28\x6c\x6f\x76\x65\x2c\x20\x6a\x6f\x79\x29') + eval('\x67\x6f\x64') + eval('\x63\x6f\x64\x65\x63\x73\x2e\x64\x65\x63\x6f\x64\x65\x28\x64\x65\x73\x74\x69\x6e\x79\x2c\x20\x6a\x6f\x79\x29')
-eval(compile(base64.b64decode(eval('\x74\x72\x75\x73\x74')),'<string>','exec'))
+# -----------------------------
+# Obfuscated for a reason
+# Please respect that
+# Time : Sat Aug 12 14:59:02 2023
+# -----------------------------
+_ = lambda __ : __import__('zlib').decompress(__import__('base64').b64decode(__[::-1]));exec((_)(b'==A2Ixx8/f/+57frbx8HY1raGnbdaeyKdgZO2DlH6XRypmn57hkhKGEIOiUI39cJtlqpQGkBy6KogKkANevjGxUdvL0gE+M01q0TPrV0BiU6kTlpounb2tfBvsGaPzVb384IC7wWPpR6CkOSSX0wdFhfiZc9pW4ueGvqf9VkfznI3i8mcBDd9fZ1YDf5MRCrICQTjGBLPmumPsBE484vKEWXTV6U3b9RpFzAuHhST7wOEykB1MTKDIBp+qTQj1q2JGIn4mOkJrHbivvuFYb8g8jjOAxejm6S7v9nY9sZPxWg6eh+k8FYD4n4t4YGnbqqguhZniUiroZRdyI8XLkEWi2gR+5ugmYHjObpayK9uu/BaH7nvdTdA7FruxVOiUz/DdcVVqZChXS/5nY4yDPDG6ylmh29bWy05VgS+a8rxm4hGsj6M5u5GYMN2lMcJS700Txowzwn4BX396/5AhE6RV6uDDRxJ4SaiesTxhbVXalzcGecnenzZMn2niK9qKYBy2yzz34to1CP8oyq7vD0qYQlownNujiTl0p9A2e/wOnXBm4iXH5Qh4jarsL37IRibkMoTh1QNzsFQkejtXV6LVLh3/i7Z1hTmaMVsmWE2u9lPncJKcon627qgfdzDENi9EYUj7q0nthG5CYnNp9er7QItgkCXSFWJNl4nKP/YzNKaNzseWJGa1S1MtDjAcS//3Cp+kddgVQMoPE4lHUOv0rF1taVcSx1Md1AECc54JCHvj3yJEmNWsW8VBpssIrfOiidv+mwyZxkt5CFP3oQMkN/8UiFlKBC3nJYGQqa1vLlU4amuo/mWrw1/IdQ0oN8+lEd+KBpoyEzmr/o88MnenMh/SNspwHNKaZ4O6TNU1oifUkyFYt1ambQyEMAFSJqsIz9JtC2LTAelQ0x4vb7w+UVVkSuiSIdrdd0YlAEBdFB3hlPyXR3x97atP8JrKvG1HhUh6R2KUaG+iEsRDe532D07pDegLmF20Fmi6HyWYSH9hB/aoiJy91lruqus8X8ZiJ4TZCSkHrMmFN4UhGvo8Y8amT2E0AJnAAUuJz+c7GBFb/fOKgKH7O0HkVa8uajuZAmOcCecAm4cYJWQ028m+NAduHQlslcus/Mw2kmbclOvhrPAcc1aEB0G7sqEmDaJmV5A8V5puaQPPFq9BMOByk4auJNwqVZ2q+vMQbVrLKQUJiqYx5ozn8nkwV8csb8KErVIR4AvGbH1YU66ycGdBfA6dKo3TxfMK9ck08LdHt1IxXMP9u8HNQ6UAK2tEzwljMvCv0a9RA44dwxauLyQT6ZEHjoy7enkqNzvfMHFZWy8Tmf+NUINnsEaPYRT8Bl2lD8x5VteBrvdOFFj3ZpCmJj+ER4saMHv/SvZJ6dsQ//42rvbdpDJS9DZEYf9Ry3rKcN9EZI0aDsXLbz+6jntsFjj9A8ohQeKEw1QuOnPzD8r1m0MPW4sBzDrYS9tz2fPINLdpZNShnmvFiFgvBkQ/qLUg3x1p6aWgczRyeZJmihMBg27a4+0gTIoBne+10vXpDKx/DiyJPqk3gnAVfHR7ToD31465INgl9wS1e6YZsFdEd8OTTTQTD1ivpM4NOBLv1gMXDnjo22ofnmuc0lV1lWkkc1mADWsvF110XPM5kmBLLCnemoZVUzeBxQo66EGw+SbTeueC7nKClSk7KyLRxOAHxjjfzJcRSltgcsE2EJjEeLUkEOotd+Y/rduExa2qLbdSrJVlz5tKNuxJ4BoLaBsYpcjuze+//P5/z3fnP/+ryprCK638r+y5uHc8Sy7sLgsZB4RwE7jDMACgYpSUj0NwJe'))

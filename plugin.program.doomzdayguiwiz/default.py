@@ -1645,10 +1645,19 @@ def developer():
 	addFile('Test First Run Settings',             'testfirstrun',          themeit=THEME1)
 	addFile('Test Auto ADV Settings',             'autoadvanced',          themeit=THEME1)
 	setView('files', 'viewType')
+	
 ###########################
 ###### Build Install ######
 ###########################
+
 def buildWizard(name, type, theme=None, over=False):
+    current_window = xbmcgui.getCurrentWindowDialogId()
+    #xbmc.executebuiltin(f"Dialog.Close({current_window})")
+    #xbmc.executebuiltin('ReloadSkin()')
+    x = f'RunPlugin(plugin://{ADDON_ID}/?mode=install2&name={name}&type={type}&_id={current_window})'
+    xbmc.executebuiltin(x)
+
+def _buildWizard(name, type, theme=None, over=False, _id: int=0):
 	if over == False:
 		testbuild = wiz.checkBuild(name, 'url')
 		if testbuild == False:
@@ -1691,8 +1700,9 @@ def buildWizard(name, type, theme=None, over=False):
 			else: DIALOG.ok(ADDONTITLE, "[COLOR %s]To save changes you now need to force close Kodi, Press OK to force close Kodi[/COLOR]" % COLOR2); wiz.killxbmc('true')
 		else:
 			wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]GuiFix: Cancelled![/COLOR]' % COLOR2)
+	
 	elif type == 'fresh':
-		freshStart(name)
+		freshStart(name, _id=_id)
 	elif type == 'normal':
 		if url == 'normal':
 			if KEEPTRAKT == 'true':
@@ -1715,8 +1725,9 @@ def buildWizard(name, type, theme=None, over=False):
 		if warning == True:
 			yes_pressed = DIALOG.yesno("%s - [COLOR red]WARNING!![/COLOR]" % ADDONTITLE, '[COLOR %s]There is a chance that the skin will not appear correctly' % COLOR2 + '\nWhen installing a %s build on a Kodi %s install' % (wiz.checkBuild(name, 'kodi'), KODIV) + '\nWould you still like to install: [COLOR %s]%s v%s[/COLOR]?[/COLOR]' % (COLOR1, name, wiz.checkBuild(name,'version')), nolabel='[B][COLOR red]No, Cancel[/COLOR][/B]',yeslabel='[B][COLOR green]Yes, Install[/COLOR][/B]')
 		else:
-			if not over == False: yes_pressed = 1
-			else: yes_pressed = DIALOG.yesno(ADDONTITLE, '[COLOR %s]Would you like to Download and Install:' % COLOR2 + '\n[COLOR %s]%s v%s[/COLOR]?[/COLOR]' % (COLOR1, name, wiz.checkBuild(name,'version')), nolabel='[B][COLOR red]No, Cancel[/COLOR][/B]',yeslabel='[B][COLOR green]Yes, Install[/COLOR][/B]')
+			yes_pressed = 1
+			#if not over == False: yes_pressed = 1
+			#else: yes_pressed = DIALOG.yesno(ADDONTITLE, '[COLOR %s]Would you like to Download and Install:' % COLOR2 + '\n[COLOR %s]%s v%s[/COLOR]?[/COLOR]' % (COLOR1, name, wiz.checkBuild(name,'version')), nolabel='[B][COLOR red]No, Cancel[/COLOR][/B]',yeslabel='[B][COLOR green]Yes, Install[/COLOR][/B]')
 		if yes_pressed:
 			wiz.clearS('build')
 			#buildzips = []
@@ -1963,6 +1974,7 @@ def apkInstaller1(apk, url):
 			xbmc.executebuiltin('StartAndroidActivity("","android.intent.action.VIEW","application/vnd.android.package-archive","file:'+lib+'")')
 		else: wiz.LogNotify(ADDONTITLE, '[COLOR red]ERROR:[/COLOR] Install Cancelled')
 	else: wiz.LogNotify(ADDONTITLE, '[COLOR red]ERROR:[/COLOR] None Android Device')
+
 def romInstaller(name, url):
 	myroms = xbmcvfs.translatePath(BACKUPROMS)
 	if myroms == '':
@@ -2250,6 +2262,7 @@ def removeAddonData(addon, name=None, over=False):
 			else: 
 				wiz.log('Addon data for %s was not removed' % addon)
 	wiz.refresh()
+
 def restoreit(type):
 	if type == 'build':
 		x = freshStart('restore')
@@ -2257,11 +2270,13 @@ def restoreit(type):
 	if not wiz.currSkin() in ['skin.estuary']:
 		wiz.skinToDefault('Restore Backup')
 	wiz.restoreLocal(type)
+
 def restoreextit(type):
 	if type == 'build':
 		x = freshStart('restore')
 		if x == False: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]External Restore Cancelled[/COLOR]" % COLOR2); return
 	wiz.restoreExternal(type)
+
 def buildInfo(name):
 	if wiz.workingURL(BUILDFILE) == True:
 		if wiz.checkBuild(name, 'url'):
@@ -2438,7 +2453,7 @@ def manageSaveData(do):
 ###########################
 ###### Fresh Install ######
 ###########################
-def freshStart(install=None, over=False):
+def freshStart(install=None, over=False, _id: int=0):
 	if KEEPTRAKT == 'true':
 		traktit.autoUpdate('all')
 		wiz.setS('traktlastsave', str(THREEDAYS))
@@ -2453,12 +2468,14 @@ def freshStart(install=None, over=False):
 	elif install: yes_pressed=DIALOG.yesno(ADDONTITLE, "[COLOR %s]Click [B][COLOR springgreen] - Yes - [/COLOR][/B]" % COLOR2 + "\nTo Erase Your Current Build, \r\nThen Fresh Install [COLOR %s]%s[/COLOR]!!" % (COLOR1, install), nolabel='[B][COLOR red]No, Cancel[/COLOR][/B]', yeslabel='[B][COLOR springgreen]Yes[/COLOR][/B]')
 	else: yes_pressed=DIALOG.yesno(ADDONTITLE, "[COLOR %s]Do you wish to restore your" % COLOR2 + "\nConfiguration to default settings?[/COLOR]", nolabel='[B][COLOR red]No, Cancel[/COLOR][/B]', yeslabel='[B][COLOR springgreen]Yes[/COLOR][/B]')
 	if yes_pressed:
+		if _id:
+		    xbmc.executebuiltin(f"Dialog.Close({_id})")
 		if not wiz.currSkin() in ['skin.estuary']:
 			skin = 'skin.estuary'
 			#yes=DIALOG.yesno(ADDONTITLE, "[COLOR %s]The skin needs to be set back to [COLOR %s]%s[/COLOR]" % (COLOR2, COLOR1, skin[5:]), "Before doing a fresh install to clear all Texture files,", "Would you like us to do that for you?[/COLOR]", yeslabel="[B][COLOR springgreen]Switch Skins[/COLOR][/B]", nolabel="[B][COLOR red]I'll Do It[/COLOR][/B]";
 			#if yes:
 			
-			'''
+			
 			skinSwitch.swapSkins(skin)
 			xbmc.log('swapskin= ' + str(install), xbmc.LOGINFO)
 			x = 0
@@ -2474,7 +2491,7 @@ def freshStart(install=None, over=False):
 		if not wiz.currSkin() in ['skin.estuary']:
 			wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Fresh Install: Skin Swap Failed![/COLOR]' % COLOR2)
 			return
-		'''
+		
 			
 		wiz.addonUpdates('set')
 		xbmcPath=os.path.abspath(HOME)
@@ -2608,6 +2625,7 @@ def totalClean(shortcut=False):
 			TPK.setLabel('Files: [B][COLOR lime]0[/B][/COLOR]')
 			DTH.setLabel('Size: [B][COLOR lime]0.0 B[/B][/COLOR]')
 			TTH.setLabel('Files: [B][COLOR lime]0[/B][/COLOR]')
+
 def clearThumb(type=None, shortcut=False):
 	latest = wiz.latestDB('Textures')
 	if not type == None: choice = 1
@@ -2654,13 +2672,16 @@ def testnotify():
 		except Exception as e:
 			wiz.log("Error on Notifications Window: %s" % str(e), xbmc.LOGERROR)
 	else: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Invalid URL for Notification[/COLOR]" % COLOR2)
+
 def testupdate():
 	if BUILDNAME == "":
 		notify.updateWindow()
 	else:
 		notify.updateWindow(BUILDNAME, BUILDVERSION, BUILDLATEST, wiz.checkBuild(BUILDNAME, 'icon'), wiz.checkBuild(BUILDNAME, 'fanart'))
+
 def testfirst():
 	notify.firstRun()
+
 def testfirstRun():
 	notify.firstRunSettings()
 	
@@ -2896,7 +2917,7 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 		#self.placeControl(self.InstallablesButton,2 , 33, 9, 8)
 		#self.connect(self.InstallablesButton, lambda: Installables())
 
-		self.CloseButton = pyxbmct.Button('[COLOR %s][B]Close[/B][/COLOR]' % MAIN_BUTTONS_TEXT,focusTexture=EXIT,noFocusTexture=BUTTON)
+		self.CloseButton = pyxbmct.Button('[COLOR %s][B]Close[/B][/COLOR]' % MAIN_BUTTONS_TEXT,focusTexture=FBUTTON,noFocusTexture=BUTTON)
 		self.placeControl(self.CloseButton,-2 , 41,13, 8)
 		self.connect(self.CloseButton, self.close)
 	
@@ -3328,9 +3349,9 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 			#self.placeControl(PreviewButton,20 , 20, 8, 8)
 			#self.connect(PreviewButton,lambda: buildVideo(Bname))
 		
-			InstallButton = pyxbmct.Button('[COLOR %s][B]Install[/B][/COLOR]' % OTHER_BUTTONS_TEXT,focusTexture=FBUTTON,noFocusTexture=BUTTON)
-			self.placeControl(InstallButton,28 , 20, 8, 8)
-			self.connect(InstallButton, lambda: buildWizard(Bname,'normal'))
+			#InstallButton = pyxbmct.Button('[COLOR %s][B]Install[/B][/COLOR]' % OTHER_BUTTONS_TEXT,focusTexture=FBUTTON,noFocusTexture=BUTTON)
+			#self.placeControl(InstallButton,28 , 20, 8, 8)
+			#self.connect(InstallButton, lambda: buildWizard(Bname,'normal'))
 		
 			FreshStartButton = pyxbmct.Button('[COLOR %s][B]Fresh Install[/B][/COLOR]' % OTHER_BUTTONS_TEXT,focusTexture=FBUTTON,noFocusTexture=BUTTON)
 			self.placeControl(FreshStartButton,36 , 20, 8, 8)
@@ -3406,7 +3427,7 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 			buildlistmenu.setVisible(True)
 			buildthumb.setVisible(True)
 
-			InstallButton.setVisible(True)
+			#InstallButton.setVisible(True)
 			FreshStartButton.setVisible(True)
 			buildtextbox.setVisible(True)
 			vertextbox.setVisible(True)
@@ -3430,19 +3451,19 @@ class Guiwiz(pyxbmct.AddonDialogWindow):
 			self.BuildsButton.controlUp(buildlistmenu)
 			self.BuildsButton.controlDown(buildlistmenu)
 		
-			buildlistmenu.controlRight(InstallButton)  # PreviewButton when fixed
+			buildlistmenu.controlRight(FreshStartButton)  # PreviewButton when fixed
 			buildlistmenu.controlUp(self.BuildsButton)
 		
 			#PreviewButton.controlDown(InstallButton)
 			#PreviewButton.controlUp(self.BuildsButton)
 			#PreviewButton.controlLeft(buildlistmenu)
 		
-			InstallButton.controlDown(FreshStartButton)
-			InstallButton.controlUp(self.BuildsButton)  # PreviewButton when fixed
-			InstallButton.controlLeft(buildlistmenu)
+			#InstallButton.controlDown(FreshStartButton)
+			#InstallButton.controlUp(self.BuildsButton)  # PreviewButton when fixed
+			#InstallButton.controlLeft(buildlistmenu)
 		
 			#FreshStartButton.controlDown(ThemeButton)
-			FreshStartButton.controlUp(InstallButton)
+			FreshStartButton.controlUp(self.BuildsButton)
 			FreshStartButton.controlLeft(buildlistmenu)
 			#ThemeButton.controlUp(FreshStartButton)
 			#ThemeButton.controlLeft(buildlistmenu)
@@ -4513,6 +4534,10 @@ mode = p.get('mode', None)
 iconimage = p.get('iconimage', ICON)
 fanart = p.get('fanart', FANART)
 description = p.get('description', '')
+_type = p.get('type', '')
+_id = p.get('_id', 0)
+if _id and str.isdecimal(_id):
+    _id = int(_id)
     
 if mode is None:
     gui = Guiwiz()
@@ -4535,9 +4560,12 @@ elif mode == 'forceclose':
 	os._exit(1)
 
 elif mode == 'install':
-    buildWizard(name, url)
+    buildWizard(name, _type)
 
-'''
+elif mode == 'install2':
+    xbmc.log(f'params= {p}', xbmc.LOGINFO)
+    _buildWizard(name, _type, _id=_id)
+
 elif mode=='wizardupdate'   : wiz.wizardUpdate()
 elif mode=='builds'         : buildMenu()
 elif mode=='viewbuild'      : viewBuild(name)
@@ -4571,7 +4599,8 @@ elif mode=='clearthumb'     : clearThumb(); wiz.refresh()
 elif mode=='cleararchive'   : clearArchive(); wiz.refresh()
 elif mode=='checksources'   : wiz.checkSources(); wiz.refresh()
 elif mode=='checkrepos'     : wiz.checkRepos(); wiz.refresh()
-elif mode=='freshstart'     : freshStart()
+elif mode=='freshstart':
+    freshStart(_id=_id)
 elif mode=='forceupdate'    : wiz.forceUpdate()
 elif mode=='forceprofile'   : wiz.reloadProfile(wiz.getInfo('System.ProfileName'))
 elif mode=='forceclose'     : wiz.killxbmc()
@@ -4700,11 +4729,13 @@ elif mode=='ftgmod'         : ftgmod()
 elif mode=='GetList'        : GetList(url)
 elif mode=='autoadvanced'   : notify.autoConfig(); wiz.refresh()
 elif mode=='autoconfig'     : autoconfig()
+
+"""
 #elif mode=='sswap'          : skinSwitch.popUPmenu()
 ### You have found my Lucky Charms !!
 #MKDIRS()
 window.connect(pyxbmct.ACTION_NAV_BACK, window.close)
 window.doModal()
 del window
-'''
 #router(sys.argv[2][1:])
+"""
