@@ -699,7 +699,7 @@ def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fan
             wiz.log("[Check Updates] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGINFO)
             wiz.setS('lastbuildcheck', str(NEXTCHECK))
             self.close()
-            url = 'plugin://%s/?mode=install&name=%s&url=fresh' % (ADDON_ID, quote_plus(BUILDNAME))
+            url = 'plugin://%s/?mode=install&name=%s&_type=fresh' % (ADDON_ID, quote_plus(BUILDNAME))
             xbmc.executebuiltin('RunPlugin(%s)' % url)
 
         def doNormalInstall(self):
@@ -707,7 +707,7 @@ def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fan
             wiz.log("[Check Updates] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGINFO)
             wiz.setS('lastbuildcheck', str(NEXTCHECK))
             self.close()
-            url = 'plugin://%s/?mode=install&name=%s&url=normal' % (ADDON_ID, quote_plus(BUILDNAME))
+            url = 'plugin://%s/?mode=install&name=%s&_type=normal' % (ADDON_ID, quote_plus(BUILDNAME))
             xbmc.executebuiltin('RunPlugin(%s)' % url)
 
         def doIgnore(self):
