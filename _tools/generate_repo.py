@@ -1,23 +1,3 @@
-""" repository files and addons.xml generator """
-
-""" If it errors out saying any import below is missing, be sure to add it via the pip install command in a console window """
-
-""" Unknown Dates - Work of previous developers """
-"""     Modified by Rodrigo@XMBCHUB to zip plugins/repositories to a "zip" folder """
-"""     Modified by BartOtten: create a repository addon, skip folders without addon.xml, user config file """
-""" 11/12/2017 """
-"""     Modified by MuadDib: Include copying of addon.xml, icon.png, and fanart.jpg when present in addon folders """
-""" 04/12/2018 """
-"""     Modified by MuadDib: Fixed md5 hashing issue for addons.xml file """
-"""     Modified by MuadDib: Added excludes line to config.ini. This is a comma separated value of file extensions to not add to zip file in releases """
-
-""" This file is "as is", without any warranty whatsoever. Use as own risk """
-
-"""
-    Youtube Video Series for this script package:
-        Playlist: https://www.youtube.com/playlist?list=PLYkSOUo1Vu4ZN6l6xJ9fzJ-d0Y_-ACo68
-"""
-
 import os
 import hashlib
 import zipfile
@@ -26,7 +6,7 @@ from xml.dom import minidom
 import glob
 import datetime
 import traceback
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
 
 class Generator:
     
@@ -41,7 +21,7 @@ class Generator:
         """
         Load the configuration
         """
-        self.config = SafeConfigParser()
+        self.config = ConfigParser()
         self.config.read('config.ini')
         
         self.tools_path=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__))))
@@ -100,7 +80,7 @@ class Generator:
         if not os.path.exists(addonid):
             os.makedirs(addonid)
             
-        self._save_file( repo_xml.encode( "utf-8" ), file=addonid + os.path.sep + "addon.xml" )
+        self._save_file( repo_xml, file=addonid + os.path.sep + "addon.xml" )
         
 
     def _generate_zip_files ( self ):
@@ -124,10 +104,10 @@ class Generator:
                 self._generate_zip_file(addon, version, addonid)
             except:
                 failure = traceback.format_exc()
-                print('Kodi Repo Generator Exception: \n' + str(failure))
+                print(('Kodi Repo Generator Exception: \n' + str(failure)))
 
     def _generate_zip_file ( self, path, version, addonid):
-        print( "Generate zip file for " + addonid + " " + version )
+        print(( "Generate zip file for " + addonid + " " + version ))
         filename = path + "-" + version + ".zip"
         try:
             zip = zipfile.ZipFile(filename, 'w')
@@ -149,28 +129,28 @@ class Generator:
             try:
                 shutil.copy(addonid + '/icon.png', self.output_path + addonid + os.path.sep + 'icon.png')
             except:
-                print( '**** Icon file missing for ' + addonid )
+                print(( '**** Icon file missing for ' + addonid ))
             try:
                 shutil.copy(addonid + '/fanart.jpg', self.output_path + addonid + os.path.sep + 'fanart.jpg')
             except:
-                print( '**** Fanart file missing for ' + addonid )
+                print(( '**** Fanart file missing for ' + addonid ))
 
         except:
             failure = traceback.format_exc()
-            print('Kodi Repo Generator Exception: \n' + str(failure))
+            print(('Kodi Repo Generator Exception: \n' + str(failure)))
 
     def _generate_addons_file( self ):
         # addon list
         addons = os.listdir( "." )
         # final addons text
-        addons_xml = u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<addons>\n"
+        addons_xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<addons>\n"
         # loop thru and add each addons addon.xml file
         for addon in addons:
             # create path
             _path = os.path.join( addon, "addon.xml" )
             #skip path if it has no addon.xml
             if not os.path.isfile( _path ): continue
-            try:               
+            try:
                 # split lines for stripping
                 xml_lines = open( _path, "r" ).read().splitlines()
                 # new addon
@@ -180,20 +160,20 @@ class Generator:
                     # skip encoding format line
                     if ( line.find( "<?xml" ) >= 0 ): continue
                     # add line
-                    addon_xml += unicode( line.rstrip() + "\n", "utf-8" )
+                    addon_xml += str(line.rstrip() + "\n")
                 # we succeeded so add to our final addons.xml text
                 addons_xml += addon_xml.rstrip() + "\n\n"
             except:
                 # missing or poorly formatted addon.xml
                 failure = traceback.format_exc()
-                print( "Excluding %s for %s" % ( str(_path), str(addon) ) )
+                print(( "Excluding %s for %s" % ( str(_path), str(addon) ) ))
                 print( "Exception Details:" )
-                print( str(failure) )
+                print(( str(failure) ))
 
         # clean and add closing tag
-        addons_xml = addons_xml.strip() + u"\n</addons>\n"
+        addons_xml = addons_xml.strip() + "\n</addons>\n"
         # save file
-        self._save_file( addons_xml.encode( "utf-8" ), file=self.output_path + "addons.xml" )
+        self._save_file( addons_xml, file=self.output_path + "addons.xml" )
 
     def _generate_md5_file( self ):
         try:
@@ -205,20 +185,21 @@ class Generator:
 
             result = hash_object.hexdigest()
             # save file
-            self._save_file( result, file=self.output_path + "addons.xml.md5" )
+            self._save_file(result, file=self.output_path + "addons.xml.md5")
         except:
             failure = traceback.format_exc()
             print( "**** An error occurred creating addons.xml.md5 file!\n" )
-            print( 'Kodi Repo Generator Exception: \n' + str(failure) )
+            print(( 'Kodi Repo Generator Exception: \n' + str(failure) ))
 
-    def _save_file( self, data, file ):
+    def _save_file(self, data, file):
         try:
             # write data to the file
-            open( file, "w" ).write( data )
+            with open(file, "w", encoding='utf-8', errors='ignore') as f:
+                f.write(data)
         except:
             failure = traceback.format_exc()
             print( "**** An error occurred saving %s file!\n" )
-            print( 'Kodi Repo Generator Exception: \n' + str(failure) )
+            print(( 'Kodi Repo Generator Exception: \n' + str(failure) ))
 
 if ( __name__ == "__main__" ):
     # start

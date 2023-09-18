@@ -40,7 +40,7 @@ def build_install(name, name2, version, url):
     setting_set('firstrun', 'true')
     check_binary()
     enable_wizard()
-    truncate_tables()
+    #truncate_tables()
     
     dialog.ok(addon_name, local_string(30036))  # Install Complete
     os._exit(1)

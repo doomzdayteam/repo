@@ -147,7 +147,7 @@ def fresh_start(standalone=False):
         setting_set('firstrun', 'true')
         setting_set('buildname', 'No Build Installed')
         setting_set('buildversion', '0')
-        truncate_tables()
+        #truncate_tables()
         dialog.ok(addon_name, local_string(30045))  # Fresh Start Complete
         os._exit(1)
     else:
