@@ -27,7 +27,7 @@
 <addon id="plugin.program.doomzdaysimple" name="[B][COLOR=red]Doomzday Simple Wizard[/COLOR][/B]" version="3.0.3" provider-name="DD Team">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
-		<import addon="script.module.requests" optional="true" />
+		<import addon="script.module.requests"/>
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="addon.py">
 		<provides>executable</provides>
