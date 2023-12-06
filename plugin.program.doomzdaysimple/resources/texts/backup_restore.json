@@ -29,6 +29,11 @@
         "setting": "savedata",
         "path": "data_path"
     },
+	"plugin.video.fenlight": {
+        "name": "Fen Light",
+        "setting": "savedata",
+        "path": "data_path"
+    },
     "plugin.video.umbrella": {
         "name": "Umbrella",
         "setting": "savedata",

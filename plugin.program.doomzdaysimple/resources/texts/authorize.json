@@ -21,6 +21,9 @@
             {
                 "name": "Authorize FEN Real Debrid",
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=real_debrid.authenticate)"
+            },{
+                "name": "Authorize FEN Light Real Debrid",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=real_debrid.authenticate)"
             },
 			{
                 "name": "Authorize EZRA Real Debrid",
@@ -37,6 +40,10 @@
             {
                 "name": "Revoke FEN Real-Debrid",
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=real_debrid.revoke_authentication)"
+            },
+			{
+                "name": "Revoke FEN Light Real-Debrid",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=real_debrid.revoke_authentication)"
             },
 			{
                 "name": "Revoke EZRA Real-Debrid",
@@ -70,6 +77,10 @@
             {
                 "name": "Authorize FEN Trakt",
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=trakt.trakt_authenticate)"
+            },
+			{
+                "name": "Authorize FEN Light Trakt",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=trakt.trakt_authenticate)"
             },
 			{
                 "name": "Authorize EZRA Trakt",
@@ -158,6 +169,10 @@
             {
                 "name": "Revoke FEN Trakt",
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=trakt.trakt_revoke_authentication)"
+            },
+			{
+                "name": "Revoke FEN Light Trakt",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=trakt.trakt_revoke_authentication)"
             }
         ]
     },
@@ -185,6 +200,10 @@
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=premiumize.authenticate)"
             },
 			{
+                "name": "Authorize FEN Light Premiumize",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=premiumize.authenticate)"
+            },
+			{
                 "name": "Authorize EZRA Premiumize",
                 "url": "RunScript(script.module.myaccounts, action=premiumizeAuth)"
             },
@@ -203,6 +222,10 @@
             {
                 "name": "Revoke FEN Premiumize.me",
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=premiumize.revoke_authentication)"
+            },
+			{
+                "name": "Revoke FEN Light Premiumize.me",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=premiumize.revoke_authentication)"
             }
         ]
     },
@@ -226,6 +249,10 @@
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=alldebrid.authenticate)"
             },
 			{
+                "name": "Authorize FEN Light Alldebrid",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=alldebrid.authenticate)"
+            },
+			{
                 "name": "Authorize EZRA Alldebrid",
                 "url": "RunScript(script.module.myaccounts, action=alldebridAuth)"
             },
@@ -236,6 +263,10 @@
             {
                 "name": "Revoke FEN AllDebrid",
                 "url": "RunPlugin(plugin://plugin.video.fen/?mode=alldebrid.revoke_authentication)"
+            },
+			{
+                "name": "Revoke FEN Light AllDebrid",
+                "url": "RunPlugin(plugin://plugin.video.fenlight/?mode=alldebrid.revoke_authentication)"
             },
 			{
                 "name": "Revoke EZRA AllDebrid",
