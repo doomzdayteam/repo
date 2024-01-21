@@ -45,6 +45,8 @@ def sources():
                         sourceDict.append((module_name, module.source()))
                     except:
                         pass
+        import xbmc
+        xbmc.log(f'sourceDict= {sourceDict}', xbmc.LOGINFO)
         return sourceDict
     except:
         return []

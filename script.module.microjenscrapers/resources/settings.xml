@@ -15,6 +15,14 @@
         <setting label="Disable All Torrent Providers" type="action" option="close" action="RunPlugin(plugin://script.module.microjenscrapers/?action=toggleAllTorrent&amp;setting=false&amp;query=0.10)"/>
         <setting label="Enable All Torrent Providers" type="action" option="close" action="RunPlugin(plugin://script.module.microjenscrapers/?action=toggleAllTorrent&amp;setting=true&amp;query=0.11)"/>
     </category>
+    
+    <category label="Quality">
+    	<setting id="quality.4k" type="bool" label="Enable 4k" default="true" />
+        <setting id="quality.1080p" type="bool" label="Enable 1080p" default="true" />
+        <setting id="quality.720p" type="bool" label="Enable 720p" default="true" />
+        <setting id="quality.sd" type="bool" label="Enable SD" default="true" />
+        <setting id="quality.cam" type="bool" label="Enable Cams" default="true" />
+    </category>
 
 <!-- Providers/Hosters-1 -->
     <category label="Hosters">
