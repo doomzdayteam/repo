@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.thearchives" name="The Archives" version="1.0.9" provider-name="The Archivist's">
+<addon id="plugin.video.thearchives" name="The Archives" version="1.1.0" provider-name="The Archivist's">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
     <import addon="script.module.requests" />
@@ -8,6 +8,7 @@
     <import addon="script.module.inputstreamhelper" />
     <import addon="script.module.resolveurl"/>
     <import addon="script.module.microjenscrapers" />
+	<import addon="script.module.yt-dlp" />
     <!--<import addon="name" />-->
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
