@@ -133,7 +133,7 @@ class Flo(Plugin):
             thumbnail = urljoin(self.base_url, tracks['image'][0])
             artist_id = thumbnail.split('/')[-1].rstrip('.png')
             summary = unescape(tracks['description'])
-            playlist = xbmc.PlayList(0)
+            playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
             playlist.clear()
             
             if str.isdecimal(artist_id):
