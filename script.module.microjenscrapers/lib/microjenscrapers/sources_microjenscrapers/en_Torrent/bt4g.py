@@ -5,11 +5,9 @@
 '''
 
 import re
-
-#import requests
-
+from urllib.parse import quote
+from bs4 import BeautifulSoup
 from six import ensure_text
-
 from microjenscrapers import cfScraper
 from microjenscrapers import parse_qs, urljoin, urlencode
 from microjenscrapers.modules import debrid
@@ -18,12 +16,13 @@ from microjenscrapers.modules import client
 from microjenscrapers.modules import source_utils
 from microjenscrapers.modules import log_utils
 
+
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['bt4g.org']
-        self.base_link = 'https://bt4g.org'
+        self.domains = ['bt4gprx.com', 'bt4g.org']
+        self.base_link = 'https://bt4gprx.com'
         self.search_link = '/movie/search/%s/byseeders/1'
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -75,8 +74,6 @@ class source:
 
             url = urljoin(self.base_link, self.search_link % query)
 
-            #r = client.request(url)
-            #r = requests.get(url).content
             r = cfScraper.get(url).content
             r = ensure_text(r, errors='replace').replace('&nbsp;', ' ')
             r = client.parseDOM(r, 'div', attrs={'class': 'col s12'})
@@ -85,7 +82,9 @@ class source:
             for post in posts:
                 try:
                     links = client.parseDOM(post, 'a', ret='href')[0]
-                    url = 'magnet:?xt=urn:btih:' + links.lstrip('magnet/')
+                    dn = client.parseDOM(post, 'a', ret='title')[0]
+                    url = f"{self.base_link}/magnet/{links.split('/')[-1]}"
+                    
                     try:
                         name = client.parseDOM(post, 'a', ret='title')[0]
                         if not query in cleantitle.get_title(name): continue
@@ -102,7 +101,13 @@ class source:
                     info.insert(0, isize)
 
                     info = ' | '.join(info)
-
+                    
+                    r = cfScraper.get(url).content
+                    r = ensure_text(r, errors='replace').replace('&nbsp;', ' ')
+                    links = BeautifulSoup(r, 'html.parser').find( attrs={'property': 'og:url'}).get('content')
+                    if links is None:
+                        continue
+                    url = f"magnet:?xt=urn:btih:{links.split('/')[-1]}&dn={quote(dn)}"
                     sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
                                     'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
                 except:
