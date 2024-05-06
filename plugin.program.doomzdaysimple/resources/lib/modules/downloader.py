@@ -29,12 +29,14 @@ class Downloader:
         if decoding:
             return requests.get(self.url, headers=self.headers, stream=stream).content.decode('utf-8')
         else:
-            return requests.get(self.url, headers=self.headers, stream=stream)
+            if 'dropbox.com' in self.url:
+                return requests.get(self.url, stream=stream, timeout=10)
+            return requests.get(self.url, headers=self.headers, stream=stream, timeout=10)
     
     def get_length(self, response, meth = 'session'):
         try:
             if meth in ['session', 'requests']:
-                return response.headers['X-Dropbox-Content-Length']
+                return response.headers.get('content-length')
             elif meth=='urllib':
                 return response.getheader('content-length')
         except KeyError:
