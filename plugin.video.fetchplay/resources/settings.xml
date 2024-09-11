@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <category label="Addon Settings">
-		<setting label="Youtube API Key" type="text" id="apikey" default="changeme" visible="true" />
-     </category>	  
-</settings>
