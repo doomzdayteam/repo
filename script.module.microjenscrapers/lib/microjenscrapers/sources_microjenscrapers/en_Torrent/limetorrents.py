@@ -19,7 +19,7 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['limetorrents.info', 'limetor.com', 'limetor.pro', 'limetorrents.co', 'limetorrents.asia']
+        self.domains = ['limetorrents.info', 'limetor.com', 'limetor.pro', 'limetorrents.co', 'limetorrents.asia', 'limetorrents.lol']
         self._base_link = None
         self.tvsearch = '/search/tv/{0}/'
         self.moviesearch = '/search/movies/{0}/'
