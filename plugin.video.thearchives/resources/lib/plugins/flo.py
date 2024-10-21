@@ -6,9 +6,12 @@ from urllib.parse import quote, urljoin
 from typing import List, Optional, Dict
 import xbmc
 import xbmcgui
+from xbmcaddon import Addon
 from bs4 import BeautifulSoup
 from ..plugin import Plugin
 from ..DI import DI
+
+FANART = Addon().getAddonInfo('fanart')
 
 
 class Flo(Plugin):
@@ -144,7 +147,7 @@ class Flo(Plugin):
                     link = f'{self.base_url}/music/vkstream/{track_id}'
                     liz = xbmcgui.ListItem(title)
                     liz.setInfo('audio', {'title': title, 'plot': summary})
-                    liz.setArt({"thumb": thumbnail, "icon": thumbnail, "poster": thumbnail})
+                    liz.setArt({"thumb": thumbnail, "icon": thumbnail, "poster": thumbnail, 'fanart': FANART})
                     playlist.add(url=link, listitem=liz)
                     itemlist.append(
                         {
@@ -164,7 +167,7 @@ class Flo(Plugin):
                     link = f'{self.base_url}/music/vkstream/{track_id}'
                     liz = xbmcgui.ListItem(title)
                     liz.setInfo('audio', {'title': title, 'plot': summary})
-                    liz.setArt({"thumb": thumbnail, "icon": thumbnail, "poster": thumbnail})
+                    liz.setArt({"thumb": thumbnail, "icon": thumbnail, "poster": thumbnail, 'fanart': FANART})
                     playlist.add(url=link, listitem=liz)
                     itemlist.append(
                         {
@@ -177,7 +180,6 @@ class Flo(Plugin):
                         }
                     )
             xbmc.Player().play(playlist)
-            xbmc.executebuiltin('SetFocus("musicplaylist")')
         return itemlist
             
 
