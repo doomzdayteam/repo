@@ -4,9 +4,9 @@ import xbmcaddon
 import json
 import base64
 import xml.etree.ElementTree as ET
-from .maintenance import clear_packages
+from .maintenance import clear_packages_startup
 from uservar import buildfile, notify_url
-from .addonvar import setting, setting_set, addon_name, isBase64, headers, dialog, local_string, addon_id
+from .addonvar import setting, setting_set, addon_name, isBase64, headers, dialog, local_string, addon_id, gui_save_default
 from .build_install import restore_binary, binaries_path
 
 current_build = setting('buildname')
@@ -103,6 +103,8 @@ class Startup:
         setting_set('firstrunSave', 'true')
 
     def notify_check(self):
+        if notify_url in ('http://CHANGEME', 'http://slamiousproject.com/wzrd/notify19.txt', ''):
+            return
         from ..GUIcontrol import notify
         info = notify.get_notify()
         current_notify = int(setting('notifyversion'))
@@ -121,11 +123,11 @@ class Startup:
             from resources.lib.modules.addons_enable import enable_addons
             from .save_data import backup_gui_skin
             enable_addons()
-            backup_gui_skin()
+            backup_gui_skin(gui_save_default)
             setting_set('firstrun', 'false')
         else:
             if setting('autoclearpackages')=='true':
-                clear_packages()
+                clear_packages_startup()
             xbmc.sleep(1000)
             self.notify_check()
             xbmc.sleep(3000)      #Delay Build Update Notification

@@ -5,7 +5,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 from .skinSwitch import swapSkins
-from .addonvar import currSkin, user_path, db_path, addon_name, textures_db, advancedsettings_folder, advancedsettings_xml, dialog, dp, xbmcPath, packages, setting_set, addon_icon, local_string, addons_db
+from .addonvar import currSkin, user_path, db_path, addon_name, textures_db, advancedsettings_xml, dialog, dp, xbmcPath, packages, setting_set, addon_icon, local_string, addons_db
 from .whitelist import EXCLUDES_INSTALL, EXCLUDES_FRESH
 
 def purge_db(db):
@@ -48,7 +48,7 @@ def clear_thumbnails():
     xbmc.sleep(1000)
     xbmcgui.Dialog().ok(addon_name, local_string(30037))  # Thumbnails Deleted
 
-def advanced_settings():
+def advanced_settings(advancedsettings_folder):
     selection = xbmcgui.Dialog().select(local_string(30038), ['1GB Devices (E.g. 1st-3rd gen Firestick/Firestick Lite)','1.5GB Devices (E.g. 4k Firestick)','2GB+ Devices (E.g. Shield Pro/Shield Tube/FireTV Cube)','Default (Reset to Default)',local_string(30039)])  # Select Ram Size, Delete
     if selection==0:
         xml = os.path.join(advancedsettings_folder, '1_gb.xml')
@@ -62,6 +62,12 @@ def advanced_settings():
             os.unlink(advancedsettings_xml)
         xbmc.sleep(1000)
         dialog.ok(addon_name, local_string(30040))  # Advanced Settings Deleted
+        os._exit(1)
+    elif selection==4:
+        if os.path.exists(advancedsettings_xml):
+            os.unlink(advancedsettings_xml)
+        xbmc.sleep(1000)
+        dialog.ok(addon_name, local_string(30107))  # Advanced Settings Set
         os._exit(1)
     else:
         return
@@ -147,7 +153,7 @@ def fresh_start(standalone=False):
         setting_set('firstrun', 'true')
         setting_set('buildname', 'No Build Installed')
         setting_set('buildversion', '0')
-        #truncate_tables()
+        truncate_tables()
         dialog.ok(addon_name, local_string(30045))  # Fresh Start Complete
         os._exit(1)
     else:
@@ -161,6 +167,13 @@ def clean_backups():
         except OSError:
             shutil.rmtree(file_path)
 
+def clear_packages_startup():
+    packages_dir = os.listdir(packages)
+    if len(packages_dir) == 0:
+        pass
+    else:
+        clear_packages()
+        
 def clear_packages():
     file_count = len([name for name in os.listdir(packages)])
     for filename in os.listdir(packages):

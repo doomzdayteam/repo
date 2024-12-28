@@ -14,10 +14,10 @@ def authorize_menu():
     file = json.loads(file)
     add_dir(color1('***Authorize Services***'), '', '', addon_icon, addon_fanart, color1('***Authorize Services***'))
     for key in file.keys():
-        add_dir(color2(key), '', 26, file[key]['icon'], file[key]['icon'], color2(key), name2=key)
+        add_dir(color2(key), '', 27, file[key]['icon'], file[key]['icon'], color2(key), name2=key)
 
 def  authorize_submenu(name, icon):
     file = open_file(AUTH_FILE)
     file = json.loads(file)
     for item in file[name]['items']:
-        add_dir(color2(item['name']), item['url'], 24, icon, icon, item['name'], isFolder=False)
+        add_dir(color2(item['name']), item['url'], 25, icon, icon, item['name'], isFolder=False)

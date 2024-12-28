@@ -120,7 +120,7 @@ msgid "Clear Thumbnails"
 msgstr ""
 
 msgctxt "#30025"
-msgid "Advanced Settings"
+msgid "Advanced Settings K20"
 msgstr ""
 
 msgctxt "#30026"
@@ -399,4 +399,12 @@ msgstr ""
 
 msgctxt "#30105"
 msgid "General"
+msgstr ""
+
+msgctxt "#30106"
+msgid "Advanced Settings K21"
+msgstr ""
+
+msgctxt "#30107"
+msgid "Advanced Settings have been deleted. Kodi will now close to apply the settings."
 msgstr ""

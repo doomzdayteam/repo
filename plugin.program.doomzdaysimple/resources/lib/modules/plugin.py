@@ -1,5 +1,7 @@
 import xbmc
 import xbmcplugin
+import xbmcgui
+import xbmcvfs
 import sys
 import os
 from .params import Params
@@ -9,8 +11,9 @@ from .authorize import authorize_menu, authorize_submenu
 from .build_install import build_install
 from .maintenance import fresh_start, clear_packages, clear_thumbnails, advanced_settings
 from .whitelist import get_whitelist
-from .addonvar import addon
-from .save_data import restore_gui, restore_skin
+from .addonvar import addon, addon_name, addon_icon, gui_save_default, gui_save_user, advancedsettings_folder_k20, advancedsettings_folder_k21
+from uservar import notify_url
+from .save_data import restore_gui, restore_skin, backup_gui_skin
 from .backup_restore import backup_build, restore_menu, restore_build, get_backup_folder, reset_backup_folder
 
 handle = int(sys.argv[1])
@@ -55,7 +58,7 @@ def router(paramstring):
         clear_thumbnails()
     
     elif mode == 8:
-        advanced_settings()
+        advanced_settings(advancedsettings_folder_k20)
     
     elif mode == 9:
         addon.openSettings()
@@ -91,26 +94,42 @@ def router(paramstring):
         restore_gui_skin()
 
     elif mode == 20:
-        restore_gui()
+        restore_gui(gui_save_default)
 
     elif mode == 21:
-        restore_skin()
-    
+        restore_skin(gui_save_default)
+
+    elif mode == 22:
+        backup_gui_skin(gui_save_user)
+        xbmcgui.Dialog().notification(addon_name, 'Backup Complete!', addon_icon, 3000)
+
+    elif mode == 23:
+        restore_gui(gui_save_user)
+        
     elif mode == 24:
-        xbmc.executebuiltin(url)
+        restore_skin(gui_save_user)
     
     elif mode == 25:
+        xbmc.executebuiltin(url)
+    
+    elif mode == 26:
         from .quick_log import log_viewer
         log_viewer()
     
-    elif mode == 26:
+    elif mode == 27:
         authorize_submenu(name2, icon)
     
-    elif mode == 27:
+    elif mode == 28:
         from .speedtester.addon import run
         run()
+
+    elif mode == 29:
+        advanced_settings(advancedsettings_folder_k21)
     
     elif mode == 100:
+        if notify_url in ('http://CHANGEME', 'http://slamiousproject.com/wzrd/notify19.txt', ''):
+            xbmcgui.Dialog().ok(addon_name, 'No Notifications to Display')
+            sys.exit()
         from resources.lib.GUIcontrol import notify
         message = notify.get_notify()[1]
         notify.notification(message)
