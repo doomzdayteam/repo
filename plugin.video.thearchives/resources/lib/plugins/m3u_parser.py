@@ -1,7 +1,7 @@
-import xbmcaddon
-import requests
 import os
 import re
+import requests
+import xbmcaddon
 from ..plugin import Plugin
 
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
@@ -25,7 +25,7 @@ class m3u(Plugin):
                 url = url.replace("file://", "")
                 with open(os.path.join(PATH, "xml", url), 'r', encoding='utf-8', errors='ignore') as f:
                     return f.read()
-            return self.session.get(url).text
+            return self.session.get(url).content.decode('utf-8')
     
     def parse_list(self, url: str, response):
         if url.endswith('.m3u') or '#EXTINF' in response:
