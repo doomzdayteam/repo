@@ -10,21 +10,20 @@
 This module contains all classes and constants of PyXBMCt framework
 """
 
-from __future__ import absolute_import, division, unicode_literals
 import os
-from six.moves import range
-from kodi_six import xbmc, xbmcgui
+import xbmc
+import xbmcgui
 from .addonskin import Skin
 
 skin = Skin()
 
-# Text alighnment constants. Mixed variants are obtained by bit OR (|)
+# Text alignment constants. Mixed variants are obtained by bit OR (|)
 ALIGN_LEFT = 0
 """Align left"""
 ALIGN_RIGHT = 1
 """Align right"""
 ALIGN_CENTER_X = 2
-"""Align center horisontally"""
+"""Align center horizontally"""
 ALIGN_CENTER_Y = 4
 """Align center vertically"""
 ALIGN_CENTER = 6

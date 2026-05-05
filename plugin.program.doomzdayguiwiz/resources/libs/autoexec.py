@@ -23,8 +23,7 @@
 
 import xbmc, xbmcvfs, xbmcaddon, xbmcgui,re, os, glob, _thread
 from datetime import datetime
-try:    from sqlite3 import dbapi2 as database
-except: from pysqlite2 import dbapi2 as database
+from sqlite3 import dbapi2 as database
 
 def main():
 	class enableAll():

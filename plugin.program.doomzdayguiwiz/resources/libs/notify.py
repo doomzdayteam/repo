@@ -81,8 +81,8 @@ THEME4         = uservar.THEME4
 THEME5         = uservar.THEME5
 COLOR1         = uservar.COLOR1
 COLOR2         = uservar.COLOR2
-CONTACTICON    = uservar.CONTACTICON if not uservar.CONTACTICON == 'http://' else ICON
-CONTACTFANART  = uservar.CONTACTFANART if not uservar.CONTACTFANART == 'http://' else BACKGROUND3
+CONTACTICON    = uservar.CONTACTICON if not uservar.CONTACTICON == 'https://' else ICON
+CONTACTFANART  = uservar.CONTACTFANART if not uservar.CONTACTFANART == 'https://' else BACKGROUND3
 
 if BACKGROUND == '': BACKGROUND = FANART
 
@@ -134,24 +134,14 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
         def __init__(self,msg='',L=0,T=0,W=1280,H=720,TxtColor='0xFFFFFFFF',Font='font12',BorderWidth=10):
             if os.path.exists(ADVANCED):
                 r = xbmcvfs.File(ADVANCED).read()
-                if KODIV < 17:
-                    try:
-                        asvideocachevalue = re.findall('<cachemembuffersize>(.+?)</cachemembuffersize>', r, re.DOTALL)[0]
-                    except:
-                        asvideocachevalue = '20971520'
-                    try:
-                        asreadfactor = re.findall('<readbufferfactor>(.+?)</readbufferfactor>', r, re.DOTALL)[0]
-                    except:
-                        asreadfactor = '4.0'
-                else:
-                    try:
-                        asvideocachevalue = re.findall('<memorysize>(.+?)</memorysize>', r, re.DOTALL)[0]
-                    except:
-                        asvideocachevalue = '20971520'
-                    try:
-                        asreadfactor = re.findall('<readfactor>(.+?)</readfactor>', r, re.DOTALL)[0]
-                    except:
-                        asreadfactor = '4.0'
+                try:
+                    asvideocachevalue = re.findall('<memorysize>(.+?)</memorysize>', r, re.DOTALL)[0]
+                except:
+                    asvideocachevalue = '20971520'
+                try:
+                    asreadfactor = re.findall('<readfactor>(.+?)</readfactor>', r, re.DOTALL)[0]
+                except:
+                    asreadfactor = '4.0'
                 asvideocachevalue = int(int(asvideocachevalue)/(1024*1024))
                 try:
                     ascurl = re.findall('<curlclienttimeout>(.+?)</curlclienttimeout>', r, re.DOTALL)[0]
@@ -343,32 +333,19 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
                 if choice == 0: return
                 try: xbmcvfs.delete(ADVANCED)
                 except: f = xbmcvfs.File(ADVANCED, 'w'); f.close()
-            if KODIV < 17:
-                with xbmcvfs.File(ADVANCED, 'w') as f:
-                    f.write('<advancedsettings>\n')
-                    f.write('   <network>\n')
-                    f.write('       <buffermode>%s</buffermode>\n' % buffermode)
-                    f.write('       <cachemembuffersize>%s</cachemembuffersize>\n' % int(self.currentVideo*1024*1024))
-                    f.write('       <readbufferfactor>%s</readbufferfactor>\n' % self.currentRead)
-                    f.write('       <curlclienttimeout>%s</curlclienttimeout>\n' % self.currentCurl)
-                    f.write('       <curllowspeedtime>%s</curllowspeedtime>\n' % self.currentCurl)
-                    f.write('   </network>\n')
-                    f.write('</advancedsettings>\n')
-                f.close()
-            else:
-                with xbmcvfs.File(ADVANCED, 'w') as f:
-                    f.write('<advancedsettings>\n')
-                    f.write('   <cache>\n')
-                    f.write('       <buffermode>%s</buffermode>\n' % buffermode)
-                    f.write('       <memorysize>%s</memorysize>\n' % int(self.currentVideo*1024*1024))
-                    f.write('       <readfactor>%s</readfactor>\n' % self.currentRead)
-                    f.write('   </cache>\n')
-                    f.write('   <network>\n')
-                    f.write('       <curlclienttimeout>%s</curlclienttimeout>\n' % self.currentCurl)
-                    f.write('       <curllowspeedtime>%s</curllowspeedtime>\n' % self.currentCurl)
-                    f.write('   </network>\n')
-                    f.write('</advancedsettings>\n')
-                f.close()
+            with xbmcvfs.File(ADVANCED, 'w') as f:
+                f.write('<advancedsettings>\n')
+                f.write('   <cache>\n')
+                f.write('       <buffermode>%s</buffermode>\n' % buffermode)
+                f.write('       <memorysize>%s</memorysize>\n' % int(self.currentVideo*1024*1024))
+                f.write('       <readfactor>%s</readfactor>\n' % self.currentRead)
+                f.write('   </cache>\n')
+                f.write('   <network>\n')
+                f.write('       <curlclienttimeout>%s</curlclienttimeout>\n' % self.currentCurl)
+                f.write('       <curllowspeedtime>%s</curllowspeedtime>\n' % self.currentCurl)
+                f.write('   </network>\n')
+                f.write('</advancedsettings>\n')
+            f.close()
             self.CloseWindow()
             
         def onControl(self, control):
@@ -530,7 +507,6 @@ def firstRunSettings():
             self.trakt      = 301
             self.debrid     = 302
             self.login      = 303
-            self.alluc      = 314
             self.profiles   = 305
             self.advanced   = 306
             self.favourites = 307
@@ -539,9 +515,8 @@ def firstRunSettings():
             self.whitelist  = 310
             self.cache      = 311
             self.showdialog()
-            self.controllist = [self.trakt, self.debrid, self.login, self.profiles, self.advanced, self.favourites, self.superfav, self.repo, self.whitelist, self.cache,  self.alluc]
-            self.controlsettings = ['keeptrakt', 'keepdebrid', 'keeplogin', 'keepprofiles', 'keepadvanced', 'keepfavourites', 'keeprepos', 'keepsuper', 'keepwhitelist', 'clearcache', 'keepalluc']
-									
+            self.controllist = [self.trakt, self.debrid, self.login, self.profiles, self.advanced, self.favourites, self.superfav, self.repo, self.whitelist, self.cache]
+            self.controlsettings = ['keeptrakt', 'keepdebrid', 'keeplogin', 'keepprofiles', 'keepadvanced', 'keepfavourites', 'keeprepos', 'keepsuper', 'keepwhitelist', 'clearcache']									
             for item in self.controllist:
                 if wiz.getS(self.controlsettings[self.controllist.index(item)]) == 'true':
                     self.getControl(item).setSelected(True)
@@ -592,8 +567,7 @@ def firstRun():
             wiz.log("[Check Updates] [User Selected: Open Build Menu] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGINFO)
             wiz.setS('lastbuildcheck', str(NEXTCHECK))
             self.close()
-            url = 'plugin://%s' % ADDON_ID
-            xbmc.executebuiltin('RunPlugin("%s")' % url)
+            xbmc.executebuiltin('RunAddon(%s)' % ADDON_ID)
 
         def doIgnore(self):
             self.close()
@@ -699,7 +673,7 @@ def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fan
             wiz.log("[Check Updates] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGINFO)
             wiz.setS('lastbuildcheck', str(NEXTCHECK))
             self.close()
-            url = 'plugin://%s/?mode=install&name=%s&_type=fresh' % (ADDON_ID, quote_plus(BUILDNAME))
+            url = 'plugin://%s/?mode=install&name=%s&url=fresh' % (ADDON_ID, quote_plus(BUILDNAME))
             xbmc.executebuiltin('RunPlugin(%s)' % url)
 
         def doNormalInstall(self):
@@ -707,7 +681,7 @@ def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fan
             wiz.log("[Check Updates] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGINFO)
             wiz.setS('lastbuildcheck', str(NEXTCHECK))
             self.close()
-            url = 'plugin://%s/?mode=install&name=%s&_type=normal' % (ADDON_ID, quote_plus(BUILDNAME))
+            url = 'plugin://%s/?mode=install&name=%s&url=normal' % (ADDON_ID, quote_plus(BUILDNAME))
             xbmc.executebuiltin('RunPlugin(%s)' % url)
 
         def doIgnore(self):

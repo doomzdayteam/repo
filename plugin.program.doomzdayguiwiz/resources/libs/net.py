@@ -16,14 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import random
-from six.moves import http_cookiejar
+import http.cookiejar
 import gzip
 import re
 import json
-import six
-from six.moves import urllib_request, urllib_parse, urllib_error
+import urllib.request
+import urllib.parse
+import urllib.error
 import socket
 import time
+import io  # <-- Needed for gzip decode
 
 # Set Global timeout - Useful for slow connections and Putlocker.
 socket.setdefaulttimeout(10)
@@ -44,7 +46,7 @@ RAND_UAS = ['Mozilla/5.0 ({win_ver}{feature}; rv:{br_ver}) Gecko/20100101 Firefo
 
 class Net:
     """
-    This class wraps :mod:`urllib2` and provides an easy way to make http
+    This class wraps urllib and provides an easy way to make http
     requests while taking care of cookies, proxies, gzip compression and
     character encoding.
 
@@ -53,10 +55,10 @@ class Net:
         from addon.common.net import Net
         net = Net()
         response = net.http_GET('http://xbmc.org')
-        print response.content
+        print(response.content)
     """
 
-    _cj = http_cookiejar.LWPCookieJar()
+    _cj = http.cookiejar.LWPCookieJar()
     _proxy = None
     _user_agent = 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
     _http_debug = False
@@ -68,12 +70,12 @@ class Net:
             cookies to.
 
             proxy (str): Proxy setting (eg.
-            ``'http://user:pass@example.com:1234'``)
+            'http://user:pass@example.com:1234')
 
             user_agent (str): String to use as the User Agent header. If not
             supplied the class will use a default user agent (chrome)
 
-            http_debug (bool): Set ``True`` to have HTTP header info written to
+            http_debug (bool): Set True to have HTTP header info written to
             the XBMC log for all requests.
         """
         if cookie_file:
@@ -121,7 +123,7 @@ class Net:
         """
         Args:
             proxy (str): Proxy setting (eg.
-            ``'http://user:pass@example.com:1234'``)
+            'http://user:pass@example.com:1234')
         """
         self._proxy = proxy
         self._update_opener()
@@ -144,17 +146,17 @@ class Net:
     def _update_opener(self, drop_tls_level=False):
         """
         Builds and installs a new opener to be used by all future calls to
-        :func:`urllib2.urlopen`.
+        urllib.request.urlopen.
         """
-        handlers = [urllib_request.HTTPCookieProcessor(self._cj), urllib_request.HTTPBasicAuthHandler()]
+        handlers = [urllib.request.HTTPCookieProcessor(self._cj), urllib.request.HTTPBasicAuthHandler()]
 
         if self._http_debug:
-            handlers += [urllib_request.HTTPHandler(debuglevel=1)]
+            handlers += [urllib.request.HTTPHandler(debuglevel=1)]
         else:
-            handlers += [urllib_request.HTTPHandler()]
+            handlers += [urllib.request.HTTPHandler()]
 
         if self._proxy:
-            handlers += [urllib_request.ProxyHandler({'http': self._proxy})]
+            handlers += [urllib.request.ProxyHandler({'http': self._proxy})]
 
         try:
             import platform
@@ -169,9 +171,9 @@ class Net:
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
                 if self._http_debug:
-                    handlers += [urllib_request.HTTPSHandler(context=ctx, debuglevel=1)]
+                    handlers += [urllib.request.HTTPSHandler(context=ctx, debuglevel=1)]
                 else:
-                    handlers += [urllib_request.HTTPSHandler(context=ctx)]
+                    handlers += [urllib.request.HTTPSHandler(context=ctx)]
             except:
                 pass
         else:
@@ -180,16 +182,16 @@ class Net:
                 import certifi
                 ctx = ssl.create_default_context(cafile=certifi.where())
                 if drop_tls_level:
-                    ctx.protocol = ssl.PROTOCOL_TLSv1_1
+                    ctx.minimum_version = ssl.TLSVersion.TLSv1_1
                 if self._http_debug:
-                    handlers += [urllib_request.HTTPSHandler(context=ctx, debuglevel=1)]
+                    handlers += [urllib.request.HTTPSHandler(context=ctx, debuglevel=1)]
                 else:
-                    handlers += [urllib_request.HTTPSHandler(context=ctx)]
+                    handlers += [urllib.request.HTTPSHandler(context=ctx)]
             except:
                 pass
 
-        opener = urllib_request.build_opener(*handlers)
-        urllib_request.install_opener(opener)
+        opener = urllib.request.build_opener(*handlers)
+        urllib.request.install_opener(opener)
 
     def http_GET(self, url, headers={}, compression=True):
         """
@@ -200,13 +202,13 @@ class Net:
 
         Kwargs:
             headers (dict): A dictionary describing any headers you would like
-            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+            to add to the request. (eg. {'X-Test': 'testing'})
 
-            compression (bool): If ``True`` (default), try to use gzip
+            compression (bool): If True (default), try to use gzip
             compression.
 
         Returns:
-            An :class:`HttpResponse` object containing headers and other
+            An HttpResponse object containing headers and other
             meta-information about the page and the page content.
         """
         return self._fetch(url, headers=headers, compression=compression)
@@ -222,13 +224,13 @@ class Net:
 
         Kwargs:
             headers (dict): A dictionary describing any headers you would like
-            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+            to add to the request. (eg. {'X-Test': 'testing'})
 
-            compression (bool): If ``True`` (default), try to use gzip
+            compression (bool): If True (default), try to use gzip
             compression.
 
         Returns:
-            An :class:`HttpResponse` object containing headers and other
+            An HttpResponse object containing headers and other
             meta-information about the page and the page content.
         """
         return self._fetch(url, form_data, headers=headers, compression=compression, jdata=jdata)
@@ -242,18 +244,17 @@ class Net:
 
         Kwargs:
             headers (dict): A dictionary describing any headers you would like
-            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+            to add to the request. (eg. {'X-Test': 'testing'})
 
         Returns:
-            An :class:`HttpResponse` object containing headers and other
+            An HttpResponse object containing headers and other
             meta-information about the page.
         """
-        request = urllib_request.Request(url)
-        request.get_method = lambda: 'HEAD'
+        request = urllib.request.Request(url, method='HEAD')
         request.add_header('User-Agent', self._user_agent)
         for key in headers:
             request.add_header(key, headers[key])
-        response = urllib_request.urlopen(request)
+        response = urllib.request.urlopen(request)
         return HttpResponse(response)
 
     def http_DELETE(self, url, headers={}):
@@ -265,18 +266,17 @@ class Net:
 
         Kwargs:
             headers (dict): A dictionary describing any headers you would like
-            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+            to add to the request. (eg. {'X-Test': 'testing'})
 
         Returns:
-            An :class:`HttpResponse` object containing headers and other
+            An HttpResponse object containing headers and other
             meta-information about the page.
         """
-        request = urllib_request.Request(url)
-        request.get_method = lambda: 'DELETE'
+        request = urllib.request.Request(url, method='DELETE')
         request.add_header('User-Agent', self._user_agent)
         for key in headers:
             request.add_header(key, headers[key])
-        response = urllib_request.urlopen(request)
+        response = urllib.request.urlopen(request)
         return HttpResponse(response)
 
     def _fetch(self, url, form_data={}, headers={}, compression=True, jdata=False):
@@ -291,25 +291,25 @@ class Net:
 
         Kwargs:
             headers (dict): A dictionary describing any headers you would like
-            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+            to add to the request. (eg. {'X-Test': 'testing'})
 
-            compression (bool): If ``True`` (default), try to use gzip
+            compression (bool): If True (default), try to use gzip
             compression.
 
         Returns:
-            An :class:`HttpResponse` object containing headers and other
+            An HttpResponse object containing headers and other
             meta-information about the page and the page content.
         """
-        req = urllib_request.Request(url)
+        req = urllib.request.Request(url)
         if form_data:
             if jdata:
                 form_data = json.dumps(form_data)
-            elif isinstance(form_data, six.string_types):
+            elif isinstance(form_data, str):
                 form_data = form_data
             else:
-                form_data = urllib_parse.urlencode(form_data, True)
-            form_data = form_data.encode('utf-8') if six.PY3 else form_data
-            req = urllib_request.Request(url, form_data)
+                form_data = urllib.parse.urlencode(form_data, True)
+            form_data = form_data.encode('utf-8')
+            req = urllib.request.Request(url, form_data)
         req.add_header('User-Agent', self._user_agent)
         for key in headers:
             req.add_header(key, headers[key])
@@ -317,37 +317,33 @@ class Net:
             req.add_header('Accept-Encoding', 'gzip')
         if jdata:
             req.add_header('Content-Type', 'application/json')
-        host = req.host if six.PY3 else req.get_host()
-        req.add_unredirected_header('Host', host)
+        host = req.host
+        req.add_header('Host', host)
         try:
-            response = urllib_request.urlopen(req, timeout=15)
-        except urllib_error.HTTPError as e:
+            response = urllib.request.urlopen(req, timeout=15)
+        except urllib.error.HTTPError as e:
             if e.code == 403:
                 self._update_opener(drop_tls_level=True)
-            response = urllib_request.urlopen(req, timeout=15)
+            response = urllib.request.urlopen(req, timeout=15)
 
         return HttpResponse(response)
 
 
 class HttpResponse:
     """
-    This class represents a resoponse from an HTTP request.
+    This class represents a response from an HTTP request.
 
     The content is examined and every attempt is made to properly decode it to
     Unicode unless the nodecode property flag is set to True.
 
     .. seealso::
-        :meth:`Net.http_GET`, :meth:`Net.http_HEAD` and :meth:`Net.http_POST`
+        Net.http_GET, Net.http_HEAD and Net.http_POST
     """
-
-    # content = ''
-    """Unicode encoded string containing the body of the reponse."""
 
     def __init__(self, response):
         """
         Args:
-            response (:class:`mimetools.Message`): The object returned by a call
-            to :func:`urllib2.urlopen`.
+            response: The object returned by a call to urllib.request.urlopen.
         """
         self._response = response
         self._nodecode = False
@@ -357,8 +353,8 @@ class HttpResponse:
         html = self._response.read()
         encoding = None
         try:
-            if self._response.headers['content-encoding'].lower() == 'gzip':
-                html = gzip.GzipFile(fileobj=six.BytesIO(html)).read()
+            if self._response.headers.get('content-encoding', '').lower() == 'gzip':
+                html = gzip.GzipFile(fileobj=io.BytesIO(html)).read()
         except:
             pass
 
@@ -366,23 +362,22 @@ class HttpResponse:
             return html
 
         try:
-            content_type = self._response.headers['content-type']
+            content_type = self._response.headers.get('content-type', '')
             if 'charset=' in content_type:
                 encoding = content_type.split('charset=')[-1]
         except:
             pass
 
         if encoding is None:
-            epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
-            epattern = epattern.encode('utf8') if six.PY3 else epattern
+            epattern = rb'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
             r = re.search(epattern, html, re.IGNORECASE)
             if r:
-                encoding = r.group(1).decode('utf8') if six.PY3 else r.group(1)
+                encoding = r.group(1).decode('utf8')
 
         if encoding is not None:
             html = html.decode(encoding, errors='ignore')
         else:
-            html = html.decode('ascii', errors='ignore') if six.PY3 else html
+            html = html.decode('ascii', errors='ignore')
         return html
 
     def get_headers(self, as_dict=False):
@@ -397,7 +392,8 @@ class HttpResponse:
                     hdrs.update({item[0].title(): ','.join([hdrs[item[0].title()], item[1]])})
             return hdrs
         else:
-            return self._response.info()._headers if six.PY3 else [(x.split(':')[0].strip(), x.split(':')[1].strip()) for x in self._response.info().headers]
+            # Python 3: info().items() gives a list of tuples
+            return list(self._response.info().items())
 
     def get_url(self):
         """
@@ -409,7 +405,7 @@ class HttpResponse:
     def nodecode(self, nodecode):
         """
         Sets whether or not content returns decoded text
-        nodecode (bool): Set to ``True`` to allow content to return undecoded data
+        nodecode (bool): Set to True to allow content to return undecoded data
         suitable to write to a binary file
         """
         self._nodecode = bool(nodecode)

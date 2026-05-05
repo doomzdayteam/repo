@@ -125,7 +125,6 @@ def PlayVideoB(id, forcePlayer=False):
     dp.close()
     xbmc.Player().play(pl, windowed=False)
 
-
 def GetVideoInformation(id):
     #id = 'H7iQ4sAf0OE' #test for HLSVP
     #id = 'ofHlUJuw8Ak' #test for stereo
@@ -141,7 +140,6 @@ def GetVideoInformation(id):
     except : pass
     
     return video, links
-
 
 def GetVideoInfo(id):
     url  = 'http://www.youtube.com/watch?v=%s&safeSearch=none' % id
@@ -342,31 +340,31 @@ def _jsToPy(jsFunBody):
     
     for i in range(len(lines)):
         # a.split("") -> list(a)
-        match = re.search('(\w+?)\.split\(""\)', lines[i])
+        match = re.search(r'(\w+?)\.split\(""\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), 'list(' + match.group(1)  + ')')
         # a.length -> len(a)
         
-        match = re.search('(\w+?)\.length', lines[i])
+        match = re.search(r'(\w+?)\.length', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), 'len(' + match.group(1)  + ')')
         # a.slice(3) -> a[3:]
         
-        match = re.search('(\w+?)\.slice\((\w+?)\)', lines[i])
+        match = re.search(r'(\w+?)\.slice\((\w+?)\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), match.group(1) + ('[%s:]' % match.group(2)) )
         # a.join("") -> "".join(a)
         
-        match = re.search('(\w+?)\.join\(("[^"]*?")\)', lines[i])
+        match = re.search(r'(\w+?)\.join\(("[^"]*?")\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), match.group(2) + '.join(' + match.group(1) + ')' )
         # a.splice(b,c) -> del a[b:c]
         
-        match = re.search('(\w+?)\.splice\(([^,]+),([^)]+)\)', lines[i])
+        match = re.search(r'(\w+?)\.splice\(([^,]+),([^)]+)\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), 'del ' + match.group(1) + '[' + match.group(2) + ':' + match.group(3) + ']' )
@@ -383,25 +381,25 @@ def _jsToPy1(jsFunBody):
     lines = pythonFunBody.split('\n')
     for i in range(len(lines)):
         # a.split("") -> list(a)
-        match = re.search('(\w+?)\.split\(""\)', lines[i])
+        match = re.search(r'(\w+?)\.split\(""\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), 'list(' + match.group(1)  + ')')
         # a.length -> len(a)
         
-        match = re.search('(\w+?)\.length', lines[i])
+        match = re.search(r'(\w+?)\.length', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), 'len(' + match.group(1)  + ')')
         # a.slice(3) -> a[3:]
         
-        match = re.search('(\w+?)\.slice\(([0-9]+?)\)', lines[i])
+        match = re.search(r'(\w+?)\.slice\(([0-9]+?)\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), match.group(1) + ('[%s:]' % match.group(2)) )
         # a.join("") -> "".join(a)
         
-        match = re.search('(\w+?)\.join\(("[^"]*?")\)', lines[i])
+        match = re.search(r'(\w+?)\.join\(("[^"]*?")\)', lines[i])
         
         if match:
             lines[i] = lines[i].replace( match.group(0), match.group(2) + '.join(' + match.group(1) + ')' )
@@ -411,7 +409,7 @@ def _jsToPy1(jsFunBody):
 def _getLocalFunBody(funName):
     # get function body 
     funName = funName.replace('$', '\\$')
-    match = re.search('(function %s\([^)]+?\){[^}]+?})' % funName, playerData)
+    match = re.search(r'(function %s\([^)]+?\){[^}]+?})' % funName, playerData)
     
     if match:
         return match.group(1)
@@ -419,7 +417,7 @@ def _getLocalFunBody(funName):
     return ''
 
 def _getAllLocalSubFunNames(mainFunBody):
-    match = re.compile('[ =(,](\w+?)\([^)]*?\)').findall( mainFunBody )
+    match = re.compile(r'[ =(,](\w+?)\([^)]*?\)').findall( mainFunBody )
     
     if len(match):
         # first item is name of main function, so omit it
@@ -476,7 +474,7 @@ def DecryptSignatureNew(s, playerUrl):
         return ''
         
     # get main function name 
-    match = re.search("signature=([$a-zA-Z]+)\([^)]\)", playerData)
+    match = re.search(r"signature=([$a-zA-Z]+)\([^)]\)", playerData)
     
     if match:
         mainFunName = match.group(1)

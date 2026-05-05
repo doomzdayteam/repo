@@ -17,14 +17,13 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
+import xbmc, xbmcaddon, xbmcgui, os, sys, xbmcvfs, glob
 import shutil
 import urllib.request, urllib.error, urllib.parse
 import re
 import uservar
 import time
-try:    from sqlite3 import dbapi2 as database
-except: from pysqlite2 import dbapi2 as database
+from sqlite3 import dbapi2 as database
 from datetime import date, datetime, timedelta
 from resources.libs import wizard as wiz
 
@@ -48,117 +47,21 @@ KEEPTRAKT      = wiz.getS('keeptrakt')
 TRAKTSAVE      = wiz.getS('traktlastsave')
 COLOR1         = uservar.COLOR1
 COLOR2         = uservar.COLOR2
-ORDER          = ['gaia', 'openmeta', 'thecrew', 'homelander', 'premiumizer', 'realizer', 'seren', 'myaccounts', 'trakt']
+ORDER          = ['trakt']
 
 TRAKTID = {
-    'gaia': {
-        'name'     : 'Gaia',
-        'plugin'   : 'plugin.video.gaia',
-        'saved'    : 'gaia',
-        'path'     : os.path.join(ADDONS, 'plugin.video.gaia'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.gaia', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.gaia', 'fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'gaia_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.gaia', 'settings.xml'),
-        'default'  : 'accounts.informants.trakt.user',
-        'data'     : ['accounts.informants.trakt.user', 'accounts.informants.trakt.refresh', 'accounts.informants.trakt.token'],
-        'activate' : 'RunPlugin(plugin://plugin.video.gaia/?action=traktAuthorize)'},
-    'thecrew': {
-        'name'     : 'The Crew',
-        'plugin'   : 'plugin.video.thecrew',
-        'saved'    : 'thecrew',
-        'path'     : os.path.join(ADDONS, 'plugin.video.thecrew'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.thecrew', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.thecrew', 'fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'thecrew_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.thecrew', 'settings.xml'),
-        'default'  : 'trakt.user',
-        'data'     : ['trakt.refresh', 'trakt.token', 'trakt.user'],
-        'activate' : 'RunPlugin(plugin://plugin.video.thecrew/?action=authTrakt)'},
-    'homelander': {
-        'name'     : 'Homelander',
-        'plugin'   : 'plugin.video.homelander',
-        'saved'    : 'homelander',
-        'path'     : os.path.join(ADDONS, 'plugin.video.homelander'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.homelander', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.homelander', 'fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'thecrew_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.homelander', 'settings.xml'),
-        'default'  : 'trakt.user',
-        'data'     : ['trakt.refresh', 'trakt.token', 'trakt.user'],
-        'activate' : 'RunPlugin(plugin://plugin.video.homelander/?action=authTrakt)'},
-    'seren': {
-        'name'     : 'Seren',
-        'plugin'   : 'plugin.video.seren',
-        'saved'    : 'seren',
-        'path'     : os.path.join(ADDONS, 'plugin.video.seren'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.seren', 'temp-icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.seren', 'temp-fanart.png'),
-        'file'     : os.path.join(TRAKTFOLD, 'seren_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.seren', 'settings.xml'),
-        'default'  : 'trakt.username',
-        'data'     : ['trakt.auth', 'trakt.refresh', 'trakt.username'],
-        'activate' : 'RunPlugin(plugin://plugin.video.seren/?action=authTrakt)'},
-    'myaccounts': {
-        'name'     : 'My Accounts (Fen-Venom)',
-        'plugin'   : 'script.module.myaccounts',
-        'saved'    : 'myaccounts',
-        'path'     : os.path.join(ADDONS, 'script.module.myaccounts'),
-        'icon'     : os.path.join(ADDONS, 'script.module.myaccounts', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'script.module.myaccounts', 'fanart.png'),
-        'file'     : os.path.join(TRAKTFOLD, 'myaccounts_trakt'),
-        'settings' : os.path.join(ADDOND, 'script.module.myaccounts', 'settings.xml'),
-        'default'  : 'trakt.username',
-        'data'     : ['trakt.username', 'trakt.refresh', 'trakt.token'],
-        'activate' : 'RunScript(script.module.myaccounts, action=traktAuth)'},
-    'trakt': {
-        'name'     : 'Trakt',
-        'plugin'   : 'script.trakt',
-        'saved'    : 'trakt',
-        'path'     : os.path.join(ADDONS, 'script.trakt'),
-        'icon'     : os.path.join(ADDONS, 'script.trakt', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'script.trakt', 'fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'trakt_trakt'),
-        'settings' : os.path.join(ADDOND, 'script.trakt', 'settings.xml'),
-        'default'  : 'user',
-        'data'     : ['authorization', 'user'],
-        'activate' : 'RunScript(script.trakt, action=auth_info)'},
-    'openmeta': {
-        'name'     : 'OpenMeta',
-        'plugin'   : 'plugin.video.openmeta',
-        'saved'    : 'openmeta',
-        'path'     : os.path.join(ADDONS, 'plugin.video.openmeta'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.openmeta', 'resources/icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.openmeta', 'resources/fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'openmeta_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.openmeta', 'settings.xml'),
-        'default'  : 'trakt_access_token',
-        'data'     : ['trakt_access_token', 'trakt_refresh_token', 'trakt_expires_at    '],
-        'activate' : 'RunPlugin(plugin://plugin.video.openmeta/authenticate_trakt)'},
-    'premiumizer': {
-        'name'     : 'Premiumizer',
-        'plugin'   : 'plugin.video.premiumizer',
-        'saved'    : 'premiumizer',
-        'path'     : os.path.join(ADDONS, 'plugin.video.premiumizer'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.premiumizer', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.premiumizer', 'fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'premiumizer_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.premiumizer', 'settings.xml'),
-        'default'  : 'trakt.auth',
-        'data'     : ['trakt.token', 'trakt.refresh', 'trakt.auth'],
-        'activate' : 'RunPlugin(plugin://plugin.video.premiumizer/?action=authTrakt)'},
-    'realizer': {
-        'name'     : 'Realizer',
-        'plugin'   : 'plugin.video.realizer',
-        'saved'    : 'premiumizer',
-        'path'     : os.path.join(ADDONS, 'plugin.video.realizer'),
-        'icon'     : os.path.join(ADDONS, 'plugin.video.realizer', 'icon.png'),
-        'fanart'   : os.path.join(ADDONS, 'plugin.video.realizer', 'fanart.jpg'),
-        'file'     : os.path.join(TRAKTFOLD, 'realizer_trakt'),
-        'settings' : os.path.join(ADDOND, 'plugin.video.realizer', 'settings.xml'),
-        'default'  : 'trakt.auth',
-        'data'     : ['trakt.token', 'trakt.refresh', 'trakt.auth'],
-        'activate' : 'RunPlugin(plugin://plugin.video.realizer/?action=authTrakt)'}
+	'trakt': {
+		'name'     : 'Trakt',
+		'plugin'   : 'script.trakt',
+		'saved'    : 'trakt',
+		'path'     : os.path.join(ADDONS, 'script.trakt'),
+		'icon'     : os.path.join(ADDONS, 'script.trakt', 'icon.png'),
+		'fanart'   : os.path.join(ADDONS, 'script.trakt', 'fanart.jpg'),
+		'file'     : os.path.join(TRAKTFOLD, 'trakt_trakt'),
+		'settings' : os.path.join(ADDOND, 'script.trakt', 'settings.xml'),
+		'default'  : 'user',
+		'data'     : ['user', 'Auth_Info', 'authorization'],
+		'activate' : 'RunScript(script.trakt, action=auth_info)'}
 }
 
 def traktUser(who):
@@ -255,7 +158,7 @@ def updateTrakt(do, who):
 					if len(match) == 0: f.write(line)
 					else:
 						if match[0] not in data: f.write(line)
-						else: wiz.log('Removing Line: %s' % line, xbmc.LOGNOTICE)
+						else: wiz.log('Removing Line: %s' % line, xbmc.LOGINFO)
 				f.close()
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name),'[COLOR %s]Addon Data: Cleared![/COLOR]' % COLOR2, 2000, icon)
 			except Exception as e:
@@ -275,8 +178,8 @@ def autoUpdate(who):
 			if u == None or u == '': return
 			elif su == '': traktIt('update', who)
 			elif not u == su:
-				if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to save the [COLOR %s]Trakt[/COLOR] data for [COLOR %s]%s[/COLOR]?" % (COLOR2, COLOR1, COLOR1, n), "Addon: [COLOR green][B]%s[/B][/COLOR]" % u, "Saved:[/COLOR] [COLOR red][B]%s[/B][/COLOR]" % su if not su == '' else 'Saved:[/COLOR] [COLOR red][B]None[/B][/COLOR]', yeslabel="[B][COLOR green]Save Data[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
-					traktIt('update', who)
+					if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to save the [COLOR %s]Trakt[/COLOR] data for [COLOR %s]%s[/COLOR]?[CR]Addon: [COLOR green][B]%s[/B][/COLOR][CR]Saved: [COLOR red][B]%s[/B][/COLOR]" % (COLOR2, COLOR1, COLOR1, n, u, su if su != '' else 'None'), yeslabel="[B][COLOR green]Save Data[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
+						traktIt('update', who)
 			else: traktIt('update', who)
 
 def importlist(who):
@@ -294,12 +197,12 @@ def importlist(who):
 			m  = re.compile('<trakt><id>%s</id><value>(.+?)</value></trakt>' % d).findall(g)
 			if len(m) > 0:
 				if not m[0] == su:
-					if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to import the [COLOR %s]Trakt[/COLOR] data for [COLOR %s]%s[/COLOR]?" % (COLOR2, COLOR1, COLOR1, n), "File: [COLOR green][B]%s[/B][/COLOR]" % m[0], "Saved:[/COLOR] [COLOR red][B]%s[/B][/COLOR]" % su if not su == '' else 'Saved:[/COLOR] [COLOR red][B]None[/B][/COLOR]', yeslabel="[B]Save Data[/B]", nolabel="[B]No Cancel[/B]"):
+					if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to import the [COLOR %s]Trakt[/COLOR] data for [COLOR %s]%s[/COLOR]?[CR]File: [COLOR green][B]%s[/B][/COLOR][CR]Saved: [COLOR red][B]%s[/B][/COLOR]" % (COLOR2, COLOR1, COLOR1, n, m[0], su if su != '' else 'None'), yeslabel="[B]Save Data[/B]", nolabel="[B]No Cancel[/B]"):
 						wiz.setS(sa, m[0])
-						wiz.log('[Import Data] %s: %s' % (who, str(m)), xbmc.LOGNOTICE)
-					else: wiz.log('[Import Data] Declined Import(%s): %s' % (who, str(m)), xbmc.LOGNOTICE)
-				else: wiz.log('[Import Data] Duplicate Entry(%s): %s' % (who, str(m)), xbmc.LOGNOTICE)
-			else: wiz.log('[Import Data] No Match(%s): %s' % (who, str(m)), xbmc.LOGNOTICE)
+						wiz.log('[Import Data] %s: %s' % (who, str(m)), xbmc.LOGINFO)
+					else: wiz.log('[Import Data] Declined Import(%s): %s' % (who, str(m)), xbmc.LOGINFO)
+				else: wiz.log('[Import Data] Duplicate Entry(%s): %s' % (who, str(m)), xbmc.LOGINFO)
+			else: wiz.log('[Import Data] No Match(%s): %s' % (who, str(m)), xbmc.LOGINFO)
 
 def activateTrakt(who):
 	if TRAKTID[who]:
@@ -317,4 +220,8 @@ def activateTrakt(who):
 		if check == 30: break
 		check += 1
 		time.sleep(10)
+	if traktUser(who) is not None:
+		name = TRAKTID[who]['name']
+		icon = TRAKTID[who]['icon'] if os.path.exists(TRAKTID[who]['path']) else ICON
+		wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Trakt: Authorized![/COLOR]' % COLOR2, 4000, icon)
 	wiz.refresh()

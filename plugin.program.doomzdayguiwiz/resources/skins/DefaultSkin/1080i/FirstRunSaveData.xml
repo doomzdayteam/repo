@@ -105,22 +105,6 @@
                 <textureradioofffocus colordiffuse="FF01DF01">RadioButton/radiobutton-focus.png</textureradioofffocus>
                 <textureradiooffnofocus>RadioButton/radiobutton-nofocus.png</textureradiooffnofocus>
             </control>
-            <control type="radiobutton" id="314">
-                <width>610</width>
-                <height>40</height>
-                <textwidth>565</textwidth>
-                <textoffsetx>10</textoffsetx>
-                <radioheight>45</radioheight>
-                <radioposx>530</radioposx>
-                <label>Keep My Alluc Login</label>
-                <font>font12</font>
-                <texturefocus colordiffuse="FF01DF01">RadioButton/MenuItemFO.png</texturefocus>
-                <texturenofocus>RadioButton/MenuItemNF.png</texturenofocus>
-                <textureradioonfocus colordiffuse="FF01DF01">RadioButton/radiobutton-focus.png</textureradioonfocus>
-                <textureradioonnofocus colordiffuse="FF01DF01">RadioButton/radiobutton-focus.png</textureradioonnofocus>
-                <textureradioofffocus colordiffuse="FF01DF01">RadioButton/radiobutton-focus.png</textureradioofffocus>
-                <textureradiooffnofocus>RadioButton/radiobutton-nofocus.png</textureradiooffnofocus>
-            </control>
             <control type="radiobutton" id="305">
                 <width>610</width>
                 <height>40</height>

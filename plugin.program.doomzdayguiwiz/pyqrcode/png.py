@@ -2716,16 +2716,17 @@ def _main(argv):
     # Prepare input and output files
     if len(args) == 0:
         infilename = '-'
-        infile = sys.stdin
+        infile = getattr(sys.stdin, 'buffer', sys.stdin)
     elif len(args) == 1:
         infilename = args[0]
         infile = open(infilename, 'rb')
     else:
         parser.error("more than one input file")
-    outfile = sys.stdout
+    outfile = getattr(sys.stdout, 'buffer', sys.stdout)
     if sys.platform == "win32":
         import msvcrt, os
-        msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+        if hasattr(sys.stdout, 'fileno'):
+            msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
 
     if options.read_png:
         # Encode PNG to PPM

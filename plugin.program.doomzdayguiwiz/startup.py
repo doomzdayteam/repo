@@ -46,13 +46,17 @@
 #                                                                          #
 ############################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
-import shutil
-import urllib.request, urllib.error, urllib.parse
+import xbmc
+import xbmcaddon
+import xbmcgui
+import os
+import xbmcvfs
+import glob
 import re
+import urllib.parse
 import uservar
 from datetime import date, datetime, timedelta
-from resources.libs import extract, downloader, notify, loginit, debridit, allucit, traktit, skinSwitch, uploadLog, wizard as wiz
+from resources.libs import notify, loginit, debridit, traktit, premiumizeit, alldebridit, torboxit, linksnappit, skinSwitch, uploadLog, wizard as wiz
 
 ADDON_ID       = uservar.ADDON_ID
 ADDONTITLE     = uservar.ADDONTITLE
@@ -61,12 +65,9 @@ VERSION        = wiz.addonInfo(ADDON_ID,'version')
 ADDONPATH      = wiz.addonInfo(ADDON_ID,'path')
 ADDONID        = wiz.addonInfo(ADDON_ID,'id')
 DIALOG         = xbmcgui.Dialog()
-DP             = xbmcgui.DialogProgress()
 HOME           = xbmcvfs.translatePath('special://home/')
 PROFILE        = xbmcvfs.translatePath('special://profile/')
-KODIHOME       = xbmcvfs.translatePath('special://xbmc/')
 ADDONS         = os.path.join(HOME,     'addons')
-KODIADDONS     = os.path.join(KODIHOME, 'addons')
 USERDATA       = os.path.join(HOME,     'userdata')
 PLUGIN         = os.path.join(ADDONS,   ADDON_ID)
 PACKAGES       = os.path.join(ADDONS,   'packages')
@@ -93,12 +94,18 @@ AUTOFEQ        = wiz.getS('autocleanfeq')
 AUTONEXTRUN    = wiz.getS('nextautocleanup')
 TRAKTSAVE      = wiz.getS('traktlastsave')
 REALSAVE       = wiz.getS('debridlastsave')
-ALLUCSAVE      = wiz.getS('alluclastsave')
 LOGINSAVE      = wiz.getS('loginlastsave')
+PREMIUMIZESAVE = wiz.getS('premiumizelastsave')
+ALLDEBRIDSAVE  = wiz.getS('alldebridlastsave')
+TORBOXSAVE     = wiz.getS('torboxlastsave')
+LINKSNAPPYSAVE = wiz.getS('linksnappylastsave')
 KEEPTRAKT      = wiz.getS('keeptrakt')
 KEEPREAL       = wiz.getS('keepdebrid')
-KEEPALLUC      = wiz.getS('keepalluc')
 KEEPLOGIN      = wiz.getS('keeplogin')
+KEEPPREMIUMIZE = wiz.getS('keeppremiumize')
+KEEPALLDEBRID  = wiz.getS('keepalldebrid')
+KEEPTORBOX     = wiz.getS('keeptorbox')
+KEEPLINKSNAPPY = wiz.getS('keeplinksnappy')
 INSTALLED      = wiz.getS('installed')
 EXTRACT        = wiz.getS('extract')
 EXTERROR       = wiz.getS('errors')
@@ -114,7 +121,8 @@ TOMORROW       = TODAY + timedelta(days=1)
 TWODAYS        = TODAY + timedelta(days=2)
 THREEDAYS      = TODAY + timedelta(days=3)
 ONEWEEK        = TODAY + timedelta(days=7)
-KODIV          = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
+from resources.libs.system_info import kodi_version_major as _kodi_major
+KODIV          = _kodi_major()
 EXCLUDES       = uservar.EXCLUDES
 BUILDFILE      = uservar.BUILDFILE
 UPDATECHECK    = uservar.UPDATECHECK if str(uservar.UPDATECHECK).isdigit() else 1
@@ -122,12 +130,6 @@ NEXTCHECK      = TODAY + timedelta(days=UPDATECHECK)
 NOTIFICATION   = uservar.NOTIFICATION
 ENABLE         = uservar.ENABLE
 HEADERMESSAGE  = uservar.HEADERMESSAGE
-AUTOUPDATE     = uservar.AUTOUPDATE
-WIZARDFILE     = uservar.WIZARDFILE
-AUTOINSTALL    = uservar.AUTOINSTALL
-REPOID         = uservar.REPOID
-REPOADDONXML   = uservar.REPOADDONXML
-REPOZIPURL     = uservar.REPOZIPURL
 COLOR1         = uservar.COLOR1
 COLOR2         = uservar.COLOR2
 WORKING        = True if wiz.workingURL(BUILDFILE) == True else False
@@ -216,84 +218,11 @@ def checkSkin():
 while xbmc.Player().isPlayingVideo():
 	xbmc.sleep(1000)
 
-if KODIV >= 17:
-	NOW = datetime.now()
-	temp = wiz.getS('kodi17iscrap')
-	if not temp == '':
-		if temp > str(NOW - timedelta(minutes=2)):
-			wiz.log("Killing Start Up Script")
-			sys.exit()
-	wiz.log("%s" % (NOW))
-	wiz.setS('kodi17iscrap', str(NOW))
-	xbmc.sleep(1000)
-	if not wiz.getS('kodi17iscrap') == str(NOW):
-		wiz.log("Killing Start Up Script")
-		sys.exit()
-	else:
-		wiz.log("Continuing Start Up Script")
-
-if KODIADDONS in ADDONPATH:
-	wiz.log("Copying path to addons dir", xbmc.LOGINFO)
-	if not os.path.exists(ADDONS): os.makedirs(ADDONS)
-	newpath = xbmcvfs.translatePath(os.path.join('special://home/addons/', ADDONID))
-	if os.path.exists(newpath):
-		wiz.log("Folder already exists, cleaning House", xbmc.LOGINFO)
-		wiz.cleanHouse(newpath)
-		wiz.removeFolder(newpath)
-	try:
-		wiz.copytree(ADDONPATH, newpath)
-	except Exception as e:
-		pass
-	wiz.forceUpdate(True)
-
 try:
 	mybuilds = xbmcvfs.translatePath(MYBUILDS)
 	if not os.path.exists(mybuilds): xbmcvfs.mkdirs(mybuilds)
-except:
+except Exception:
 	pass
-
-wiz.log("[Auto Install Repo] Started", xbmc.LOGINFO)
-if AUTOINSTALL == 'Yes' and not os.path.exists(os.path.join(ADDONS, REPOID)):
-	workingxml = wiz.workingURL(REPOADDONXML)
-	if workingxml == True:
-		ver = wiz.parseDOM(wiz.openURL(REPOADDONXML), 'addon', ret='version', attrs = {'id': REPOID})
-		if len(ver) > 0:
-			installzip = '%s-%s.zip' % (REPOID, ver[0])
-			workingrepo = wiz.workingURL(REPOZIPURL+installzip)
-			if workingrepo == True:
-				DP.create(ADDONTITLE,'Downloading Repo...\nPlease Wait')
-				if not os.path.exists(PACKAGES): os.makedirs(PACKAGES)
-				lib=os.path.join(PACKAGES, installzip)
-				try: os.remove(lib)
-				except: pass
-				downloader.download(REPOZIPURL+installzip,lib, DP)
-				extract.all(lib, ADDONS, DP)
-				try:
-					f = open(os.path.join(ADDONS, REPOID, 'addon.xml'), mode='r', encoding='utf-8'); g = f.read(); f.close()
-					name = wiz.parseDOM(g, 'addon', ret='name', attrs = {'id': REPOID})
-					wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name[0]), "[COLOR %s]Add-on updated[/COLOR]" % COLOR2, icon=os.path.join(ADDONS, REPOID, 'icon.png'))
-				except:
-					pass
-				if KODIV >= 17: wiz.addonDatabase(REPOID, 1)
-				DP.close()
-				xbmc.sleep(500)
-				wiz.forceUpdate(True)
-				wiz.log("[Auto Install Repo] Successfully Installed", xbmc.LOGINFO)
-			else: 
-				wiz.LogNotify("[COLOR %s]Repo Install Error[/COLOR]" % COLOR1, "[COLOR %s]Invalid url for zip![/COLOR]" % COLOR2)
-				wiz.log("[Auto Install Repo] Was unable to create a working url for repository. %s" % workingrepo, xbmc.LOGERROR)
-		else:
-			wiz.log("Invalid URL for Repo Zip", xbmc.LOGERROR)
-	else: 
-		wiz.LogNotify("[COLOR %s]Repo Install Error[/COLOR]" % COLOR1, "[COLOR %s]Invalid addon.xml file![/COLOR]" % COLOR2)
-		wiz.log("[Auto Install Repo] Unable to read the addon.xml file.", xbmc.LOGERROR)
-elif not AUTOINSTALL == 'Yes': wiz.log("[Auto Install Repo] Not Enabled", xbmc.LOGINFO)
-elif os.path.exists(os.path.join(ADDONS, REPOID)): wiz.log("[Auto Install Repo] Repository already installed")
-
-wiz.log("[Auto Update Wizard] Started", xbmc.LOGINFO)
-if AUTOUPDATE == 'Yes':
-	wiz.wizardUpdate('startup')
-else: wiz.log("[Auto Update Wizard] Not Enabled", xbmc.LOGINFO)
 
 wiz.log("[Notifications] Started", xbmc.LOGINFO)
 if ENABLE == 'Yes':
@@ -321,12 +250,20 @@ if ENABLE == 'Yes':
 	else: wiz.log("[Notifications] Turned Off", xbmc.LOGINFO)
 else: wiz.log("[Notifications] Not Enabled", xbmc.LOGINFO)
 
+# ── First-run: seed favourites.xml if userdata has none yet ──────────────────
+_favdest = os.path.join(USERDATA, 'favourites.xml')
+_favsrc  = os.path.join(ADDONPATH, 'resources', 'text examples', 'favourites.xml')
+if not os.path.exists(_favdest) and os.path.exists(_favsrc):
+    import shutil
+    shutil.copy2(_favsrc, _favdest)
+    wiz.log("[First Run] Seeded favourites.xml into userdata", xbmc.LOGINFO)
+# ─────────────────────────────────────────────────────────────────────────────
+
 wiz.log("[Installed Check] Started", xbmc.LOGINFO)
 if INSTALLED == 'true':
-	if KODIV >= 17:
-		wiz.kodi17Fix()
-		if SKIN in ['skin.estuary']:
-			checkSkin()
+	wiz.kodi17Fix()
+	if SKIN in ['skin.estuary']:
+		checkSkin()
 		FAILED = True
 	elif not EXTRACT == '100' and not BUILDNAME == "":
 		wiz.log("[Installed Check] Build was extracted %s/100 with [ERRORS: %s]" % (EXTRACT, EXTERROR), xbmc.LOGINFO)
@@ -353,18 +290,8 @@ if INSTALLED == 'true':
 					wiz.ebi('SendClick(11)')
 					wiz.lookandFeelData('restore')
 		if not wiz.currSkin() == defaults and not BUILDNAME == "":
-			gui = wiz.checkBuild(BUILDNAME, 'gui')
 			FAILED = True
-			if gui == 'http://':
-				wiz.log("[Installed Check] Guifix was set to http://", xbmc.LOGINFO)
-				DIALOG.ok(ADDONTITLE, "[COLOR %s]It looks like the skin settings was not applied to the build." % COLOR2 + "\nSadly no gui fix was attatched to the build" + "\nYou will need to reinstall the build and make sure to do a force close[/COLOR]")
-			elif wiz.workingURL(gui):
-				yes=DIALOG.yesno(ADDONTITLE, '%s was not installed correctly!' % BUILDNAME + '\nIt looks like the skin settings was not applied to the build.\nWould you like to apply the GuiFix?', nolabel='[B]No, Cancel[/B]', yeslabel='[B]Apply Fix[/B]')
-				if yes: wiz.ebi("PlayMedia(plugin://%s/?mode=install&name=%s&url=gui)" % (ADDON_ID, urllib.parse.quote_plus(BUILDNAME))); wiz.log("[Installed Check] Guifix attempting to install")
-				else: wiz.log('[Installed Check] Guifix url working but cancelled: %s' % gui, xbmc.LOGINFO)
-			else:
-				DIALOG.ok(ADDONTITLE, "[COLOR %s]It looks like the skin settings was not applied to the build." % COLOR2 + "\nSadly no gui fix was attatched to the build\nYou will need to reinstall the build and make sure to do a force close[/COLOR]")
-				wiz.log('[Installed Check] Guifix url not working: %s' % gui, xbmc.LOGINFO)
+			wiz.log('[Installed Check] Skin mismatch — reinstall build to restore skin settings', xbmc.LOGINFO)
 	else:
 		wiz.log('[Installed Check] Install seems to be completed correctly', xbmc.LOGINFO)
 	if not wiz.getS('pvrclient') == "":
@@ -374,6 +301,10 @@ if INSTALLED == 'true':
 	if KEEPTRAKT == 'true': traktit.traktIt('restore', 'all'); wiz.log('[Installed Check] Restoring Trakt Data', xbmc.LOGINFO)
 	if KEEPREAL  == 'true': debridit.debridIt('restore', 'all'); wiz.log('[Installed Check] Restoring Real Debrid Data', xbmc.LOGINFO)
 	if KEEPLOGIN == 'true': loginit.loginIt('restore', 'all'); wiz.log('[Installed Check] Restoring Login Data', xbmc.LOGINFO)
+	if KEEPPREMIUMIZE == 'true': premiumizeit.premiumizeIt('restore', 'all'); wiz.log('[Installed Check] Restoring Premiumize Data', xbmc.LOGINFO)
+	if KEEPALLDEBRID  == 'true': alldebridit.alldebridIt('restore', 'all'); wiz.log('[Installed Check] Restoring AllDebrid Data', xbmc.LOGINFO)
+	if KEEPTORBOX     == 'true': torboxit.torboxIt('restore', 'all'); wiz.log('[Installed Check] Restoring TorBox Data', xbmc.LOGINFO)
+	if KEEPLINKSNAPPY == 'true': linksnappit.linksnappyIt('restore', 'all'); wiz.log('[Installed Check] Restoring LinkSnappy Data', xbmc.LOGINFO)
 	wiz.clearS('install')
 else: wiz.log("[Installed Check] Not Enabled", xbmc.LOGINFO)
 
@@ -432,6 +363,45 @@ if KEEPLOGIN == 'true':
 		wiz.log("[Login Data] Next Auto Save isnt until: %s / TODAY is: %s" % (LOGINSAVE, str(TODAY)), xbmc.LOGINFO)
 else: wiz.log("[Login Data] Not Enabled", xbmc.LOGINFO)
 
+wiz.log("[Premiumize Data] Started", xbmc.LOGINFO)
+if KEEPPREMIUMIZE == 'true':
+	if PREMIUMIZESAVE <= str(TODAY):
+		wiz.log("[Premiumize Data] Saving all Data", xbmc.LOGINFO)
+		premiumizeit.autoUpdate('all')
+		wiz.setS('premiumizelastsave', str(THREEDAYS))
+	else: 
+		wiz.log("[Premiumize Data] Next Auto Save isnt until: %s / TODAY is: %s" % (PREMIUMIZESAVE, str(TODAY)), xbmc.LOGINFO)
+else: wiz.log("[Premiumize Data] Not Enabled", xbmc.LOGINFO)
+
+wiz.log("[AllDebrid Data] Started", xbmc.LOGINFO)
+if KEEPALLDEBRID == 'true':
+	if ALLDEBRIDSAVE <= str(TODAY):
+		wiz.log("[AllDebrid Data] Saving all Data", xbmc.LOGINFO)
+		alldebridit.autoUpdate('all')
+		wiz.setS('alldebridlastsave', str(THREEDAYS))
+	else:
+		wiz.log("[AllDebrid Data] Next Auto Save isnt until: %s / TODAY is: %s" % (ALLDEBRIDSAVE, str(TODAY)), xbmc.LOGINFO)
+else: wiz.log("[AllDebrid Data] Not Enabled", xbmc.LOGINFO)
+
+wiz.log("[TorBox Data] Started", xbmc.LOGINFO)
+if KEEPTORBOX == 'true':
+	if TORBOXSAVE <= str(TODAY):
+		wiz.log("[TorBox Data] Saving all Data", xbmc.LOGINFO)
+		torboxit.autoUpdate('all')
+		wiz.setS('torboxlastsave', str(THREEDAYS))
+	else:
+		wiz.log("[TorBox Data] Next Auto Save isnt until: %s / TODAY is: %s" % (TORBOXSAVE, str(TODAY)), xbmc.LOGINFO)
+else: wiz.log("[TorBox Data] Not Enabled", xbmc.LOGINFO)
+
+wiz.log("[LinkSnappy Data] Started", xbmc.LOGINFO)
+if KEEPLINKSNAPPY == 'true':
+	if LINKSNAPPYSAVE <= str(TODAY):
+		wiz.log("[LinkSnappy Data] Saving all Data", xbmc.LOGINFO)
+		linksnappit.autoUpdate('all')
+		wiz.setS('linksnappylastsave', str(THREEDAYS))
+	else:
+		wiz.log("[LinkSnappy Data] Next Auto Save isnt until: %s / TODAY is: %s" % (LINKSNAPPYSAVE, str(TODAY)), xbmc.LOGINFO)
+else: wiz.log("[LinkSnappy Data] Not Enabled", xbmc.LOGINFO)
 filesize = int(wiz.getS('filesize_alert'))
 filesize_thumb = int(wiz.getS('filesizethumb_alert'))
 total_size2 = 0
@@ -464,6 +434,3 @@ if int(total_sizetext2) > filesize_thumb:
 if wiz.getS('clearcache') == 'true':
 	wiz.clearCache(); wiz.refresh()
 	wiz.log("[Auto Cleaner] Thumbs Cleaner Triggered", xbmc.LOGINFO)
-	
-	
-wiz.setS('kodi17iscrap', '')

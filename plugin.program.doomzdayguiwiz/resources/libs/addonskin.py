@@ -5,20 +5,17 @@
 # Licence: GPL v.3 <http://www.gnu.org/licenses/gpl.html>
 """Classes for defining the appearance of PyXBMCt Windows and Controls"""
 
-from __future__ import unicode_literals
 import os
-from abc import ABCMeta, abstractmethod
-from six import with_metaclass
+from abc import ABC, abstractmethod
 import xbmc
 from xbmcaddon import Addon
 
-
-class BaseSkin(with_metaclass(ABCMeta, object)):
+class BaseSkin(ABC):
     """
     Abstract class for creating fully customized skins
 
     .. warning:: This class is meant for subclassing and cannot be instantiated directly!
-        A sublcass must implement all the following properties.
+        A subclass must implement all the following properties.
     """
     @abstractmethod
     def images(self):

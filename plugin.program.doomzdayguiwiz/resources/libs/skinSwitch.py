@@ -18,29 +18,34 @@
 ################################################################################
 
 import os
-import _thread
+import re
+import threading
 import json
-import uservar
-import xbmc
-import xbmcaddon
-import xbmcvfs
-from . import wizard as wiz
 
-KODIV  = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
-COLOR1 = uservar.COLOR1
-COLOR2 = uservar.COLOR2
-transPath  = xbmcvfs.translatePath
+import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
+
+try:
+    from resources.libs import wizard as wiz
+except ImportError:
+    import wizard as wiz
+
+import uservar
+
+KODIV = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
+COLOR1 = getattr(uservar, "COLOR1", "white")
+COLOR2 = getattr(uservar, "COLOR2", "grey")
+ADDONTITLE = getattr(uservar, "ADDONTITLE", "Addon")
+transPath = xbmc.translatePath if KODIV < 19 else xbmcvfs.translatePath
 
 def getOld(old):
     try:
-        old = '"%s"' % old 
-        query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":%s}, "id":1}' % (old)
+        old = '"%s"' % old
+        query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":%s}, "id":1}' % old
         response = xbmc.executeJSONRPC(query)
         response = json.loads(response)
-        if 'result' in response:
-            if 'value' in response['result']:
-                return response ['result']['value'] 
-    except:
+        if 'result' in response and 'value' in response['result']:
+            return response['result']['value']
+    except Exception:
         pass
     return None
 
@@ -50,48 +55,45 @@ def setNew(new, value):
         value = '"%s"' % value
         query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":%s,"value":%s}, "id":1}' % (new, value)
         xbmc.executeJSONRPC(query)
-    except:
+    except Exception:
         pass
-    return None
 
 def swapSkins(skin):
     if skin == 'skin.confluence':
-        HOME     = transPath('special://home/')
+        HOME = transPath('special://home/')
         skinfold = os.path.join(HOME, 'userdata', 'addon_data', 'skin.confluence')
         settings = os.path.join(skinfold, 'settings.xml')
         if not os.path.exists(settings):
             string = '<settings>\n    <setting id="FirstTimeRun" type="bool">true</setting>\n</settings>'
-            os.makedirs(skinfold)
-            f = xbmcvfs.File(settings, 'w'); f.write(string); f.close()
-        else: xbmcaddon.Addon(id='skin.confluence').setSetting('FirstTimeRun', 'true')
+            os.makedirs(skinfold, exist_ok=True)
+            f = xbmcvfs.File(settings, 'w')
+            f.write(string)
+            f.close()
+        else:
+            xbmcaddon.Addon(id='skin.confluence').setSetting('FirstTimeRun', 'true')
     old = 'lookandfeel.skin'
     value = skin
-    current = getOld(old)
-    new = old
-    setNew(new, value)
-    #   if not xbmc.getCondVisibility(Skin.HasSetting(FirstTimeRun)):
-    #       while xbmc.getCondVisibility('Window.IsVisible(1112)'):
-    #           xbmc.executebuiltin('SendClick(100)')
+    setNew(old, value)
 
 def swapUS():
     new = '"addons.unknownsources"'
     value = 'true'
-    query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":%s}, "id":1}' % (new)
+    query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":%s}, "id":1}' % new
     response = xbmc.executeJSONRPC(query)
     wiz.log("Unknown Sources Get Settings: %s" % str(response), xbmc.LOGDEBUG)
     if 'false' in response:
-        _thread.start_new_thread(dialogWatch, ())
+        threading.Thread(target=dialogWatch).start()
         xbmc.sleep(200)
         query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":%s,"value":%s}, "id":1}' % (new, value)
         response = xbmc.executeJSONRPC(query)
-        wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, uservar.ADDONTITLE), '[COLOR %s]Unknown Sources:[/COLOR] [COLOR %s]Enabled[/COLOR]' % (COLOR1, COLOR2))
+        wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE),
+                      '[COLOR %s]Unknown Sources:[/COLOR] [COLOR %s]Enabled[/COLOR]' % (COLOR1, COLOR2))
         wiz.log("Unknown Sources Set Settings: %s" % str(response), xbmc.LOGDEBUG)
-        
+
 def dialogWatch():
     x = 0
     while not xbmc.getCondVisibility("Window.isVisible(yesnodialog)") and x < 100:
         x += 1
         xbmc.sleep(100)
-    
     if xbmc.getCondVisibility("Window.isVisible(yesnodialog)"):
         xbmc.executebuiltin('SendClick(11)')

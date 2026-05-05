@@ -5,15 +5,13 @@
 # Licence: GPL v.3 <http://www.gnu.org/licenses/gpl.html>
 """Classes for defining the appearance of PyXBMCt Windows and Controls"""
 
-from __future__ import unicode_literals
 import os
-from abc import ABCMeta, abstractmethod
-from six import with_metaclass
+from abc import ABC, abstractmethod
 import xbmc
 from xbmcaddon import Addon
 
 
-class BaseSkin(with_metaclass(ABCMeta, object)):
+class BaseSkin(ABC):
     """
     Abstract class for creating fully customized skins
 
@@ -257,8 +255,8 @@ class Skin(BaseSkin):
 
     @property
     def title_bar_y_shift(self):
-        if self.estuary:
-            return 8
+            if self.estuary:
+                return 3
         else:
             return 4
 

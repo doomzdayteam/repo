@@ -17,46 +17,116 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcgui, urllib.request, urllib.parse, urllib.error, sys, time, uservar
+import os
+import time
+import xbmc
+import xbmcgui
+import uservar
+
+from urllib.request import urlopen, Request
+from urllib.error import URLError, HTTPError
+
 from . import wizard as wiz
 
-ADDONTITLE     = uservar.ADDONTITLE
-COLOR1         = uservar.COLOR1
-COLOR2         = uservar.COLOR2
+ADDONTITLE = uservar.ADDONTITLE
+COLOR1     = uservar.COLOR1
+COLOR2     = uservar.COLOR2
 
-urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36 SE 2.X MetaSr 1.0'
+_UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+       'AppleWebKit/537.36 (KHTML, like Gecko) '
+       'Chrome/122.0.0.0 Safari/537.36')
 
-def download(url, dest, dp = None):
-	if not dp:
-		dp = xbmcgui.DialogProgress()
-		dp.create(ADDONTITLE, "Downloading Content")
-	dp.update(0)
-	start_time=time.time()
-	urllib.request.urlretrieve(url, dest, lambda nb, bs, fs: _pbhook(nb, bs, fs, dp, start_time))
 
-def _pbhook(numblocks, blocksize, filesize, dp, start_time):
-	try: 
-		percent = min(numblocks * blocksize * 100 / filesize, 100) 
-		currently_downloaded = float(numblocks) * blocksize / (1024 * 1024) 
-		kbps_speed = numblocks * blocksize / (time.time() - start_time) 
-		if kbps_speed > 0 and not percent == 100: 
-			eta = (filesize - numblocks * blocksize) / kbps_speed 
-		else: 
-			eta = 0
-		kbps_speed = kbps_speed / 1024 
-		type_speed = 'KB'
-		if kbps_speed >= 1024:
-			kbps_speed = kbps_speed / 1024 
-			type_speed = 'MB'
-		total = float(filesize) / (1024 * 1024) 
-		mbs = '[COLOR %s][B]Size:[/B] [COLOR %s]%.02f[/COLOR] MB of [COLOR %s]%.02f[/COLOR] MB[/COLOR]' % (COLOR2, COLOR1, currently_downloaded, COLOR1, total) 
-		e   = '[COLOR %s][B]Speed:[/B] [COLOR %s]%.02f [/COLOR]%s/s ' % (COLOR2, COLOR1, kbps_speed, type_speed)
-		e  += '[B]ETA:[/B] [COLOR '+COLOR1+']%02d:%02d[/COLOR][/COLOR]' % divmod(eta, 60)
-		dp.update(int(percent),  str(mbs) + '\n' + str(e))
-	except Exception as e:
-		wiz.log("ERROR Downloading: %s" % str(e), xbmc.LOGERROR)
-		pass
-	if dp.iscanceled(): 
-		dp.close()
-		wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Download Cancelled[/COLOR]" % COLOR2)
-		sys.exit()
+def download(url, dest, dp=None):
+    """Download *url* to *dest*, updating *dp* with progress.
+
+    *dp* may be an ``xbmcgui.DialogProgress`` **or** an
+    ``InstallWindow`` instance — both implement the same interface.
+    Returns True on success, False on failure or user cancel.
+    """
+    own_dp = dp is None
+    if own_dp:
+        dp = xbmcgui.DialogProgress()
+        dp.create(ADDONTITLE, 'Downloading…')
+
+    dp.update(0)
+    os.makedirs(os.path.dirname(dest) or '.', exist_ok=True)
+
+    try:
+        req = Request(url, headers={'User-Agent': _UA})
+        with urlopen(req, timeout=30) as resp:
+            total = int(resp.headers.get('Content-Length') or 0)
+            downloaded = 0
+            start = time.time()
+            chunk = 512 * 1024
+            with open(dest, 'wb') as fh:
+                while True:
+                    data = resp.read(chunk)
+                    if not data:
+                        break
+                    fh.write(data)
+                    downloaded += len(data)
+
+                    if dp.iscanceled():
+                        break
+
+                    elapsed = max(time.time() - start, 0.001)
+                    if total > 0:
+                        pct = int(downloaded * 100 / total)
+                        dl_mb  = downloaded / (1024 * 1024)
+                        tot_mb = total / (1024 * 1024)
+                        speed  = downloaded / elapsed
+                        speed_mb = speed / (1024 * 1024)
+                        eta = (total - downloaded) / speed if speed > 0 else 0
+                        line1 = ('[COLOR %s][B]Size:[/B][/COLOR] '
+                                 '[COLOR %s]%.2f[/COLOR] MB of '
+                                 '[COLOR %s]%.2f[/COLOR] MB'
+                                 % (COLOR2, COLOR1, dl_mb, COLOR1, tot_mb))
+                        line2 = ('[COLOR %s][B]Speed:[/B][/COLOR] '
+                                 '[COLOR %s]%.2f[/COLOR] MB/s  '
+                                 '[B]ETA:[/B] [COLOR %s]%02d:%02d[/COLOR]'
+                                 % (COLOR2, COLOR1, speed_mb,
+                                    COLOR1, *divmod(int(eta), 60)))
+                    else:
+                        pct   = 0
+                        dl_mb = downloaded / (1024 * 1024)
+                        line1 = '[COLOR %s]%.1f MB received[/COLOR]' % (COLOR1, dl_mb)
+                        line2 = ''
+
+                    dp.update(pct, line1 + ('\n' + line2 if line2 else ''))
+
+        if dp.iscanceled():
+            try:
+                os.remove(dest)
+            except OSError:
+                pass
+            wiz.LogNotify(
+                '[COLOR %s]%s[/COLOR]' % (COLOR1, ADDONTITLE),
+                '[COLOR %s]Download Cancelled[/COLOR]' % COLOR2,
+            )
+            if own_dp:
+                dp.close()
+            return False
+
+        if own_dp:
+            dp.close()
+        return True
+
+    except (HTTPError, URLError) as exc:
+        wiz.log('download ERROR %s: %s' % (url, exc), xbmc.LOGERROR)
+        try:
+            os.remove(dest)
+        except OSError:
+            pass
+        if own_dp:
+            dp.close()
+        return False
+    except Exception as exc:
+        wiz.log('download UNEXPECTED ERROR %s: %s' % (url, exc), xbmc.LOGERROR)
+        try:
+            os.remove(dest)
+        except OSError:
+            pass
+        if own_dp:
+            dp.close()
+        return False

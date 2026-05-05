@@ -17,29 +17,28 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import zipfile, xbmcaddon, xbmc, xbmcvfs, uservar, sys, os, time
+import zipfile
+import os
+import xbmc
+import xbmcaddon
+import xbmcvfs
+import uservar
 
 from . import wizard as wiz
-KODIV          = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
+from . import config as _config
 
 ADDON_ID       = uservar.ADDON_ID
 ADDONTITLE     = uservar.ADDONTITLE
 COLOR1         = uservar.COLOR1
 COLOR2         = uservar.COLOR2
-ADDON          = wiz.addonId(ADDON_ID)
+ADDON          = xbmcaddon.Addon(id=ADDON_ID)
 HOME           = xbmcvfs.translatePath('special://home/')
-USERDATA       = os.path.join(HOME,      'userdata')
-GUISETTINGS    = os.path.join(USERDATA,  'guisettings.xml')
-KEEPFAVS       = wiz.getS('keepfavourites')
-KEEPSOURCES    = wiz.getS('keepsources')
-KEEPPROFILES   = wiz.getS('keepprofiles')
-KEEPADVANCED   = wiz.getS('keepadvanced')
-KEEPSUPER      = wiz.getS('keepsuper')
-KEEPREPOS      = wiz.getS('keeprepos')
-KEEPWHITELIST  = wiz.getS('keepwhitelist')
-KODIV          = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
-LOGFILES       = ['xbmc.log', 'xbmc.old.log', 'kodi.log', 'kodi.old.log', 'spmc.log', 'spmc.old.log', 'tvmc.log', 'tvmc.old.log', 'Thumbs.db', '.gitignore', '.DS_Store']
-bad_files      = ['onechannelcache.db', 'saltscache.db', 'saltscache.db-shm', 'saltscache.db-wal', 'saltshd.lite.db', 'saltshd.lite.db-shm', 'saltshd.lite.db-wal', 'queue.db', 'commoncache.db', 'access.log', 'trakt.db', 'video_cache.db']
+USERDATA       = os.path.join(HOME,     'userdata')
+GUISETTINGS    = os.path.join(USERDATA, 'guisettings.xml')
+# NOTE: settings are read at call-time inside allWithProgress() so they
+# reflect the user's current choices rather than being frozen at import.
+LOGFILES       = _config.LOGFILES
+bad_files      = _config.BAD_FILES
 
 def all(_in, _out, dp=None, ignore=None, title=None):
 	if dp: return allWithProgress(_in, _out, dp, ignore, title)
@@ -50,19 +49,29 @@ def allNoProgress(_in, _out, ignore):
 		zin = zipfile.ZipFile(_in, 'r')
 		zin.extractall(_out)
 	except Exception as e:
-		print(str(e))
+		xbmc.log('Extract allNoProgress error: ' + str(e), xbmc.LOGWARNING)
 		return False
 	return True
 
 def allWithProgress(_in, _out, dp, ignore, title):
+	# Read keep-settings at call time (not at module import) so they
+	# always reflect the user's current choices.
+	KEEPFAVS      = wiz.getS('keepfavourites')
+	KEEPSOURCES   = wiz.getS('keepsources')
+	KEEPPROFILES  = wiz.getS('keepprofiles')
+	KEEPADVANCED  = wiz.getS('keepadvanced')
+	KEEPSUPER     = wiz.getS('keepsuper')
+	KEEPREPOS     = wiz.getS('keeprepos')  # noqa: F841  (kept for future use)
+	KEEPWHITELIST = wiz.getS('keepwhitelist')  # noqa: F841
+
 	count = 0; errors = 0; error = ''; update = 0; size = 0; excludes = []
 	try:
-		zin = zipfile.ZipFile(_in,  'r')
+		zin = zipfile.ZipFile(_in, 'r')
 	except Exception as e:
 		errors += 1; error += '%s\n' % e
 		wiz.log('Error Checking Zip: %s' % str(e), xbmc.LOGERROR)
 		return update, errors, error
-	
+
 	whitelist = wiz.whiteList('read')
 	for item in whitelist:
 		try: name, id, fold = item
@@ -70,12 +79,12 @@ def allWithProgress(_in, _out, dp, ignore, title):
 		excludes.append(fold)
 		if fold.startswith('pvr'):
 			wiz.setS('pvrclient', id)
-	
+
 	nFiles = float(len(zin.namelist()))
 	zipsize = wiz.convertSize(sum([item.file_size for item in zin.infolist()]))
 
 	zipit = str(_in).replace('\\', '/').split('/')
-	title = title if not title == None else zipit[-1].replace('.zip', '')
+	title = title if title is not None else zipit[-1].replace('.zip', '')
 
 	for item in zin.infolist():
 		count += 1; prog = int(count / nFiles * 100); size += item.file_size
@@ -108,9 +117,12 @@ def allWithProgress(_in, _out, dp, ignore, title):
 				wiz.log('Error Extracting: %s(%s)' % (item.filename, str(e)), xbmc.LOGERROR)
 				pass
 		dp.update(int(prog), line1 + '\n' + line2 + '\n' + line3)
-		if dp.iscanceled(): break
-	if dp.iscanceled(): 
-		dp.close()
-		wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Extract Cancelled[/COLOR]" % COLOR2)
-		sys.exit()
+		if dp.iscanceled():
+			break
+	if dp.iscanceled():
+		wiz.LogNotify(
+			'[COLOR %s]%s[/COLOR]' % (COLOR1, ADDONTITLE),
+			'[COLOR %s]Extract Cancelled[/COLOR]' % COLOR2,
+		)
+		return 0, errors, error
 	return prog, errors, error

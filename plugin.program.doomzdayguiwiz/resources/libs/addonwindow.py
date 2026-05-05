@@ -10,26 +10,26 @@
 This module contains all classes and constants of PyXBMCt framework
 """
 
-from __future__ import absolute_import, division, unicode_literals
 import os
-from six.moves import range
-from kodi_six import xbmc, xbmcgui
+import xbmc
+import xbmcgui
 from .addonskin import Skin
 import uservar
 from resources.libs import wizard as wiz
+
 ADDON_ID = uservar.ADDON_ID
-ADDONPATH      = wiz.addonInfo(ADDON_ID,'path')
-_images  = os.path.join(ADDONPATH,   'resources', 'skins', 'DefaultSkin', 'media')
+ADDONPATH = wiz.addonInfo(ADDON_ID, 'path')
+_images = os.path.join(ADDONPATH, 'resources', 'skins', 'DefaultSkin', 'media')
 
 skin = Skin()
 
-# Text alighnment constants. Mixed variants are obtained by bit OR (|)
+# Text alignment constants. Mixed variants are obtained by bit OR (|)
 ALIGN_LEFT = 0
 """Align left"""
 ALIGN_RIGHT = 1
 """Align right"""
 ALIGN_CENTER_X = 2
-"""Align center horisontally"""
+"""Align center horizontally"""
 ALIGN_CENTER_Y = 4
 """Align center vertically"""
 ALIGN_CENTER = 6
@@ -38,6 +38,7 @@ ALIGN_TRUNCATED = 8
 """Align truncated"""
 ALIGN_JUSTIFY = 10
 """Align justify"""
+
 
 # Kodi key action codes.
 # More codes available in xbmcgui module
